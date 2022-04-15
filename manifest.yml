@@ -1,0 +1,8 @@
+---
+applications:
+  - name: traver
+    path: ./target/Traver-0.0.1.jar
+    disk_quota: 500M
+    instances: 1
+    memory: 1G
+    health check timeout:   600
