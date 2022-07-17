@@ -38,6 +38,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     public Category updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(categoryDTO.getId()).orElseThrow(CategoryNotFoundException::new);
         category.setName(categoryDTO.getName());
+        category.setPicture(categoryDTO.getPicture());
         categoryRepository.saveAndFlush(category);
         return category;
     }
@@ -49,6 +50,7 @@ public class CategoryDAOImpl implements CategoryDAO {
         } else {
             Category category = new Category();
             category.setName(categoryDTO.getName());
+            category.setPicture(categoryDTO.getPicture());
             categoryRepository.saveAndFlush(category);
             return category;
         }

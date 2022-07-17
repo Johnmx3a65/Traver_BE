@@ -5,6 +5,7 @@ import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
+import com.parovsky.traver.entity.Photo;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.service.LocationService;
@@ -31,13 +32,19 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationDTO> getAllLocations() {
         List<Location> locations = locationDAO.getAllLocations();
-        return locations.stream().map(this::transformLocationToLocationDTO).collect(Collectors.toList());
+        return locations.stream().map(LocationServiceImpl::transformLocationToLocationDTO).collect(Collectors.toList());
     }
 
     @Override
     public LocationDTO getLocationById(Long id) throws LocationNotFoundException {
         Location location = locationDAO.getLocationById(id);
         return transformLocationToLocationDTO(location);
+    }
+
+    @Override
+    public List<String> getPhotos(Long id) throws LocationNotFoundException {
+        Location location = locationDAO.getLocationById(id);
+        return location.getPhotos().stream().map(Photo::getPhoto).collect(Collectors.toList());
     }
 
     public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException {
@@ -56,13 +63,15 @@ public class LocationServiceImpl implements LocationService {
         locationDAO.deleteLocation(id);
     }
 
-    private LocationDTO transformLocationToLocationDTO(Location location) {
+    public static LocationDTO transformLocationToLocationDTO(Location location) {
         return new LocationDTO(
                 location.getId(),
                 location.getName(),
                 location.getDescription(),
                 location.getCoordinates(),
-                location.getCategory().getId()
+                location.getCategory().getId(),
+                location.getPicture(),
+                location.getSubtitle()
         );
     }
 }

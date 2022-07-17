@@ -53,7 +53,9 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryDTO transformCategoryToCategoryDTO(Category category) {
         return new CategoryDTO(
                 category.getId(),
-                category.getName()
+                category.getName(),
+                category.getPicture(),
+                category.getLocations().stream().map(LocationServiceImpl::transformLocationToLocationDTO).collect(Collectors.toList())
         );
     }
 }

@@ -1,6 +1,8 @@
 package com.parovsky.traver.dao.impl;
 
+import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDAO;
+import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -67,7 +70,7 @@ public class UserDAOImpl implements UserDAO {
         user.setName(userDTO.getName());
         user.setRole(userDTO.getRole());
         user.setVerifyCode(userDTO.getVerifyCode());
-        //TODO добавить список понравившихся мест
+        user.setFavouriteLocations(userDTO.getFavoriteLocations().stream().map(LocationDAOImpl::transformLocationDTO).collect(Collectors.toList()));
         userRepository.saveAndFlush(user);
         return user;
     }

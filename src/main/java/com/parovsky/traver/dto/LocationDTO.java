@@ -8,18 +8,24 @@ public class LocationDTO {
 
     private String name;
 
+    private String subtitle;
+
     private String description;
 
     private String coordinates;
 
+    private String picture;
+
     private Long categoryId;
 
-    public LocationDTO(Long id, String name, String description, String coordinates, Long categoryId) {
+    public LocationDTO(Long id, String name, String description, String coordinates, Long categoryId, String picture, String subtitle) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.coordinates = coordinates;
         this.categoryId = categoryId;
+        this.picture = picture;
+        this.subtitle = subtitle;
     }
 
     @NonNull
@@ -41,6 +47,15 @@ public class LocationDTO {
     }
 
     @NonNull
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(@NonNull String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    @NonNull
     public String getDescription() {
         return description;
     }
@@ -59,6 +74,11 @@ public class LocationDTO {
     }
 
     @NonNull
+    public String getPicture() { return picture; }
+
+    public void setPicture(@NonNull String picture) { this.picture = picture;}
+
+    @NonNull
     public Long getCategoryId() {
         return categoryId;
     }
@@ -66,4 +86,5 @@ public class LocationDTO {
     public void setCategoryId(@NonNull Long categoryId) {
         this.categoryId = categoryId;
     }
+
 }

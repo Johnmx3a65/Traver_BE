@@ -39,8 +39,10 @@ public class LocationDAOImpl implements LocationDAO {
     public Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) {
         Location location = new Location();
         location.setName(locationDTO.getName());
+        location.setSubtitle(locationDTO.getSubtitle());
         location.setDescription(locationDTO.getDescription());
         location.setCoordinates(locationDTO.getCoordinates());
+        location.setPicture(locationDTO.getPicture());
         location.setCategory(category);
         locationRepository.saveAndFlush(location);
         return location;
@@ -50,8 +52,10 @@ public class LocationDAOImpl implements LocationDAO {
     public Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) throws LocationNotFoundException {
         Location location = locationRepository.findById(locationDTO.getId()).orElseThrow(LocationNotFoundException::new);
         location.setName(locationDTO.getName());
+        location.setSubtitle(locationDTO.getSubtitle());
         location.setDescription(locationDTO.getDescription());
         location.setCoordinates(locationDTO.getCoordinates());
+        location.setPicture(locationDTO.getPicture());
         location.setCategory(category);
         locationRepository.saveAndFlush(location);
         return location;
@@ -62,5 +66,16 @@ public class LocationDAOImpl implements LocationDAO {
         if (locationRepository.deleteAllById(id) == 0) {
             throw new LocationNotFoundException();
         }
+    }
+
+    public static Location transformLocationDTO(LocationDTO locationDTO) {
+        Location location = new Location();
+        location.setId(locationDTO.getId());
+        location.setName(locationDTO.getName());
+        location.setSubtitle(locationDTO.getSubtitle());
+        location.setDescription(locationDTO.getDescription());
+        location.setCoordinates(locationDTO.getCoordinates());
+        location.setPicture(locationDTO.getPicture());
+        return location;
     }
 }

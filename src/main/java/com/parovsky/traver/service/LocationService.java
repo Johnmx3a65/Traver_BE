@@ -17,4 +17,6 @@ public interface LocationService {
     LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException;
 
     void deleteLocation(Long id) throws LocationNotFoundException;
+
+    List<String> getPhotos(Long id) throws LocationNotFoundException;
 }

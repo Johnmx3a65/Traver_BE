@@ -15,6 +15,9 @@ public class Category {
     @Column(name = "category_name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "category_picture", nullable = false, columnDefinition="TEXT")
+    private String picture;
+
     @OneToMany(mappedBy = "category", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<Location> locations = new ArrayList<>();
 
@@ -39,5 +42,13 @@ public class Category {
 
     public void setLocations(List<Location> locations) {
         this.locations = locations;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

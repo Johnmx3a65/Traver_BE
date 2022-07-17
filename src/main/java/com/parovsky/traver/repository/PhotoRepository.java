@@ -1,0 +1,7 @@
+package com.parovsky.traver.repository;
+
+import com.parovsky.traver.entity.Photo;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PhotoRepository extends JpaRepository<Photo, Long> {
+}

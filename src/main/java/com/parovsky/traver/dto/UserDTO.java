@@ -2,6 +2,8 @@ package com.parovsky.traver.dto;
 
 import org.springframework.lang.NonNull;
 
+import java.util.List;
+
 public class UserDTO {
     private Long id;
 
@@ -15,13 +17,20 @@ public class UserDTO {
 
     private String verifyCode;
 
-    public UserDTO(Long id, String name, String mail, String password, String role, String verifyCode) {
+    private List<LocationDTO> favoriteLocations;
+
+    public UserDTO() {
+
+    }
+
+    public UserDTO(Long id, String name, String mail, String password, String role, String verifyCode, List<LocationDTO> favoriteLocations) {
         this.id = id;
         this.name = name;
         this.mail = mail;
         this.password = password;
         this.role = role;
         this.verifyCode = verifyCode;
+        this.favoriteLocations = favoriteLocations;
     }
 
     @NonNull
@@ -76,5 +85,14 @@ public class UserDTO {
 
     public void setVerifyCode(@NonNull String verifyCode) {
         this.verifyCode = verifyCode;
+    }
+
+    @NonNull
+    public List<LocationDTO> getFavoriteLocations() {
+        return favoriteLocations;
+    }
+
+    public void setFavoriteLocations(@NonNull List<LocationDTO> favoriteLocations) {
+        this.favoriteLocations = favoriteLocations;
     }
 }

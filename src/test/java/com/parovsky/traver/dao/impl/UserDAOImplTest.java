@@ -51,6 +51,7 @@ class UserDAOImplTest {
             user1Email,
             "phone1",
             "role1",
+            null,
             null
     );
 

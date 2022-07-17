@@ -4,6 +4,8 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,7 +33,7 @@ public class User {
 
     @ManyToMany
     @JoinTable(name = "users_favourite_locations", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "favourite_locations_id"))
-    private Set<Location> favouriteLocations = new LinkedHashSet<>();
+    private List<Location> favouriteLocations = new LinkedList<>();
 
     public User() {
     }
@@ -97,11 +99,11 @@ public class User {
         this.verifyCode = verifyCode;
     }
 
-    public Set<Location> getFavouriteLocations() {
+    public List<Location> getFavouriteLocations() {
         return favouriteLocations;
     }
 
-    public void setFavouriteLocations(Set<Location> favouriteLocations) {
+    public void setFavouriteLocations(List<Location> favouriteLocations) {
         this.favouriteLocations = favouriteLocations;
     }
 }
