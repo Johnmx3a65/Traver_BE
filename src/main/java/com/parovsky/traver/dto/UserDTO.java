@@ -23,6 +23,13 @@ public class UserDTO {
 
     }
 
+    public UserDTO(Long id, String email, String name, String role) {
+        this.id = id;
+        this.name = name;
+        this.mail = email;
+        this.role = role;
+    }
+
     public UserDTO(Long id, String name, String mail, String password, String role, String verifyCode, List<LocationDTO> favoriteLocations) {
         this.id = id;
         this.name = name;
