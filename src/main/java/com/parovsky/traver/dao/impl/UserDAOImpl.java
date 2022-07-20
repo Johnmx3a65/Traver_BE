@@ -1,8 +1,6 @@
 package com.parovsky.traver.dao.impl;
 
-import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
@@ -57,8 +55,7 @@ public class UserDAOImpl implements UserDAO {
             user.setName(userDTO.getName());
             user.setPassword(userDTO.getPassword());
             user.setRole(userDTO.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
-            userRepository.saveAndFlush(user);
-            return user;
+            return userRepository.saveAndFlush(user);
         }
     }
 
@@ -71,8 +68,7 @@ public class UserDAOImpl implements UserDAO {
         user.setRole(userDTO.getRole());
         user.setVerifyCode(userDTO.getVerifyCode());
         user.setFavouriteLocations(userDTO.getFavoriteLocations().stream().map(LocationDAOImpl::transformLocationDTO).collect(Collectors.toList()));
-        userRepository.saveAndFlush(user);
-        return user;
+        return userRepository.saveAndFlush(user);
     }
 
     @Override
