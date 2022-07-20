@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private final AuthEntryPointJwt unauthorizedHandler;
 
 	@Autowired
-	public WebSecurityConfig(@Qualifier("ShopUserDetailsService") UserDetailsService userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
+	public WebSecurityConfig(@Qualifier("AppUserDetailsService") UserDetailsService userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
 		this.userDetailsService = userDetailsService;
 		this.unauthorizedHandler = unauthorizedHandler;
 	}

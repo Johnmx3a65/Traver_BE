@@ -7,11 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-@Service("ShopUserDetailsService")
-public class ShopUserDetailsService implements UserDetailsService {
+@Service("AppUserDetailsService")
+public class AppUserDetailsService implements UserDetailsService {
     private final UserDAO userDAO;
 
-    public ShopUserDetailsService(UserDAO userDAO) {
+    public AppUserDetailsService(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
