@@ -1,6 +1,7 @@
 package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import org.springframework.lang.NonNull;
@@ -18,4 +19,12 @@ public interface CategoryService {
     CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException;
 
     void deleteCategory(Long id) throws CategoryNotFoundException;
+
+    static CategoryDTO transformCategoryToCategoryDTO(Category category) {
+        return new CategoryDTO(
+                category.getId(),
+                category.getName(),
+                category.getPicture()
+        );
+    }
 }

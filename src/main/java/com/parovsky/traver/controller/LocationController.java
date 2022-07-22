@@ -43,12 +43,6 @@ public class LocationController {
         return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 
-    @GetMapping("/locations/favorite/{id}")
-    public ResponseEntity<LocationDTO> getFavoriteLocations(@PathVariable Long id) throws LocationNotFoundException, UserNotFoundException {
-        LocationDTO locations = userService.getFavoriteLocation(id);
-        return new ResponseEntity<>(locations, HttpStatus.OK);
-    }
-
     @GetMapping("/location/{id}")
     public ResponseEntity<LocationDTO> getLocation(@PathVariable Long id) throws LocationNotFoundException {
         LocationDTO location = locationService.getLocationById(id);

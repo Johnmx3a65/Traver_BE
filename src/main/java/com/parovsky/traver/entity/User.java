@@ -3,10 +3,6 @@ package com.parovsky.traver.entity;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -30,10 +26,6 @@ public class User {
 
     @Column(name="verify_code")
     private String verifyCode;
-
-    @ManyToMany
-    @JoinTable(name = "users_favourite_locations", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "favourite_locations_id"))
-    private List<Location> favouriteLocations = new LinkedList<>();
 
     public User() {
     }
@@ -99,11 +91,4 @@ public class User {
         this.verifyCode = verifyCode;
     }
 
-    public List<Location> getFavouriteLocations() {
-        return favouriteLocations;
-    }
-
-    public void setFavouriteLocations(List<Location> favouriteLocations) {
-        this.favouriteLocations = favouriteLocations;
-    }
 }

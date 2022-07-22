@@ -26,36 +26,27 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDTO> getAllCategories() {
         List<Category> categories = categoryDAO.getAllCategories();
-        return categories.stream().map(this::transformCategoryToCategoryDTO).collect(Collectors.toList());
+        return categories.stream().map(CategoryService::transformCategoryToCategoryDTO).collect(Collectors.toList());
     }
 
     @Override
     public CategoryDTO getCategoryById(Long id) throws CategoryNotFoundException {
         Category category = categoryDAO.getCategoryById(id);
-        return transformCategoryToCategoryDTO(category);
+        return CategoryService.transformCategoryToCategoryDTO(category);
     }
 
     @Override
     public CategoryDTO saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
-        return transformCategoryToCategoryDTO(categoryDAO.saveCategory(categoryDTO));
+        return CategoryService.transformCategoryToCategoryDTO(categoryDAO.saveCategory(categoryDTO));
     }
 
     @Override
     public CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException {
-        return transformCategoryToCategoryDTO(categoryDAO.updateCategory(categoryDTO));
+        return CategoryService.transformCategoryToCategoryDTO(categoryDAO.updateCategory(categoryDTO));
     }
 
     @Override
     public void deleteCategory(Long id) throws CategoryNotFoundException {
         categoryDAO.deleteCategory(id);
-    }
-
-    private CategoryDTO transformCategoryToCategoryDTO(Category category) {
-        return new CategoryDTO(
-                category.getId(),
-                category.getName(),
-                category.getPicture(),
-                category.getLocations().stream().map(LocationServiceImpl::transformLocationToLocationDTO).collect(Collectors.toList())
-        );
     }
 }

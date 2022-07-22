@@ -1,8 +1,6 @@
 package com.parovsky.traver.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -18,12 +16,6 @@ public class Category {
     @Column(name = "category_picture", nullable = false, columnDefinition="TEXT")
     private String picture;
 
-    @OneToMany(mappedBy = "category", orphanRemoval = true, cascade = CascadeType.REMOVE)
-    private List<Location> locations = new ArrayList<>();
-
-    public Category() {
-    }
-
     public Long getId() {
         return id;
     }
@@ -34,14 +26,6 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Location> getLocations() {
-        return locations;
-    }
-
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
     }
 
     public String getPicture() {

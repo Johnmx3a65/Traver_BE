@@ -1,8 +1,6 @@
 package com.parovsky.traver.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "locations")
@@ -30,9 +28,6 @@ public class Location {
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @OneToMany(mappedBy = "location", cascade = CascadeType.REMOVE)
-    private List<Photo> photos = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -82,11 +77,4 @@ public class Location {
         this.category = category;
     }
 
-    public List<Photo> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
-    }
 }

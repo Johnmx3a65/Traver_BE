@@ -2,6 +2,7 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
+import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
@@ -23,55 +24,45 @@ public class LocationServiceImpl implements LocationService {
 
     private final CategoryDAO categoryDAO;
 
+    private final PhotoDAO photoDAO;
+
     @Autowired
-    public LocationServiceImpl(LocationDAO locationDAO, CategoryDAO categoryDAO) {
+    public LocationServiceImpl(LocationDAO locationDAO, CategoryDAO categoryDAO, PhotoDAO photoDAO) {
         this.locationDAO = locationDAO;
         this.categoryDAO = categoryDAO;
+        this.photoDAO = photoDAO;
     }
 
     @Override
     public List<LocationDTO> getAllLocations() {
         List<Location> locations = locationDAO.getAllLocations();
-        return locations.stream().map(LocationServiceImpl::transformLocationToLocationDTO).collect(Collectors.toList());
+        return locations.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
     }
 
     @Override
     public LocationDTO getLocationById(Long id) throws LocationNotFoundException {
         Location location = locationDAO.getLocationById(id);
-        return transformLocationToLocationDTO(location);
+        return LocationService.transformLocationToLocationDTO(location);
     }
 
     @Override
-    public List<String> getPhotos(Long id) throws LocationNotFoundException {
-        Location location = locationDAO.getLocationById(id);
-        return location.getPhotos().stream().map(Photo::getPhoto).collect(Collectors.toList());
+    public List<String> getPhotos(Long id) {
+        return photoDAO.findAllByLocationId(id).stream().map(Photo::getPhoto).collect(Collectors.toList());
     }
 
     public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException {
         Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-        return transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
+        return LocationService.transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
     }
 
     @Override
     public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
         Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-        return transformLocationToLocationDTO(locationDAO.updateLocation(locationDTO, category));
+        return LocationService.transformLocationToLocationDTO(locationDAO.updateLocation(locationDTO, category));
     }
 
     @Override
     public void deleteLocation(@NonNull Long id) throws LocationNotFoundException {
         locationDAO.deleteLocation(id);
-    }
-
-    public static LocationDTO transformLocationToLocationDTO(Location location) {
-        return new LocationDTO(
-                location.getId(),
-                location.getName(),
-                location.getDescription(),
-                location.getCoordinates(),
-                location.getCategory().getId(),
-                location.getPicture(),
-                location.getSubtitle()
-        );
     }
 }

@@ -13,9 +13,24 @@ public interface LocationDAO {
 
     Location getLocationById(Long id) throws LocationNotFoundException;
 
+    boolean isLocationExist(Long id);
+
+    List<Location> getLocationsByUserId(Long id);
+
     Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category);
 
     Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) throws LocationNotFoundException;
 
     void deleteLocation(Long id) throws LocationNotFoundException;
+
+     static Location transformLocationDTO(LocationDTO locationDTO) {
+        Location location = new Location();
+        location.setId(locationDTO.getId());
+        location.setName(locationDTO.getName());
+        location.setSubtitle(locationDTO.getSubtitle());
+        location.setDescription(locationDTO.getDescription());
+        location.setCoordinates(locationDTO.getCoordinates());
+        location.setPicture(locationDTO.getPicture());
+        return location;
+    }
 }

@@ -5,6 +5,7 @@ import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.exception.impl.LocationNotFoundException;
+import com.parovsky.traver.repository.FavouriteLocationRepository;
 import com.parovsky.traver.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -20,9 +21,12 @@ public class LocationDAOImpl implements LocationDAO {
 
     private final LocationRepository locationRepository;
 
+    private final FavouriteLocationRepository favouriteLocationRepository;
+
     @Autowired
-    public LocationDAOImpl(LocationRepository locationRepository) {
+    public LocationDAOImpl(LocationRepository locationRepository, FavouriteLocationRepository favouriteLocationRepository) {
         this.locationRepository = locationRepository;
+        this.favouriteLocationRepository = favouriteLocationRepository;
     }
 
     @Override
@@ -33,6 +37,16 @@ public class LocationDAOImpl implements LocationDAO {
     @Override
     public Location getLocationById(@NonNull Long id) throws LocationNotFoundException {
         return locationRepository.findById(id).orElseThrow(LocationNotFoundException::new);
+    }
+
+    @Override
+    public boolean isLocationExist(Long id) {
+        return locationRepository.existsById(id);
+    }
+
+    @Override
+    public List<Location> getLocationsByUserId(Long id) {
+       return favouriteLocationRepository.findAllLocationsByUserId(id);
     }
 
     @Override
@@ -66,16 +80,5 @@ public class LocationDAOImpl implements LocationDAO {
         if (locationRepository.deleteAllById(id) == 0) {
             throw new LocationNotFoundException();
         }
-    }
-
-    public static Location transformLocationDTO(LocationDTO locationDTO) {
-        Location location = new Location();
-        location.setId(locationDTO.getId());
-        location.setName(locationDTO.getName());
-        location.setSubtitle(locationDTO.getSubtitle());
-        location.setDescription(locationDTO.getDescription());
-        location.setCoordinates(locationDTO.getCoordinates());
-        location.setPicture(locationDTO.getPicture());
-        return location;
     }
 }

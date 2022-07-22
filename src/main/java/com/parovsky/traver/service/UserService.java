@@ -2,6 +2,7 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
@@ -9,7 +10,6 @@ import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
-import java.util.Set;
 
 public interface UserService {
     List<UserDTO> getAllUsers();
@@ -36,5 +36,14 @@ public interface UserService {
 
     void addFavoriteLocation(Long locationId) throws UserNotFoundException, LocationNotFoundException;
 
-    LocationDTO getFavoriteLocation(Long id) throws UserNotFoundException, LocationNotFoundException;
+     static UserDTO transformUserToUserDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getRole(),
+                user.getVerifyCode()
+        );
+    }
 }
