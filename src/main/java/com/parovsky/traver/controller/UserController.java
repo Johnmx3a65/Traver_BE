@@ -20,18 +20,6 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@GetMapping("/")
-	public ResponseEntity<UserDTO> init() {
-		UserDTO userDTO;
-		try {
-			userDTO = userService.getCurrentUserDTO();
-		} catch (UserNotFoundException e) {
-			userDTO = new UserDTO();
-			userDTO.setName("Anonymous");
-		}
-		return new ResponseEntity<>(userDTO, HttpStatus.OK);
-	}
-
 	@GetMapping("/users")
 	public ResponseEntity<List<UserDTO>> getUsers() {
 		List<UserDTO> users = userService.getAllUsers();
