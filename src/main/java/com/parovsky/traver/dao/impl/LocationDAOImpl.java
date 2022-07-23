@@ -45,8 +45,8 @@ public class LocationDAOImpl implements LocationDAO {
     }
 
     @Override
-    public List<Location> getLocationsByUserId(Long id) {
-       return favouriteLocationRepository.findAllLocationsByUserId(id);
+    public boolean isFavouriteLocationExist(Long userId, Long locationId) {
+        return favouriteLocationRepository.existsByUserIdAndLocationId(userId, locationId);
     }
 
     @Override
@@ -80,5 +80,22 @@ public class LocationDAOImpl implements LocationDAO {
         if (locationRepository.deleteAllById(id) == 0) {
             throw new LocationNotFoundException();
         }
+    }
+
+    @Override
+    public List<Location> getFavouriteLocationsByUserId(Long id) {
+        return favouriteLocationRepository.findAllLocationsByUserId(id);
+    }
+
+    @Override
+    public void addFavouriteLocation(Long userId, Long locationId) {
+        favouriteLocationRepository.save(userId, locationId);
+        favouriteLocationRepository.flush();
+    }
+
+    @Override
+    public void deleteFavouriteLocation(Long userId, Long locationId) {
+        favouriteLocationRepository.delete(userId, locationId);
+        favouriteLocationRepository.flush();
     }
 }

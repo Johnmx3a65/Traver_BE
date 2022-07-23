@@ -40,9 +40,23 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public boolean isLocationExist(Long id) {
+        return locationDAO.isLocationExist(id);
+    }
+
+    @Override
+    public boolean isFavouriteLocationExist(Long userId, Long locationId) {
+        return locationDAO.isFavouriteLocationExist(userId, locationId);
+    }
+
+    @Override
     public LocationDTO getLocationById(Long id) throws LocationNotFoundException {
         Location location = locationDAO.getLocationById(id);
         return LocationService.transformLocationToLocationDTO(location);
+    }
+
+    public List<LocationDTO> getFavoriteLocations(Long userId) {
+        return locationDAO.getFavouriteLocationsByUserId(userId).stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -55,6 +69,10 @@ public class LocationServiceImpl implements LocationService {
         return LocationService.transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
     }
 
+    public void addFavoriteLocation(Long locationId, Long userId) {
+        locationDAO.addFavouriteLocation(userId, locationId);
+    }
+
     @Override
     public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
         Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
@@ -64,5 +82,13 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public void deleteLocation(@NonNull Long id) throws LocationNotFoundException {
         locationDAO.deleteLocation(id);
+    }
+
+    public void deleteFavoriteLocation(Long locationId, Long userId) throws LocationNotFoundException {
+        if (locationDAO.isLocationExist(locationId)) {
+            locationDAO.deleteFavouriteLocation(userId, locationId);
+        } else {
+            throw new LocationNotFoundException();
+        }
     }
 }

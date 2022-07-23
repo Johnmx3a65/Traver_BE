@@ -22,8 +22,4 @@ public interface UserDAO {
     User updateUser(@NonNull UserDTO userDTO) throws UserNotFoundException;
 
     void deleteUser(Long id) throws UserNotFoundException;
-
-    void addFavouriteLocation(Long userId, Long locationId);
-
-    void deleteFavouriteLocation(Long userId, Long locationId);
 }

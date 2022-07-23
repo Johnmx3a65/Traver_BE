@@ -1,9 +1,7 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
-import com.parovsky.traver.exception.impl.LocationNotFoundException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
+import com.parovsky.traver.exception.impl.*;
 import com.parovsky.traver.service.LocationService;
 import com.parovsky.traver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +35,9 @@ public class LocationController {
         return new ResponseEntity<>(photos, HttpStatus.OK);
     }
 
-    @GetMapping("/locations/favorite")
-    public ResponseEntity<List<LocationDTO>> getFavoriteLocations() throws UserNotFoundException {
-        List<LocationDTO> locations = userService.getFavoriteLocations();
+    @GetMapping("/locations/favourite")
+    public ResponseEntity<List<LocationDTO>> getFavouriteLocations() throws UserNotFoundException {
+        List<LocationDTO> locations = locationService.getFavoriteLocations(userService.getCurrentUserDTO().getId());
         return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 
@@ -55,10 +53,15 @@ public class LocationController {
         return new ResponseEntity<>(location, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/location/favorite/{id}")
-    public ResponseEntity<Void> addFavoriteLocation(@PathVariable Long id) throws UserNotFoundException, LocationNotFoundException {
-        userService.addFavoriteLocation(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping(value = "/location/favourite/{locationId}")
+    public ResponseEntity<Void> addFavouriteLocation(@PathVariable Long locationId) throws UserNotFoundException, FavouriteLocationIsAlreadyExistException {
+        Long userId = userService.getCurrentUserDTO().getId();
+        if (!locationService.isFavouriteLocationExist(userId, locationId)) {
+            locationService.addFavoriteLocation(locationId, userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            throw new FavouriteLocationIsAlreadyExistException();
+        }
     }
 
     @PutMapping(value = "/location", consumes = "application/json")
@@ -67,10 +70,16 @@ public class LocationController {
         return new ResponseEntity<>(location, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/location/favorite/{id}")
-    public ResponseEntity<Void> deleteFavoriteLocation(@PathVariable Long id) throws UserNotFoundException, LocationNotFoundException {
-        userService.deleteFavoriteLocation(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping(value = "/location/favourite/{locationId}")
+    public ResponseEntity<Void> deleteFavouriteLocation(@PathVariable Long locationId) throws UserNotFoundException, LocationNotFoundException, FavouriteLocationIsNotFoundException {
+        Long userId = userService.getCurrentUserDTO().getId();
+        if (locationService.isFavouriteLocationExist(userId, locationId)) {
+            locationService.deleteFavoriteLocation(locationId, userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            throw new FavouriteLocationIsNotFoundException();
+        }
+
     }
 
     @DeleteMapping(value = "/location/{id}")

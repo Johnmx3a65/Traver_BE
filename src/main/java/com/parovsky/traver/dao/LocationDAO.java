@@ -15,13 +15,19 @@ public interface LocationDAO {
 
     boolean isLocationExist(Long id);
 
-    List<Location> getLocationsByUserId(Long id);
+    boolean isFavouriteLocationExist(Long userId, Long locationId);
 
     Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category);
 
     Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) throws LocationNotFoundException;
 
     void deleteLocation(Long id) throws LocationNotFoundException;
+
+    List<Location> getFavouriteLocationsByUserId(Long id);
+
+    void addFavouriteLocation(Long userId, Long locationId);
+
+    void deleteFavouriteLocation(Long userId, Long locationId);
 
      static Location transformLocationDTO(LocationDTO locationDTO) {
         Location location = new Location();

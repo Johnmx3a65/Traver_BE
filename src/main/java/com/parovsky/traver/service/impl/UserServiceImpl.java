@@ -1,16 +1,11 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.UserDTO;
-import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
-import com.parovsky.traver.service.LocationService;
 import com.parovsky.traver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -26,14 +21,11 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
-    private final LocationDAO locationDAO;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, LocationDAO locationDAO) {
+    public UserServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.locationDAO = locationDAO;
         this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -41,11 +33,6 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getAllUsers() {
         List<User> users = userDAO.getAllUsers();
         return users.stream().map(UserService::transformUserToUserDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<LocationDTO> getFavoriteLocations() throws UserNotFoundException {
-        return locationDAO.getLocationsByUserId(getCurrentUser().getId()).stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -71,13 +58,6 @@ public class UserServiceImpl implements UserService {
     public UserDTO saveUser(@NonNull UserDTO userDTO) throws UserIsAlreadyExistException {
         userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         return UserService.transformUserToUserDTO(userDAO.saveUser(userDTO));
-    }
-
-    @Override
-    public void addFavoriteLocation(Long locationId) throws UserNotFoundException, LocationNotFoundException {
-        User user = getCurrentUser();
-        Location location = locationDAO.getLocationById(locationId);
-        userDAO.addFavouriteLocation(user.getId(), location.getId());
     }
 
     @Override
@@ -110,16 +90,6 @@ public class UserServiceImpl implements UserService {
             userDAO.deleteUser(id);
         } else {
             throw new UserNotFoundException();
-        }
-    }
-
-    @Override
-    public void deleteFavoriteLocation(Long id) throws UserNotFoundException, LocationNotFoundException {
-        User user = getCurrentUser();
-        if (locationDAO.isLocationExist(id)) {
-            userDAO.deleteFavouriteLocation(user.getId(), id);
-        } else {
-            throw new LocationNotFoundException();
         }
     }
 

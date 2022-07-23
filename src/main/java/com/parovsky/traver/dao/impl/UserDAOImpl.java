@@ -5,7 +5,6 @@ import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
-import com.parovsky.traver.repository.FavouriteLocationRepository;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,9 @@ import java.util.List;
 public class UserDAOImpl implements UserDAO {
     private final UserRepository userRepository;
 
-    private final FavouriteLocationRepository favouriteLocationRepository;
-
     @Autowired
-    public UserDAOImpl(UserRepository userRepository, FavouriteLocationRepository favouriteLocationRepository) {
+    public UserDAOImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.favouriteLocationRepository = favouriteLocationRepository;
     }
 
     @Override
@@ -78,17 +74,5 @@ public class UserDAOImpl implements UserDAO {
         if (userRepository.deleteAllById(id) == 0) {
             throw new UserNotFoundException();
         }
-    }
-
-    @Override
-    public void addFavouriteLocation(Long userId, Long locationId) {
-        favouriteLocationRepository.save(userId, locationId);
-        favouriteLocationRepository.flush();
-    }
-
-    @Override
-    public void deleteFavouriteLocation(Long userId, Long locationId) {
-        favouriteLocationRepository.delete(userId, locationId);
-        favouriteLocationRepository.flush();
     }
 }
