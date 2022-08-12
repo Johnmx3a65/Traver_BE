@@ -11,7 +11,7 @@ public class Photo {
     private Long id;
 
     @Column(name = "photo_resource", nullable = false, columnDefinition="TEXT")
-    private String photo;
+    private String photoData;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
@@ -25,12 +25,12 @@ public class Photo {
         this.id = id;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getPhotoData() {
+        return photoData;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhotoData(String photo) {
+        this.photoData = photo;
     }
 
     public Location getLocation() {

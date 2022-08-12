@@ -7,8 +7,6 @@ import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
-import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -20,75 +18,71 @@ import java.util.stream.Collectors;
 @Service
 public class LocationServiceImpl implements LocationService {
 
-    private final LocationDAO locationDAO;
+	private final LocationDAO locationDAO;
 
-    private final CategoryDAO categoryDAO;
+	private final CategoryDAO categoryDAO;
 
-    private final PhotoDAO photoDAO;
+	private final PhotoDAO photoDAO;
 
-    @Autowired
-    public LocationServiceImpl(LocationDAO locationDAO, CategoryDAO categoryDAO, PhotoDAO photoDAO) {
-        this.locationDAO = locationDAO;
-        this.categoryDAO = categoryDAO;
-        this.photoDAO = photoDAO;
-    }
+	@Autowired
+	public LocationServiceImpl(LocationDAO locationDAO, CategoryDAO categoryDAO, PhotoDAO photoDAO) {
+		this.locationDAO = locationDAO;
+		this.categoryDAO = categoryDAO;
+		this.photoDAO = photoDAO;
+	}
 
-    @Override
-    public List<LocationDTO> getAllLocations() {
-        List<Location> locations = locationDAO.getAllLocations();
-        return locations.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
-    }
+	@Override
+	public List<LocationDTO> getAllLocations() {
+		List<Location> locations = locationDAO.getAllLocations();
+		return locations.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
+	}
 
-    @Override
-    public boolean isLocationExist(Long id) {
-        return locationDAO.isLocationExist(id);
-    }
+	@Override
+	public boolean isLocationExist(Long id) {
+		return locationDAO.isLocationExist(id);
+	}
 
-    @Override
-    public boolean isFavouriteLocationExist(Long userId, Long locationId) {
-        return locationDAO.isFavouriteLocationExist(userId, locationId);
-    }
+	@Override
+	public boolean isFavouriteLocationExist(Long userId, Long locationId) {
+		return locationDAO.isFavouriteLocationExist(userId, locationId);
+	}
 
-    @Override
-    public LocationDTO getLocationById(Long id) throws LocationNotFoundException {
-        Location location = locationDAO.getLocationById(id);
-        return LocationService.transformLocationToLocationDTO(location);
-    }
+	@Override
+	public LocationDTO getLocationById(Long id) {
+		Location location = locationDAO.getLocationById(id);
+		return LocationService.transformLocationToLocationDTO(location);
+	}
 
-    public List<LocationDTO> getFavoriteLocations(Long userId) {
-        return locationDAO.getFavouriteLocationsByUserId(userId).stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
-    }
+	public List<LocationDTO> getFavoriteLocations(Long userId) {
+		return locationDAO.getFavouriteLocationsByUserId(userId).stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
+	}
 
-    @Override
-    public List<String> getPhotos(Long id) {
-        return photoDAO.findAllByLocationId(id).stream().map(Photo::getPhoto).collect(Collectors.toList());
-    }
+	@Override
+	public List<String> getPhotos(Long id) {
+		return photoDAO.findAllByLocationId(id).stream().map(Photo::getPhotoData).collect(Collectors.toList());
+	}
 
-    public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException {
-        Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-        return LocationService.transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
-    }
+	public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) {
+		Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
+		return LocationService.transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
+	}
 
-    public void addFavoriteLocation(Long locationId, Long userId) {
-        locationDAO.addFavouriteLocation(userId, locationId);
-    }
+	public void addFavoriteLocation(Long locationId, Long userId) {
+		locationDAO.addFavouriteLocation(userId, locationId);
+	}
 
-    @Override
-    public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
-        Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-        return LocationService.transformLocationToLocationDTO(locationDAO.updateLocation(locationDTO, category));
-    }
+	@Override
+	public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) {
+		Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
+		return LocationService.transformLocationToLocationDTO(locationDAO.updateLocation(locationDTO, category));
+	}
 
-    @Override
-    public void deleteLocation(@NonNull Long id) throws LocationNotFoundException {
-        locationDAO.deleteLocation(id);
-    }
+	@Override
+	public void deleteLocation(@NonNull Long id) {
+		locationDAO.deleteLocation(id);
+	}
 
-    public void deleteFavoriteLocation(Long locationId, Long userId) throws LocationNotFoundException {
-        if (locationDAO.isLocationExist(locationId)) {
-            locationDAO.deleteFavouriteLocation(userId, locationId);
-        } else {
-            throw new LocationNotFoundException();
-        }
-    }
+	public void deleteFavoriteLocation(Long locationId, Long userId) {
+		locationDAO.deleteFavouriteLocation(userId, locationId);
+	}
 }
