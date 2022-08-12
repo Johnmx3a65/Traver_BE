@@ -2,8 +2,6 @@ package com.parovsky.traver.dao;
 
 import com.parovsky.traver.dto.CategoryDTO;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -11,11 +9,15 @@ import java.util.List;
 public interface CategoryDAO {
     List<Category> getAllCategories();
 
-    Category getCategoryById(Long id) throws CategoryNotFoundException;
+    Category getCategoryById(Long id);
 
-    Category updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException;
+    boolean isCategoryExistById(Long id);
 
-    Category saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException;
+    boolean isCategoryExistByName(String name);
 
-    void deleteCategory(Long id) throws CategoryNotFoundException;
+    Category updateCategory(@NonNull CategoryDTO categoryDTO);
+
+    Category saveCategory(@NonNull CategoryDTO categoryDTO);
+
+    void deleteCategory(Long id);
 }

@@ -28,24 +28,36 @@ public class CategoryController {
 
     @GetMapping(value = "/category/{id}")
     public ResponseEntity<CategoryDTO> getCategory(@PathVariable Long id) throws CategoryNotFoundException {
+        if (!categoryService.isCategoryExistById(id)) {
+            throw new CategoryNotFoundException();
+        }
         CategoryDTO categoryDTO = categoryService.getCategoryById(id);
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
 
     @PostMapping(value = "/category", consumes = "application/json")
     public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
+        if (categoryService.isCategoryExistByName(categoryDTO.getName())) {
+            throw new CategoryIsAlreadyExistException();
+        }
         CategoryDTO category = categoryService.saveCategory(categoryDTO);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @PutMapping(value = "/category", consumes = "application/json")
     public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryNotFoundException {
+        if (!categoryService.isCategoryExistById(categoryDTO.getId())) {
+            throw new CategoryNotFoundException();
+        }
         CategoryDTO category = categoryService.updateCategory(categoryDTO);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws CategoryNotFoundException {
+        if (!categoryService.isCategoryExistById(id)) {
+            throw new CategoryNotFoundException();
+        }
         categoryService.deleteCategory(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

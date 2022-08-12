@@ -3,8 +3,6 @@ package com.parovsky.traver.dao.impl;
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dto.CategoryDTO;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -16,52 +14,57 @@ import java.util.List;
 @Component
 @Transactional
 public class CategoryDAOImpl implements CategoryDAO {
-    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    public CategoryDAOImpl(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
+	private final CategoryRepository categoryRepository;
 
-    @Override
-    public @NonNull
-    List<Category> getAllCategories() {
-        return categoryRepository.findAll();
-    }
+	@Autowired
+	public CategoryDAOImpl(CategoryRepository categoryRepository) {
+		this.categoryRepository = categoryRepository;
+	}
 
-    @Override
-    public Category getCategoryById(Long id) throws CategoryNotFoundException {
-        return categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
-    }
+	@Override
+	public @NonNull
+	List<Category> getAllCategories() {
+		return categoryRepository.findAll();
+	}
 
-    @Override
-    public Category updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException {
-        Category category = categoryRepository.findById(categoryDTO.getId()).orElseThrow(CategoryNotFoundException::new);
-        category.setName(categoryDTO.getName());
-        category.setPicture(categoryDTO.getPicture());
-        categoryRepository.saveAndFlush(category);
-        return category;
-    }
+	@Override
+	public Category getCategoryById(Long id) {
+		return categoryRepository.getById(id);
+	}
 
-    @Override
-    public Category saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
-        if (categoryRepository.existsByName(categoryDTO.getName())) {
-            throw new CategoryIsAlreadyExistException();
-        } else {
-            Category category = new Category();
-            category.setName(categoryDTO.getName());
-            category.setPicture(categoryDTO.getPicture());
-            categoryRepository.saveAndFlush(category);
-            return category;
-        }
-    }
+	@Override
+	public boolean isCategoryExistById(Long id) {
+		return categoryRepository.existsById(id);
+	}
 
-    @Override
-    public void deleteCategory(Long id) throws CategoryNotFoundException {
-        if (categoryRepository.deleteAllById(id) == 0) {
-            throw new CategoryNotFoundException();
-        }
-    }
+	@Override
+	public boolean isCategoryExistByName(String name) {
+		return categoryRepository.existsByName(name);
+	}
+
+	@Override
+	public Category updateCategory(@NonNull CategoryDTO categoryDTO) {
+		Category category = categoryRepository.getById(categoryDTO.getId());
+		category.setName(categoryDTO.getName());
+		category.setPicture(categoryDTO.getPicture());
+		categoryRepository.saveAndFlush(category);
+		return category;
+	}
+
+	@Override
+	public Category saveCategory(@NonNull CategoryDTO categoryDTO) {
+		Category category = new Category();
+		category.setName(categoryDTO.getName());
+		category.setPicture(categoryDTO.getPicture());
+		categoryRepository.saveAndFlush(category);
+		return category;
+	}
+
+	@Override
+	public void deleteCategory(Long id) {
+		categoryRepository.deleteById(id);
+	}
 }
 
 

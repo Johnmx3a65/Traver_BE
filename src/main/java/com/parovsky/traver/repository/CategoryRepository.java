@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    int deleteAllById(Long id);
-
-    boolean existsByName(String name);
+	boolean existsByName(String name);
 
 }
