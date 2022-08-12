@@ -2,21 +2,18 @@ package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 class UserDAOImplTest {
 
@@ -30,23 +27,23 @@ class UserDAOImplTest {
 
 	private final String user1NameUpdated = "name1Updated";
 
-	private final Optional<User> user1 = Optional.of(new User(
+	private final User user1 = new User(
 			user1Id,
 			"name1",
 			user1Email,
 			"password1",
 			Role.USER.name()
-	));
+	);
 
-	private final Optional<User> user2 = Optional.of(new User(
+	private final User user2 = new User(
 			user2Id,
 			"name2",
 			user2Email,
 			"password2",
 			Role.ADMIN.name()
-	));
+	);
 
-	private final List<User> users = Arrays.asList(user1.get(), user2.get());
+	private final List<User> users = Arrays.asList(user1, user2);
 
 	private final UserDTO userDTO1 = new UserDTO(
 			user1Id,
@@ -54,8 +51,7 @@ class UserDAOImplTest {
 			user1Email,
 			"phone1",
 			"role1",
-			"verificationCode1",
-			new LinkedList<>()
+			"verificationCode1"
 	);
 
 	private final User user1Updated = new User(
@@ -84,72 +80,63 @@ class UserDAOImplTest {
 	}
 
 	@Test
-	void getUserById() throws UserNotFoundException {
-		doReturn(user1).when(userRepository).findById(user1Id);
+	void getUserById() {
+		doReturn(user1).when(userRepository).getById(user1Id);
 		User result = subject.getUserById(user1Id);
-		assertEquals(user1.get(), result);
+		assertEquals(user1, result);
 	}
 
 	@Test
-	void getUserByEmail() throws UserNotFoundException {
-		doReturn(user1).when(userRepository).findByEmail(user1Email);
+	void getUserByEmail() {
+		doReturn(user1).when(userRepository).getByEmail(user1Email);
 		User result = subject.getUserByEmail(user1Email);
-		assertEquals(user1.get(), result);
+		assertEquals(user1, result);
 	}
 
 	@Test
-	void isUserExistShouldReturnTrue() {
+	void isUserExistByIdShouldReturnTrue() {
 		doReturn(true).when(userRepository).existsById(user1Id);
 		boolean result = subject.isUserExist(user1Id);
 		assertTrue(result);
 	}
 
 	@Test
-	void isUserExistShouldReturnFalse() {
+	void isUserExistByIdShouldReturnFalse() {
 		doReturn(false).when(userRepository).existsById(user1Id);
 		boolean result = subject.isUserExist(user1Id);
 		assertFalse(result);
 	}
 
 	@Test
-	void saveUser() throws UserIsAlreadyExistException {
-		User user = user1.get();
-		doReturn(false).when(userRepository).existsUserByEmail(user1Email);
-		doReturn(user).when(userRepository).saveAndFlush(any(User.class));
-		User result = subject.saveUser(userDTO1);
-		assertEquals(user.getId(), result.getId());
-		assertEquals(user.getEmail(), result.getEmail());
-		assertEquals(user.getPassword(), result.getPassword());
-		assertEquals(user.getRole(), result.getRole());
-	}
-
-	@Test
-	void saveUserShouldThrowException() {
+	void isUserExistByEmailShouldReturnTrue() {
 		doReturn(true).when(userRepository).existsUserByEmail(user1Email);
-		assertThrows(UserIsAlreadyExistException.class, () -> subject.saveUser(userDTO1));
+		boolean result = subject.isUserExistByEmail(user1Email);
+		assertTrue(result);
 	}
 
 	@Test
-	void updateUser() throws UserNotFoundException {
-		User user = user1.get();
-		doReturn(user1).when(userRepository).findById(user1Id);
+	void saveUser() {
+		doReturn(false).when(userRepository).existsUserByEmail(user1Email);
+		doReturn(user1).when(userRepository).saveAndFlush(any(User.class));
+		User result = subject.saveUser(userDTO1);
+		assertEquals(user1.getId(), result.getId());
+		assertEquals(user1.getEmail(), result.getEmail());
+		assertEquals(user1.getPassword(), result.getPassword());
+		assertEquals(user1.getRole(), result.getRole());
+	}
+
+	@Test
+	void updateUser() {
+		doReturn(user1).when(userRepository).getById(user1Id);
 		doReturn(user1Updated).when(userRepository).saveAndFlush(any(User.class));
 		User result = subject.updateUser(userDTO1);
-		assertEquals(user.getId(), result.getId());
+		assertEquals(user1.getId(), result.getId());
 		assertEquals(user1NameUpdated, result.getName());
 	}
 
 	@Test
 	void deleteUser() {
-		int DELETED_USER_COUNT = 1;
-		doReturn(DELETED_USER_COUNT).when(userRepository).deleteAllById(user1Id);
 		assertDoesNotThrow(() -> subject.deleteUser(user1Id));
 	}
 
-	@Test
-	void deleteUserShouldThrowException() {
-		int DELETED_USER_COUNT = 0;
-		doReturn(DELETED_USER_COUNT).when(userRepository).deleteAllById(user1Id);
-		assertThrows(UserNotFoundException.class, () -> subject.deleteUser(user1Id));
-	}
 }
