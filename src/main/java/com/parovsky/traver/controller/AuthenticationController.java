@@ -61,6 +61,9 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/signup", consumes = "application/json")
 	public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) throws UserIsAlreadyExistException {
+		if (userService.isUserExistByEmail(userDTO.getMail())) {
+			throw new UserIsAlreadyExistException();
+		}
 		UserDTO user = userService.saveUser(userDTO);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
@@ -74,6 +77,9 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
 	public ResponseEntity<Void> verifyEmail(@RequestBody UserDTO userDTO) throws UserNotFoundException {
+		if (!userService.isUserExistByEmail(userDTO.getMail())) {
+			throw new UserNotFoundException();
+		}
 		int code = Utils.generateVerificationCode();
 		emailService.sendEmail(userDTO.getMail(), "Verification code", "Your verification code is: " + code);
 		UserDTO user = userService.getUserByEmail(userDTO.getMail());
@@ -84,12 +90,24 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
 	public ResponseEntity<Void> checkVerificationCode(@RequestBody UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException {
-		userService.checkVerificationCode(userDTO);
+		if (userService.isUserExistByEmail(userDTO.getMail())) {
+			if (!userService.checkVerificationCode(userDTO)) {
+				throw new VerificationCodeNotMatchException();
+			}
+		} else {
+			throw new UserNotFoundException();
+		}
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@PutMapping(value = "/reset-password", consumes = "application/json")
 	public ResponseEntity<Void> resetPassword(@RequestBody UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException {
+		if (!userService.isUserExistByEmail(userDTO.getMail())) {
+			throw new UserNotFoundException();
+		}
+		if (!userService.checkVerificationCode(userDTO)) {
+			throw new VerificationCodeNotMatchException();
+		}
 		userService.resetPassword(userDTO);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

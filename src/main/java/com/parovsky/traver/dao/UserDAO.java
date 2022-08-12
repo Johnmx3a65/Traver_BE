@@ -2,24 +2,25 @@ package com.parovsky.traver.dao;
 
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
 
 public interface UserDAO {
-    List<User> getAllUsers();
 
-    User getUserById(Long id) throws UserNotFoundException;
+	List<User> getAllUsers();
 
-    User getUserByEmail(String email) throws UserNotFoundException;
+	User getUserById(Long id);
 
-    boolean isUserExist(Long id);
+	User getUserByEmail(String email);
 
-    User saveUser(@NonNull UserDTO userDTO) throws UserIsAlreadyExistException;
+	boolean isUserExist(Long id);
 
-    User updateUser(@NonNull UserDTO userDTO) throws UserNotFoundException;
+	boolean isUserExistByEmail(String email);
 
-    void deleteUser(Long id) throws UserNotFoundException;
+	User saveUser(@NonNull UserDTO userDTO);
+
+	User updateUser(@NonNull UserDTO userDTO);
+
+	void deleteUser(Long id);
 }

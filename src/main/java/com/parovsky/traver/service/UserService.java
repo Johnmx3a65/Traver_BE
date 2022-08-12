@@ -2,40 +2,42 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
-import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUsers();
 
-    UserDTO getUserById(Long id) throws UserNotFoundException;
+	List<UserDTO> getAllUsers();
 
-    UserDTO getUserByEmail(String email) throws UserNotFoundException;
+	UserDTO getUserById(Long id);
 
-    UserDTO saveUser(@NonNull UserDTO userDTO) throws UserIsAlreadyExistException;
+	UserDTO getUserByEmail(String email);
 
-    UserDTO updateUser(@NonNull UserDTO userDTO) throws UserNotFoundException;
+	String getCurrentUserEmail();
 
-    void deleteUser(Long id) throws UserNotFoundException;
+	boolean isUserExist(Long id);
 
-    UserDTO getCurrentUserDTO() throws UserNotFoundException;
+	boolean isUserExistByEmail(String email);
 
-    void resetPassword(UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException;
+	UserDTO saveUser(@NonNull UserDTO userDTO);
 
-    void checkVerificationCode(UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException;
+	UserDTO updateUser(@NonNull UserDTO userDTO);
 
-     static UserDTO transformUserToUserDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getRole(),
-                user.getVerifyCode()
-        );
-    }
+	void deleteUser(Long id);
+
+	void resetPassword(UserDTO userDTO);
+
+	boolean checkVerificationCode(UserDTO userDTO);
+
+	static UserDTO transformUserToUserDTO(User user) {
+		return new UserDTO(
+				user.getId(),
+				user.getName(),
+				user.getEmail(),
+				user.getPassword(),
+				user.getRole(),
+				user.getVerifyCode()
+		);
+	}
 }
