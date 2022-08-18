@@ -10,9 +10,7 @@ import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;
 import com.parovsky.traver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,11 +19,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
@@ -46,17 +45,32 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<UserDTO> authenticateUser(@RequestBody UserDTO loginRequest) {
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getMail(), loginRequest.getPassword()));
+	public ResponseEntity<UserDTO> authenticateUser(@RequestBody UserDTO loginRequest, HttpServletResponse response) {
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+						loginRequest.getMail(),
+						loginRequest.getPassword()
+				)
+		);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
-		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
+		Cookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+		jwtCookie.setPath("/");
+		response.addCookie(jwtCookie);
+
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-				.body(new UserDTO(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), roles.get(0)));
+
+		return ResponseEntity.ok().body(
+				new UserDTO(
+						userDetails.getId(),
+						userDetails.getUsername(),
+						userDetails.getName(),
+						roles.get(0)
+				)
+		);
 	}
 
 	@PostMapping(value = "/signup", consumes = "application/json")
@@ -69,10 +83,10 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signout")
-	public ResponseEntity<String> logoutUser() {
-		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-				.body("You've been signed out!");
+	public ResponseEntity<String> logoutUser(HttpServletResponse response) {
+		Cookie cookie = jwtUtils.getCleanJwtCookie();
+		response.addCookie(cookie);
+		return ResponseEntity.ok().body("You've been signed out!");
 	}
 
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
