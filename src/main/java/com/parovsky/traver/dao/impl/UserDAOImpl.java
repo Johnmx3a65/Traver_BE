@@ -7,6 +7,7 @@ import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +19,12 @@ public class UserDAOImpl implements UserDAO {
 
 	private final UserRepository userRepository;
 
+	private final BCryptPasswordEncoder passwordEncoder;
+
 	@Autowired
 	public UserDAOImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
+		this.passwordEncoder = new BCryptPasswordEncoder();
 	}
 
 	@Override
@@ -62,10 +66,14 @@ public class UserDAOImpl implements UserDAO {
 	public User updateUser(@NonNull UserDTO userDTO) {
 		User user = userRepository.getById(userDTO.getId());
 		user.setEmail(userDTO.getMail());
-		user.setPassword(userDTO.getPassword());
 		user.setName(userDTO.getName());
 		user.setRole(userDTO.getRole());
-		user.setVerifyCode(userDTO.getVerifyCode());
+		if (!userDTO.getPassword().isEmpty()) {
+			user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		}
+		if (userDTO.getVerifyCode() != null && !userDTO.getVerifyCode().isEmpty()) {
+			user.setVerifyCode(userDTO.getVerifyCode());
+		}
 		return userRepository.saveAndFlush(user);
 	}
 

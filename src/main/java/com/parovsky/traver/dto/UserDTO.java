@@ -80,7 +80,6 @@ public class UserDTO {
         this.role = role;
     }
 
-    @NonNull
     public String getVerifyCode() {
         return verifyCode;
     }
