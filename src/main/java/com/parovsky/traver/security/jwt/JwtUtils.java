@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -35,17 +36,13 @@ public class JwtUtils {
 		}
 	}
 
-	public Cookie generateJwtCookie(UserPrincipal userPrincipal) {
+	public ResponseCookie generateJwtCookie(UserPrincipal userPrincipal) {
 		String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-		Cookie cookie = new Cookie(jwtCookie, jwt);
-		cookie.setMaxAge(24 * 60 * 60);
-		return cookie;
+		return ResponseCookie.from(jwtCookie, jwt).path("/").maxAge(24 * 60 * 60L).httpOnly(false).build();
 	}
 
-	public Cookie getCleanJwtCookie() {
-		Cookie cookie = new Cookie(jwtCookie, "");
-		cookie.setPath("/");
-		return cookie;
+	public ResponseCookie getCleanJwtCookie() {
+		return ResponseCookie.from(jwtCookie, "").path("/").httpOnly(false).build();
 	}
 
 	public String getUserNameFromJwtToken(String token) {
