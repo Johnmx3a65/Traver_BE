@@ -2,6 +2,7 @@ package com.parovsky.traver.config;
 
 import com.parovsky.traver.security.jwt.AuthEntryPointJwt;
 import com.parovsky.traver.security.jwt.AuthTokenFilter;
+import io.pivotal.cfenv.core.CfEnv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -79,6 +80,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
+	}
+
+	@Bean
+	public CfEnv cfEnv() {
+		return new CfEnv();
 	}
 
 	@Bean
