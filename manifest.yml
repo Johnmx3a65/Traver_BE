@@ -5,4 +5,4 @@ applications:
     disk_quota: 500M
     instances: 1
     memory: 1G
-    health check timeout:   600
+    health check timeout: 600
