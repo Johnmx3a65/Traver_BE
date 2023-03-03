@@ -1,6 +1,5 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.Utils.Utils;
 import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
@@ -9,6 +8,7 @@ import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;
 import com.parovsky.traver.service.UserService;
+import com.parovsky.traver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

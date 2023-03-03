@@ -1,4 +1,4 @@
-package com.parovsky.traver.Utils;
+package com.parovsky.traver.utils;
 
 public class Utils {
     private Utils() {

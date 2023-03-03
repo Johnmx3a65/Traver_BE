@@ -84,7 +84,7 @@ public class LocationController {
 			throw new FavouriteLocationIsAlreadyExistException();
 		}
 		locationService.addFavoriteLocation(locationId, user.getId());
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/location", consumes = "application/json")

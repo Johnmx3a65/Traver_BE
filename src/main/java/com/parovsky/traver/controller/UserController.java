@@ -1,8 +1,10 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.dto.UserResponse;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.UserService;
+import com.parovsky.traver.utils.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.parovsky.traver.utils.ModelMapper.mapUserDTO;
 
 @RestController
 public class UserController {
@@ -22,26 +27,30 @@ public class UserController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<List<UserDTO>> getUsers() {
+	public ResponseEntity<List<UserResponse>> getUsers() {
 		List<UserDTO> users = userService.getAllUsers();
-		return new ResponseEntity<>(users, HttpStatus.OK);
+		List<UserResponse> response = users
+				.stream()
+				.map(ModelMapper::mapUserDTO)
+				.collect(Collectors.toList());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<UserDTO> getUser(@RequestParam Map<String, String> params) throws UserNotFoundException {
+	public ResponseEntity<UserResponse> getUser(@RequestParam Map<String, String> params) throws UserNotFoundException {
 		if (params.containsKey("email")) {
 			String email = params.get("email");
 			if (userService.isUserExistByEmail(email)) {
 				UserDTO userDTO = userService.getUserByEmail(email);
-				return new ResponseEntity<>(userDTO, HttpStatus.OK);
+				return new ResponseEntity<>(mapUserDTO(userDTO), HttpStatus.OK);
 			} else {
 				throw new UserNotFoundException();
 			}
-		}else if (params.containsKey("id")) {
+		} else if (params.containsKey("id")) {
 			Long id = Long.parseLong(params.get("id"));
 			if (userService.isUserExist(id)) {
 				UserDTO userDTO = userService.getUserById(id);
-				return new ResponseEntity<>(userDTO, HttpStatus.OK);
+				return new ResponseEntity<>(mapUserDTO(userDTO), HttpStatus.OK);
 			} else {
 				throw new UserNotFoundException();
 			}
@@ -50,21 +59,21 @@ public class UserController {
 	}
 
 	@GetMapping("/current-user")
-	public ResponseEntity<UserDTO> getCurrentUser() throws UserNotFoundException {
+	public ResponseEntity<UserResponse> getCurrentUser() throws UserNotFoundException {
 		String userEmail = userService.getCurrentUserEmail();
 		if (userService.isUserExistByEmail(userEmail)) {
 			UserDTO userDTO = userService.getUserByEmail(userEmail);
-			return new ResponseEntity<>(userDTO, HttpStatus.OK);
+			return new ResponseEntity<>(mapUserDTO(userDTO), HttpStatus.OK);
 		} else {
 			throw new UserNotFoundException();
 		}
 	}
 
 	@PutMapping(value = "/user", consumes = "application/json")
-	public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) throws UserNotFoundException {
+	public ResponseEntity<UserResponse> updateUser(@RequestBody UserDTO userDTO) throws UserNotFoundException {
 		if (userService.isUserExist(userDTO.getId())){
 			UserDTO user = userService.updateUser(userDTO);
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>(mapUserDTO(user), HttpStatus.OK);
 		}else {
 			throw new UserNotFoundException();
 		}

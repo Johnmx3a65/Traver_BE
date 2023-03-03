@@ -1,7 +1,12 @@
 package com.parovsky.traver.dto;
 
-import org.springframework.lang.NonNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter(onMethod = @__({@org.springframework.lang.NonNull}))
+@AllArgsConstructor
 public class LocationDTO {
 
     private Long id;
@@ -27,64 +32,4 @@ public class LocationDTO {
         this.picture = picture;
         this.subtitle = subtitle;
     }
-
-    @NonNull
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @NonNull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(@NonNull String name) {
-        this.name = name;
-    }
-
-    @NonNull
-    public String getSubtitle() {
-        return subtitle;
-    }
-
-    public void setSubtitle(@NonNull String subtitle) {
-        this.subtitle = subtitle;
-    }
-
-    @NonNull
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(@NonNull String description) {
-        this.description = description;
-    }
-
-    @NonNull
-    public String getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(@NonNull String coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    @NonNull
-    public String getPicture() { return picture; }
-
-    public void setPicture(@NonNull String picture) { this.picture = picture;}
-
-    @NonNull
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(@NonNull Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
 }

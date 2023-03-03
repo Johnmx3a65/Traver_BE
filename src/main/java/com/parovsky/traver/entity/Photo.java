@@ -1,8 +1,19 @@
 package com.parovsky.traver.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Table(name = "photo")
 public class Photo {
     @Id
@@ -17,27 +28,16 @@ public class Photo {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    public Long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Photo photo = (Photo) o;
+        return getId() != null && Objects.equals(getId(), photo.getId());
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPhotoData() {
-        return photoData;
-    }
-
-    public void setPhotoData(String photo) {
-        this.photoData = photo;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
