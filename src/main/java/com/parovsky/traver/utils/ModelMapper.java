@@ -10,7 +10,7 @@ public class ModelMapper {
 	public static UserResponse mapUserDTO(UserDTO userDTO) {
 		return UserResponse.builder()
 				.id(userDTO.getId())
-				.email(userDTO.getMail())
+				.email(userDTO.getEmail())
 				.name(userDTO.getName())
 				.role(userDTO.getRole())
 				.verifyCode(userDTO.getVerifyCode()).build();

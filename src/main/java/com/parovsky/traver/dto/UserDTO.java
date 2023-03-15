@@ -14,7 +14,7 @@ public class UserDTO {
 
     private String name;
 
-    private String mail;
+    private String email;
 
     private String password;
 
@@ -25,8 +25,12 @@ public class UserDTO {
     public UserDTO(Long id, String email, String name, String role) {
         this.id = id;
         this.name = name;
-        this.mail = email;
+        this.email = email;
         this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public String getVerifyCode() {

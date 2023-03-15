@@ -48,7 +48,7 @@ public class AuthenticationController {
 	public ResponseEntity<UserDTO> authenticateUser(@RequestBody UserDTO loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						loginRequest.getMail(),
+						loginRequest.getEmail(),
 						loginRequest.getPassword()
 				)
 		);
@@ -73,7 +73,7 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/signup", consumes = "application/json")
 	public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) throws UserIsAlreadyExistException {
-		if (userService.isUserExistByEmail(userDTO.getMail())) {
+		if (userService.isUserExistByEmail(userDTO.getEmail())) {
 			throw new UserIsAlreadyExistException();
 		}
 		UserDTO user = userService.saveUser(userDTO);
@@ -88,12 +88,12 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
 	public ResponseEntity<Void> verifyEmail(@RequestBody UserDTO userDTO) throws UserNotFoundException {
-		if (!userService.isUserExistByEmail(userDTO.getMail())) {
+		if (!userService.isUserExistByEmail(userDTO.getEmail())) {
 			throw new UserNotFoundException();
 		}
 		int code = Utils.generateVerificationCode();
-		emailService.sendEmail(userDTO.getMail(), "Verification code", "Your verification code is: " + code);
-		UserDTO user = userService.getUserByEmail(userDTO.getMail());
+		emailService.sendEmail(userDTO.getEmail(), "Verification code", "Your verification code is: " + code);
+		UserDTO user = userService.getUserByEmail(userDTO.getEmail());
 		user.setVerifyCode(String.valueOf(code));
 		userService.updateUser(user);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -101,7 +101,7 @@ public class AuthenticationController {
 
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
 	public ResponseEntity<Void> checkVerificationCode(@RequestBody UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException {
-		if (userService.isUserExistByEmail(userDTO.getMail())) {
+		if (userService.isUserExistByEmail(userDTO.getEmail())) {
 			if (!userService.checkVerificationCode(userDTO)) {
 				throw new VerificationCodeNotMatchException();
 			}
@@ -113,7 +113,7 @@ public class AuthenticationController {
 
 	@PutMapping(value = "/reset-password", consumes = "application/json")
 	public ResponseEntity<Void> resetPassword(@RequestBody UserDTO userDTO) throws UserNotFoundException, VerificationCodeNotMatchException {
-		if (!userService.isUserExistByEmail(userDTO.getMail())) {
+		if (!userService.isUserExistByEmail(userDTO.getEmail())) {
 			throw new UserNotFoundException();
 		}
 		if (!userService.checkVerificationCode(userDTO)) {

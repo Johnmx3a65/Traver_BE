@@ -55,7 +55,7 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	public User saveUser(@NonNull UserDTO userDTO) {
 		User user = new User();
-		user.setEmail(userDTO.getMail());
+		user.setEmail(userDTO.getEmail());
 		user.setName(userDTO.getName());
 		user.setPassword(userDTO.getPassword());
 		user.setRole(userDTO.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
@@ -65,10 +65,10 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	public User updateUser(@NonNull UserDTO userDTO) {
 		User user = userRepository.getById(userDTO.getId());
-		user.setEmail(userDTO.getMail());
+		user.setEmail(userDTO.getEmail());
 		user.setName(userDTO.getName());
 		user.setRole(userDTO.getRole());
-		if (!userDTO.getPassword().isEmpty()) {
+		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
 			user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		}
 		if (userDTO.getVerifyCode() != null && !userDTO.getVerifyCode().isEmpty()) {

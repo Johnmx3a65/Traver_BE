@@ -68,14 +68,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void resetPassword(UserDTO userDTO) {
-		User user = userDAO.getUserByEmail(userDTO.getMail());
+		User user = userDAO.getUserByEmail(userDTO.getEmail());
 		user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
 		userDAO.updateUser(UserService.transformUserToUserDTO(user));
 	}
 
 	@Override
 	public boolean checkVerificationCode(UserDTO userDTO) {
-		User user = userDAO.getUserByEmail(userDTO.getMail());
+		User user = userDAO.getUserByEmail(userDTO.getEmail());
 		return user.getVerifyCode().equals(userDTO.getVerifyCode());
 	}
 
