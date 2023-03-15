@@ -1,11 +1,12 @@
-package com.parovsky.traver.controller;
+package com.parovsky.traver.controller.admin;
 
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.dto.UserResponse;
+import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.UserService;
 import com.parovsky.traver.utils.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +18,11 @@ import java.util.stream.Collectors;
 import static com.parovsky.traver.utils.ModelMapper.mapUserDTO;
 
 @RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class UserController {
 
 	private final UserService userService;
-
-	@Autowired
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
 
 	@GetMapping("/users")
 	public ResponseEntity<List<UserResponse>> getUsers() {
@@ -66,6 +64,16 @@ public class UserController {
 			return new ResponseEntity<>(mapUserDTO(userDTO), HttpStatus.OK);
 		} else {
 			throw new UserNotFoundException();
+		}
+	}
+
+	@PostMapping(value = "/user", consumes = "application/json")
+	public ResponseEntity<UserResponse> saveUser(@RequestBody UserDTO userDTO) throws UserIsAlreadyExistException {
+		if (!userService.isUserExistByEmail(userDTO.getEmail())) {
+			UserDTO user = userService.saveUser(userDTO);
+			return new ResponseEntity<>(mapUserDTO(user), HttpStatus.CREATED);
+		} else {
+			throw new UserIsAlreadyExistException();
 		}
 	}
 

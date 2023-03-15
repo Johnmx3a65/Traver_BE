@@ -14,16 +14,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.parovsky.traver.utils.Utils.generateRandomString;
+
 @Service
 public class UserServiceImpl implements UserService {
 
 	private final UserDAO userDAO;
 
+	private final EmailServiceImpl emailService;
+
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
-	public UserServiceImpl(UserDAO userDAO) {
+	public UserServiceImpl(UserDAO userDAO, EmailServiceImpl emailService) {
 		this.userDAO = userDAO;
+		this.emailService = emailService;
 		this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
 	}
 
@@ -57,6 +62,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDTO saveUser(@NonNull UserDTO userDTO) {
+		if (userDTO.getPassword() == null) {
+			userDTO.setPassword(generateRandomString(10));
+			emailService.sendEmail(userDTO.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userDTO.getPassword());
+		}
 		userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
 		return UserService.transformUserToUserDTO(userDAO.saveUser(userDTO));
 	}
