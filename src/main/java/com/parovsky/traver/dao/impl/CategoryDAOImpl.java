@@ -29,6 +29,11 @@ public class CategoryDAOImpl implements CategoryDAO {
 	}
 
 	@Override
+	public List<Category> getFavoriteCategories(Long userId) {
+		return categoryRepository.findFovoriteCategories(userId);
+	}
+
+	@Override
 	public Category getCategoryById(Long id) {
 		return categoryRepository.getById(id);
 	}

@@ -10,6 +10,8 @@ public interface CategoryService {
 
     List<CategoryDTO> getAllCategories();
 
+    List<CategoryDTO> getFavoriteCategories(Long userId);
+
     CategoryDTO getCategoryById(Long id);
 
     boolean isCategoryExistById(Long id);

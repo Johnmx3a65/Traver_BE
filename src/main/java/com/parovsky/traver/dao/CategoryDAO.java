@@ -9,6 +9,8 @@ import java.util.List;
 public interface CategoryDAO {
     List<Category> getAllCategories();
 
+    List<Category> getFavoriteCategories(Long userId);
+
     Category getCategoryById(Long id);
 
     boolean isCategoryExistById(Long id);

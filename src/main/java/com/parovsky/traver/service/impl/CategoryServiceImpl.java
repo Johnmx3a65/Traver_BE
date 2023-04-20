@@ -28,6 +28,12 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	public List<CategoryDTO> getFavoriteCategories(Long userId) {
+		List<Category> categories = categoryDAO.getFavoriteCategories(userId);
+		return categories.stream().map(CategoryService::transformCategoryToCategoryDTO).collect(Collectors.toList());
+	}
+
+	@Override
 	public CategoryDTO getCategoryById(Long id) {
 		Category category = categoryDAO.getCategoryById(id);
 		return CategoryService.transformCategoryToCategoryDTO(category);

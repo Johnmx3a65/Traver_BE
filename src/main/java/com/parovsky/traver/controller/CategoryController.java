@@ -1,9 +1,12 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.CategoryService;
+import com.parovsky.traver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +18,29 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    private final UserService userService;
+
     @Autowired
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, UserService userService) {
         this.categoryService = categoryService;
+        this.userService = userService;
     }
 
     @GetMapping(value = "/categories")
     public ResponseEntity<List<CategoryDTO>> getCategories() {
         List<CategoryDTO> categories = categoryService.getAllCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
+    }
+
+    @GetMapping("/categories/favorite")
+    public ResponseEntity<List<CategoryDTO>> getFavoriteCategories() throws UserNotFoundException {
+        String userEmail = userService.getCurrentUserEmail();
+        if (userService.isUserExistByEmail(userEmail)) {
+            UserDTO user = userService.getUserByEmail(userEmail);
+            List<CategoryDTO> categories = categoryService.getFavoriteCategories(user.getId());
+            return new ResponseEntity<>(categories, HttpStatus.OK);
+        }
+        throw new UserNotFoundException();
     }
 
     @GetMapping(value = "/category/{id}")
