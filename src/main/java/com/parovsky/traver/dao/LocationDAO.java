@@ -13,6 +13,8 @@ public interface LocationDAO {
 
 	Location getLocationById(Long id);
 
+	List<Location> getLocationsByCategoryId(Long categoryId);
+
 	boolean isLocationExist(Long id);
 
 	boolean isFavouriteLocationExist(Long userId, Long locationId);

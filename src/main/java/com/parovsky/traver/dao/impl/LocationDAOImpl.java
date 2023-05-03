@@ -33,6 +33,10 @@ public class LocationDAOImpl implements LocationDAO {
 		return locationRepository.findAll();
 	}
 
+	public List<Location> getLocationsByCategoryId(Long categoryId) {
+		return locationRepository.findAllByCategoryId(categoryId);
+	}
+
 	@Override
 	public Location getLocationById(@NonNull Long id) {
 		return locationRepository.getById(id);

@@ -4,6 +4,7 @@ import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dto.LocationDTO;
+import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
@@ -37,6 +38,11 @@ public class LocationServiceImpl implements LocationService {
 		return locations.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
 	}
 
+	public List<LocationDTO> getLocationsByCategoryId(Long categoryId) {
+		List<Location> locations = locationDAO.getLocationsByCategoryId(categoryId);
+		return locations.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
+	}
+
 	@Override
 	public boolean isLocationExist(Long id) {
 		return locationDAO.isLocationExist(id);
@@ -59,7 +65,12 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public List<String> getPhotos(Long id) {
-		return photoDAO.findAllByLocationId(id).stream().map(Photo::getPhotoData).collect(Collectors.toList());
+		return photoDAO.findAllByLocationId(id).stream().map(Photo::getUrl).collect(Collectors.toList());
+	}
+
+	public PhotoDTO addLocationPhoto(PhotoDTO photoDTO, Long locationId) {
+		Location location = locationDAO.getLocationById(locationId);
+		return LocationService.mapPhotoToPhotoDTO(photoDAO.addLocationPhoto(photoDTO, location));
 	}
 
 	public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) {

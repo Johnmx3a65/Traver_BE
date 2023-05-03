@@ -1,6 +1,8 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
+import com.parovsky.traver.dto.PhotoDTO;
+import com.parovsky.traver.dto.PhotoResponse;
 import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.exception.impl.*;
 import com.parovsky.traver.service.CategoryService;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.parovsky.traver.utils.ModelMapper.mapPhotoDTO;
 
 @RestController
 public class LocationController {
@@ -30,7 +34,15 @@ public class LocationController {
 	}
 
 	@GetMapping("/locations")
-	public ResponseEntity<List<LocationDTO>> getLocations() {
+	public ResponseEntity<List<LocationDTO>> getLocations(@RequestParam(required = false) Long categoryId) throws CategoryNotFoundException {
+		if (categoryId != null) {
+			if (categoryService.isCategoryExistById(categoryId)) {
+				List<LocationDTO> locations = locationService.getLocationsByCategoryId(categoryId);
+				return new ResponseEntity<>(locations, HttpStatus.OK);
+			} else {
+				throw new CategoryNotFoundException();
+			}
+		}
 		List<LocationDTO> locations = locationService.getAllLocations();
 		return new ResponseEntity<>(locations, HttpStatus.OK);
 	}
@@ -85,6 +97,14 @@ public class LocationController {
 		}
 		locationService.addFavoriteLocation(locationId, user.getId());
 		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@PostMapping(value = "/location/{id}/photo", consumes = "application/json")
+	public ResponseEntity<PhotoResponse> addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
+		if (!locationService.isLocationExist(locationId)) {
+			throw new LocationNotFoundException();
+		}
+		return new ResponseEntity<>(mapPhotoDTO(locationService.addLocationPhoto(photoDTO, locationId)), HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "/location", consumes = "application/json")

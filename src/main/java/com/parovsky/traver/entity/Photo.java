@@ -1,9 +1,6 @@
 package com.parovsky.traver.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -13,7 +10,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "photo")
 public class Photo {
     @Id
@@ -21,8 +20,8 @@ public class Photo {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "photo_resource", nullable = false, columnDefinition="TEXT")
-    private String photoData;
+    @Column(name = "url", nullable = false, columnDefinition="TEXT")
+    private String url;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")

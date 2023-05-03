@@ -1,13 +1,17 @@
 package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.LocationDTO;
+import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Location;
+import com.parovsky.traver.entity.Photo;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
 
 public interface LocationService {
 	List<LocationDTO> getAllLocations();
+
+	List<LocationDTO> getLocationsByCategoryId(Long categoryId);
 
 	boolean isLocationExist(Long id);
 
@@ -29,6 +33,8 @@ public interface LocationService {
 
 	List<String> getPhotos(Long id);
 
+	PhotoDTO addLocationPhoto(PhotoDTO photoDTO, Long locationId);
+
 	static LocationDTO transformLocationToLocationDTO(Location location) {
 		return new LocationDTO(
 				location.getId(),
@@ -39,5 +45,13 @@ public interface LocationService {
 				location.getPicture(),
 				location.getSubtitle()
 		);
+	}
+
+	static PhotoDTO mapPhotoToPhotoDTO(Photo photo) {
+		return PhotoDTO.builder()
+				.id(photo.getId())
+				.url(photo.getUrl())
+				.locationId(photo.getLocation().getId())
+				.build();
 	}
 }
