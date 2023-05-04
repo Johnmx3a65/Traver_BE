@@ -3,11 +3,13 @@ package com.parovsky.traver.dao.impl;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
+import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.repository.FavouriteLocationRepository;
 import com.parovsky.traver.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +40,8 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
-	public Location getLocationById(@NonNull Long id) {
-		return locationRepository.getById(id);
+	public @Nullable Location getLocationById(@NonNull Long id) {
+		return locationRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -48,8 +50,8 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
-	public boolean isFavouriteLocationExist(Long userId, Long locationId) {
-		return favouriteLocationRepository.existsByUserIdAndLocationId(userId, locationId);
+	public boolean isFavouriteLocationExist(String email, Long locationId) {
+		return favouriteLocationRepository.existsByUserEmailAndLocationId(email, locationId);
 	}
 
 	@Override
@@ -74,19 +76,20 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
-	public List<Location> getFavouriteLocationsByUserId(Long id) {
-		return favouriteLocationRepository.findAllLocationsByUserId(id);
+	public List<Location> getFavouriteLocationsByUserEmail(String email) {
+		return favouriteLocationRepository.findAllLocationsByUserEmail(email);
 	}
 
 	@Override
-	public void addFavouriteLocation(Long userId, Long locationId) {
-		favouriteLocationRepository.save(userId, locationId);
+	public FavouriteLocation addFavouriteLocation(String email, Long locationId) {
+		FavouriteLocation favouriteLocation = favouriteLocationRepository.save(email, locationId).orElse(null);
 		favouriteLocationRepository.flush();
+		return favouriteLocation;
 	}
 
 	@Override
-	public void deleteFavouriteLocation(Long userId, Long locationId) {
-		favouriteLocationRepository.delete(userId, locationId);
+	public void deleteFavouriteLocation(String email, Long locationId) {
+		favouriteLocationRepository.delete(email, locationId);
 		favouriteLocationRepository.flush();
 	}
 

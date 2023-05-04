@@ -7,6 +7,8 @@ import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,21 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	public User getUserByEmail(String email) {
 		return userRepository.getByEmail(email);
+	}
+
+	@Override
+	public String getCurrentUserEmail() {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String userEmail;
+
+		if (principal instanceof UserDetails) {
+			userEmail = ((UserDetails) principal).getUsername();
+		} else {
+			userEmail = principal.toString();
+		}
+
+		return userEmail;
 	}
 
 	@Override

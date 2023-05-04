@@ -3,14 +3,13 @@ package com.parovsky.traver.controller;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.dto.PhotoResponse;
-import com.parovsky.traver.dto.UserDTO;
-import com.parovsky.traver.exception.impl.*;
-import com.parovsky.traver.service.CategoryService;
+import com.parovsky.traver.exception.impl.CategoryNotFoundException;
+import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
+import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
+import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.service.LocationService;
-import com.parovsky.traver.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,130 +17,70 @@ import java.util.List;
 import static com.parovsky.traver.utils.ModelMapper.mapPhotoDTO;
 
 @RestController
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class LocationController {
 
 	private final LocationService locationService;
 
-	private final UserService userService;
-
-	private final CategoryService categoryService;
-
-	@Autowired
-	public LocationController(LocationService locationService, UserService userService, CategoryService categoryService) {
-		this.locationService = locationService;
-		this.userService = userService;
-		this.categoryService = categoryService;
-	}
-
+	@ResponseBody
 	@GetMapping("/locations")
-	public ResponseEntity<List<LocationDTO>> getLocations(@RequestParam(required = false) Long categoryId) throws CategoryNotFoundException {
-		if (categoryId != null) {
-			if (categoryService.isCategoryExistById(categoryId)) {
-				List<LocationDTO> locations = locationService.getLocationsByCategoryId(categoryId);
-				return new ResponseEntity<>(locations, HttpStatus.OK);
-			} else {
-				throw new CategoryNotFoundException();
-			}
-		}
-		List<LocationDTO> locations = locationService.getAllLocations();
-		return new ResponseEntity<>(locations, HttpStatus.OK);
+	public List<LocationDTO> getLocations(@RequestParam(required = false) Long categoryId) throws CategoryNotFoundException {
+		return locationService.getLocations(categoryId);
 	}
 
+	@ResponseBody
 	@GetMapping("location/{id}/photos")
-	public ResponseEntity<List<String>> getPhotos(@PathVariable Long id) throws LocationNotFoundException {
-		if (locationService.isLocationExist(id)) {
-			List<String> photos = locationService.getPhotos(id);
-			return new ResponseEntity<>(photos, HttpStatus.OK);
-		} else {
-			throw new LocationNotFoundException();
-		}
+	public List<String> getPhotos(@PathVariable Long id) throws LocationNotFoundException {
+		return locationService.getPhotos(id);
 	}
 
+	@ResponseBody
 	@GetMapping("/locations/favourite")
-	public ResponseEntity<List<LocationDTO>> getFavouriteLocations() throws UserNotFoundException {
-		String userEmail = userService.getCurrentUserEmail();
-		if (userService.isUserExistByEmail(userEmail)) {
-			UserDTO user = userService.getUserByEmail(userEmail);
-			List<LocationDTO> locations = locationService.getFavoriteLocations(user.getId());
-			return new ResponseEntity<>(locations, HttpStatus.OK);
-		} else {
-			throw new UserNotFoundException();
-		}
+	public List<LocationDTO> getFavouriteLocations() {
+		return locationService.getFavoriteLocations();
 	}
 
+	@ResponseBody
 	@GetMapping("/location/{id}")
-	public ResponseEntity<LocationDTO> getLocation(@PathVariable Long id) throws LocationNotFoundException {
-		if (locationService.isLocationExist(id)) {
-			LocationDTO location = locationService.getLocationById(id);
-			return new ResponseEntity<>(location, HttpStatus.OK);
-		} else {
-			throw new LocationNotFoundException();
-		}
+	public LocationDTO getLocation(@PathVariable Long id) throws LocationNotFoundException {
+		return locationService.getLocationById(id);
 	}
 
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
-    public ResponseEntity<LocationDTO> saveLocation(@RequestBody LocationDTO locationDTO) {
-        LocationDTO location = locationService.saveLocation(locationDTO);
-        return new ResponseEntity<>(location, HttpStatus.OK);
+    public LocationDTO saveLocation(@RequestBody LocationDTO locationDTO) throws CategoryNotFoundException {
+        return locationService.saveLocation(locationDTO);
     }
 
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/location/favourite/{locationId}")
-	public ResponseEntity<Void> addFavouriteLocation(@PathVariable Long locationId) throws UserNotFoundException, FavouriteLocationIsAlreadyExistException {
-		String userEmail = userService.getCurrentUserEmail();
-		if (!userService.isUserExistByEmail(userEmail)) {
-			throw new UserNotFoundException();
-		}
-		UserDTO user = userService.getUserByEmail(userEmail);
-		if (locationService.isFavouriteLocationExist(user.getId(), locationId)) {
-			throw new FavouriteLocationIsAlreadyExistException();
-		}
-		locationService.addFavoriteLocation(locationId, user.getId());
-		return new ResponseEntity<>(HttpStatus.CREATED);
+	public void addFavouriteLocation(@PathVariable Long locationId) throws FavouriteLocationIsAlreadyExistException, LocationNotFoundException {
+		locationService.addFavoriteLocation(locationId);
 	}
 
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/location/{id}/photo", consumes = "application/json")
-	public ResponseEntity<PhotoResponse> addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
-		if (!locationService.isLocationExist(locationId)) {
-			throw new LocationNotFoundException();
-		}
-		return new ResponseEntity<>(mapPhotoDTO(locationService.addLocationPhoto(photoDTO, locationId)), HttpStatus.CREATED);
+	public PhotoResponse addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
+		return mapPhotoDTO(locationService.addLocationPhoto(photoDTO, locationId));
 	}
 
+	@ResponseBody
 	@PutMapping(value = "/location", consumes = "application/json")
-	public ResponseEntity<LocationDTO> updateLocation(@RequestBody LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
-		if (!locationService.isLocationExist(locationDTO.getId())) {
-			throw new LocationNotFoundException();
-		} else if (!categoryService.isCategoryExistById(locationDTO.getCategoryId())) {
-			throw new CategoryNotFoundException();
-		}
-		LocationDTO location = locationService.updateLocation(locationDTO);
-		return new ResponseEntity<>(location, HttpStatus.OK);
+	public LocationDTO updateLocation(@RequestBody LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
+		return locationService.updateLocation(locationDTO);
 	}
 
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(value = "/location/favourite/{locationId}")
-	public ResponseEntity<Void> deleteFavouriteLocation(@PathVariable Long locationId) throws UserNotFoundException, LocationNotFoundException, FavouriteLocationIsNotFoundException {
-		if (!locationService.isLocationExist(locationId)) {
-			throw new LocationNotFoundException();
-		}
-		String userEmail = userService.getCurrentUserEmail();
-		if (!userService.isUserExistByEmail(userEmail)) {
-			throw new UserNotFoundException();
-		}
-		UserDTO user = userService.getUserByEmail(userEmail);
-		if (!locationService.isFavouriteLocationExist(user.getId(), locationId)) {
-			throw new FavouriteLocationIsNotFoundException();
-
-		}
-		locationService.deleteFavoriteLocation(locationId, user.getId());
-		return new ResponseEntity<>(HttpStatus.OK);
+	public void deleteFavouriteLocation(@PathVariable Long locationId) throws FavouriteLocationIsNotFoundException {
+		locationService.deleteFavoriteLocation(locationId);
 	}
 
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(value = "/location/{id}")
-	public ResponseEntity<Void> deleteLocation(@PathVariable long id) throws LocationNotFoundException {
-		if (!locationService.isLocationExist(id)) {
-			throw new LocationNotFoundException();
-		}
+	public void deleteLocation(@PathVariable long id) throws LocationNotFoundException {
 		locationService.deleteLocation(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

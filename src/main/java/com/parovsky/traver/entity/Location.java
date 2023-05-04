@@ -36,7 +36,7 @@ public class Location {
     @Column(name = "location_picture", nullable = false, columnDefinition="TEXT")
     private String picture;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 

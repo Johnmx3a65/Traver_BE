@@ -6,6 +6,7 @@ import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +35,8 @@ public class CategoryDAOImpl implements CategoryDAO {
 	}
 
 	@Override
-	public Category getCategoryById(Long id) {
-		return categoryRepository.getById(id);
+	public @Nullable Category getCategoryById(Long id) {
+		return categoryRepository.findById(id).orElse(null);
 	}
 
 	@Override

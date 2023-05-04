@@ -6,8 +6,6 @@ import com.parovsky.traver.entity.User;
 import com.parovsky.traver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -91,19 +89,5 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(@NonNull Long id) {
 		userDAO.deleteUser(id);
-	}
-
-	public String getCurrentUserEmail() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String userEmail;
-
-		if (principal instanceof UserDetails) {
-			userEmail = ((UserDetails) principal).getUsername();
-		} else {
-			userEmail = principal.toString();
-		}
-
-		return userEmail;
 	}
 }

@@ -14,8 +14,6 @@ public interface UserService {
 
 	UserDTO getUserByEmail(String email);
 
-	String getCurrentUserEmail();
-
 	boolean isUserExist(Long id);
 
 	boolean isUserExistByEmail(String email);

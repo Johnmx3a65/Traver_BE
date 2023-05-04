@@ -14,6 +14,8 @@ public interface UserDAO {
 
 	User getUserByEmail(String email);
 
+	String getCurrentUserEmail();
+
 	boolean isUserExist(Long id);
 
 	boolean isUserExistByEmail(String email);
