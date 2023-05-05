@@ -10,7 +10,7 @@ import java.util.List;
 public interface CategoryDAO {
     List<Category> getAllCategories();
 
-    List<Category> getFavoriteCategories(Long userId);
+    List<Category> getFavoriteCategories(String email);
 
     @Nullable
     Category getCategoryById(Long id);

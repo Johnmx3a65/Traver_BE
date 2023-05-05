@@ -1,81 +1,55 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.CategoryDTO;
-import com.parovsky.traver.dto.UserDTO;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.CategoryService;
-import com.parovsky.traver.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class CategoryController {
+
     private final CategoryService categoryService;
 
-    private final UserService userService;
-
-    @Autowired
-    public CategoryController(CategoryService categoryService, UserService userService) {
-        this.categoryService = categoryService;
-        this.userService = userService;
-    }
-
+    @ResponseBody
     @GetMapping(value = "/categories")
-    public ResponseEntity<List<CategoryDTO>> getCategories() {
-        List<CategoryDTO> categories = categoryService.getAllCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public List<CategoryDTO> getCategories() {
+        return categoryService.getAllCategories();
     }
 
+    @ResponseBody
     @GetMapping("/categories/favorite")
-    public ResponseEntity<List<CategoryDTO>> getFavoriteCategories() throws UserNotFoundException {
-        String userEmail = userService.getCurrentUserEmail();
-        if (userService.isUserExistByEmail(userEmail)) {
-            UserDTO user = userService.getUserByEmail(userEmail);
-            List<CategoryDTO> categories = categoryService.getFavoriteCategories(user.getId());
-            return new ResponseEntity<>(categories, HttpStatus.OK);
-        }
-        throw new UserNotFoundException();
+    public List<CategoryDTO> getFavoriteCategories() {
+        return categoryService.getFavoriteCategories();
     }
 
+    @ResponseBody
     @GetMapping(value = "/category/{id}")
-    public ResponseEntity<CategoryDTO> getCategory(@PathVariable Long id) throws CategoryNotFoundException {
-        if (!categoryService.isCategoryExistById(id)) {
-            throw new CategoryNotFoundException();
-        }
-        CategoryDTO categoryDTO = categoryService.getCategoryById(id);
-        return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+    public CategoryDTO getCategory(@PathVariable Long id) throws CategoryNotFoundException {
+        return categoryService.getCategoryById(id);
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", consumes = "application/json")
-    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
-        if (categoryService.isCategoryExistByName(categoryDTO.getName())) {
-            throw new CategoryIsAlreadyExistException();
-        }
-        CategoryDTO category = categoryService.saveCategory(categoryDTO);
-        return new ResponseEntity<>(category, HttpStatus.OK);
+    public CategoryDTO saveCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
+        return categoryService.saveCategory(categoryDTO);
     }
 
+    @ResponseBody
     @PutMapping(value = "/category", consumes = "application/json")
-    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryNotFoundException {
-        if (!categoryService.isCategoryExistById(categoryDTO.getId())) {
-            throw new CategoryNotFoundException();
-        }
-        CategoryDTO category = categoryService.updateCategory(categoryDTO);
-        return new ResponseEntity<>(category, HttpStatus.OK);
+    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryNotFoundException {
+        return categoryService.updateCategory(categoryDTO);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/category/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws CategoryNotFoundException {
-        if (!categoryService.isCategoryExistById(id)) {
-            throw new CategoryNotFoundException();
-        }
+    public void deleteUser(@PathVariable Long id) throws CategoryNotFoundException {
         categoryService.deleteCategory(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

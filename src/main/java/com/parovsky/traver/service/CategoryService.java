@@ -2,6 +2,8 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.CategoryDTO;
 import com.parovsky.traver.entity.Category;
+import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
+import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -10,19 +12,15 @@ public interface CategoryService {
 
     List<CategoryDTO> getAllCategories();
 
-    List<CategoryDTO> getFavoriteCategories(Long userId);
+    List<CategoryDTO> getFavoriteCategories();
 
-    CategoryDTO getCategoryById(Long id);
+    CategoryDTO getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
 
-    boolean isCategoryExistById(Long id);
+    CategoryDTO saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException;
 
-    boolean isCategoryExistByName(String name);
+    CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException;
 
-    CategoryDTO saveCategory(@NonNull CategoryDTO categoryDTO);
-
-    CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO);
-
-    void deleteCategory(Long id);
+    void deleteCategory(@NonNull Long id) throws CategoryNotFoundException;
 
     static CategoryDTO transformCategoryToCategoryDTO(Category category) {
         return new CategoryDTO(

@@ -20,7 +20,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 			" WHERE locations.id IN (" +
 			" SELECT users_favourite_locations.location_id" +
 			" FROM users_favourite_locations" +
-			" WHERE users_favourite_locations.user_id = ?1));", nativeQuery = true)
-	List<Category> findFovoriteCategories(Long userId);
+			" WHERE users_favourite_locations.user_id IN (" +
+			" SELECT id" +
+			" FROM users" +
+			" WHERE email like ?1)));", nativeQuery = true)
+	List<Category> findFavouriteCategories(String email);
 
 }
