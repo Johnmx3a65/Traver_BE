@@ -1,6 +1,6 @@
 package com.parovsky.traver.dao.impl;
 
-import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.dto.UserModel;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
@@ -45,7 +45,7 @@ class UserDAOImplTest {
 
 	private final List<User> users = Arrays.asList(user1, user2);
 
-	private final UserDTO userDTO1 = new UserDTO(
+	private final UserModel userModel1 = new UserModel(
 			user1Id,
 			"name1",
 			user1Email,
@@ -118,7 +118,7 @@ class UserDAOImplTest {
 	void saveUser() {
 		doReturn(false).when(userRepository).existsUserByEmail(user1Email);
 		doReturn(user1).when(userRepository).saveAndFlush(any(User.class));
-		User result = subject.saveUser(userDTO1);
+		User result = subject.saveUser(userModel1);
 		assertEquals(user1.getId(), result.getId());
 		assertEquals(user1.getEmail(), result.getEmail());
 		assertEquals(user1.getPassword(), result.getPassword());
@@ -129,7 +129,7 @@ class UserDAOImplTest {
 	void updateUser() {
 		doReturn(user1).when(userRepository).getById(user1Id);
 		doReturn(user1Updated).when(userRepository).saveAndFlush(any(User.class));
-		User result = subject.updateUser(userDTO1);
+		User result = subject.updateUser(userModel1);
 		assertEquals(user1.getId(), result.getId());
 		assertEquals(user1NameUpdated, result.getName());
 	}

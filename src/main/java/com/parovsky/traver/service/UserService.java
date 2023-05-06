@@ -1,35 +1,38 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
+import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
 
 public interface UserService {
 
-	List<UserDTO> getAllUsers();
+	List<UserView> getAllUsers();
 
-	UserDTO getUserById(Long id);
+	UserView getUserById(Long id) throws UserNotFoundException;
 
-	UserDTO getUserByEmail(String email);
+	UserView getUserByEmail(String email) throws UserNotFoundException;
 
-	boolean isUserExist(Long id);
+	UserView getCurrentUser();
 
 	boolean isUserExistByEmail(String email);
 
-	UserDTO saveUser(@NonNull UserDTO userDTO);
+	UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException;
 
-	UserDTO updateUser(@NonNull UserDTO userDTO);
+	UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException;
 
-	void deleteUser(Long id);
+	void deleteUser(Long id) throws UserNotFoundException;
 
-	void resetPassword(UserDTO userDTO);
+	void resetPassword(UserModel userModel);
 
-	boolean checkVerificationCode(UserDTO userDTO);
+	boolean checkVerificationCode(UserModel userModel);
 
-	static UserDTO transformUserToUserDTO(User user) {
-		return new UserDTO(
+	static UserModel transformUserToUserDTO(User user) {
+		return new UserModel(
 				user.getId(),
 				user.getName(),
 				user.getEmail(),

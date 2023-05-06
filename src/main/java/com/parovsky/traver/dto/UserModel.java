@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter(onMethod = @__({@org.springframework.lang.NonNull}))
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class UserModel {
     private Long id;
 
     private String name;
@@ -22,7 +22,7 @@ public class UserDTO {
 
     private String verifyCode;
 
-    public UserDTO(Long id, String email, String name, String role) {
+    public UserModel(Long id, String email, String name, String role) {
         this.id = id;
         this.name = name;
         this.email = email;

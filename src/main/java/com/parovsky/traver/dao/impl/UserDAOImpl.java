@@ -1,12 +1,13 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.dto.UserModel;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,13 +36,22 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
+	@Nullable
 	public User getUserById(Long id) {
-		return userRepository.getById(id);
+		return userRepository.findById(id).orElse(null);
 	}
 
 	@Override
+	@Nullable
 	public User getUserByEmail(String email) {
-		return userRepository.getByEmail(email);
+		return userRepository.findByEmail(email).orElse(null);
+	}
+
+	@Override
+	@Nullable
+	public User getCurrentUser() {
+		String currentUserEmail = getCurrentUserEmail();
+		return getUserByEmail(currentUserEmail);
 	}
 
 	@Override
@@ -70,26 +80,26 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User saveUser(@NonNull UserDTO userDTO) {
+	public User saveUser(@NonNull UserModel userModel) {
 		User user = new User();
-		user.setEmail(userDTO.getEmail());
-		user.setName(userDTO.getName());
-		user.setPassword(userDTO.getPassword());
-		user.setRole(userDTO.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
+		user.setEmail(userModel.getEmail());
+		user.setName(userModel.getName());
+		user.setPassword(userModel.getPassword());
+		user.setRole(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
 		return userRepository.saveAndFlush(user);
 	}
 
 	@Override
-	public User updateUser(@NonNull UserDTO userDTO) {
-		User user = userRepository.getById(userDTO.getId());
-		user.setEmail(userDTO.getEmail());
-		user.setName(userDTO.getName());
-		user.setRole(userDTO.getRole());
-		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-			user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+	public User updateUser(@NonNull UserModel userModel) {
+		User user = userRepository.getById(userModel.getId());
+		user.setEmail(userModel.getEmail());
+		user.setName(userModel.getName());
+		user.setRole(userModel.getRole());
+		if (userModel.getPassword() != null && !userModel.getPassword().isEmpty()) {
+			user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 		}
-		if (userDTO.getVerifyCode() != null && !userDTO.getVerifyCode().isEmpty()) {
-			user.setVerifyCode(userDTO.getVerifyCode());
+		if (userModel.getVerifyCode() != null && !userModel.getVerifyCode().isEmpty()) {
+			user.setVerifyCode(userModel.getVerifyCode());
 		}
 		return userRepository.saveAndFlush(user);
 	}

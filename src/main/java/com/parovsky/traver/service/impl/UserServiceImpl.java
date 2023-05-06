@@ -1,10 +1,14 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.UserDTO;
+import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
+import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.parovsky.traver.utils.Utils.generateRandomString;
 
 @Service
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class UserServiceImpl implements UserService {
 
 	private final UserDAO userDAO;
@@ -23,34 +28,39 @@ public class UserServiceImpl implements UserService {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	@Autowired
-	public UserServiceImpl(UserDAO userDAO, EmailServiceImpl emailService) {
-		this.userDAO = userDAO;
-		this.emailService = emailService;
-		this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
-	}
+	private final ModelMapper modelMapper;
 
 	@Override
-	public List<UserDTO> getAllUsers() {
+	public List<UserView> getAllUsers() {
 		List<User> users = userDAO.getAllUsers();
-		return users.stream().map(UserService::transformUserToUserDTO).collect(Collectors.toList());
+		return users
+				.stream()
+				.map(user -> modelMapper.map(user, UserView.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public UserDTO getUserById(@NonNull Long id) {
+	public UserView getUserById(@NonNull Long id) throws UserNotFoundException {
 		User user = userDAO.getUserById(id);
-		return UserService.transformUserToUserDTO(user);
+		if (user == null) {
+			throw new UserNotFoundException();
+		}
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public UserDTO getUserByEmail(@NonNull String email) {
+	public UserView getUserByEmail(@NonNull String email) throws UserNotFoundException {
 		User user = userDAO.getUserByEmail(email);
-		return UserService.transformUserToUserDTO(user);
+		if (user == null) {
+			throw new UserNotFoundException();
+		}
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public boolean isUserExist(Long id) {
-		return userDAO.isUserExist(id);
+	public UserView getCurrentUser() {
+		User user = userDAO.getCurrentUser();
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
@@ -59,35 +69,46 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO saveUser(@NonNull UserDTO userDTO) {
-		if (userDTO.getPassword() == null) {
-			userDTO.setPassword(generateRandomString(10));
-			emailService.sendEmail(userDTO.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userDTO.getPassword());
+	public UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
+		if (userDAO.isUserExistByEmail(userModel.getEmail())) {
+			throw new UserIsAlreadyExistException();
 		}
-		userDTO.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-		return UserService.transformUserToUserDTO(userDAO.saveUser(userDTO));
+		if (userModel.getPassword() == null) {
+			userModel.setPassword(generateRandomString(10));
+			emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
+		}
+		userModel.setPassword(bCryptPasswordEncoder.encode(userModel.getPassword()));
+		User user = userDAO.saveUser(userModel);
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public UserDTO updateUser(@NonNull UserDTO userDTO) {
-		return UserService.transformUserToUserDTO(userDAO.updateUser(userDTO));
+	public UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException {
+		if (!userDAO.isUserExist(userModel.getId())) {
+			throw new UserNotFoundException();
+		}
+		User user = userDAO.updateUser(userModel);
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public void resetPassword(UserDTO userDTO) {
-		User user = userDAO.getUserByEmail(userDTO.getEmail());
-		user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+	public void resetPassword(UserModel userModel) {
+		User user = userDAO.getUserByEmail(userModel.getEmail());
+		user.setPassword(bCryptPasswordEncoder.encode(userModel.getPassword()));
 		userDAO.updateUser(UserService.transformUserToUserDTO(user));
 	}
 
 	@Override
-	public boolean checkVerificationCode(UserDTO userDTO) {
-		User user = userDAO.getUserByEmail(userDTO.getEmail());
-		return user.getVerifyCode().equals(userDTO.getVerifyCode());
+	public boolean checkVerificationCode(UserModel userModel) {
+		User user = userDAO.getUserByEmail(userModel.getEmail());
+		return user.getVerifyCode().equals(userModel.getVerifyCode());
 	}
 
 	@Override
-	public void deleteUser(@NonNull Long id) {
+	public void deleteUser(@NonNull Long id) throws UserNotFoundException {
+		if (!userDAO.isUserExist(id)) {
+			throw new UserNotFoundException();
+		}
 		userDAO.deleteUser(id);
 	}
 }
