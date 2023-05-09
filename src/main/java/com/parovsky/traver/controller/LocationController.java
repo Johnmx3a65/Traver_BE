@@ -2,7 +2,7 @@ package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
-import com.parovsky.traver.dto.PhotoResponse;
+import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static com.parovsky.traver.utils.ModelMapper.mapPhotoDTO;
 
 @RestController
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
@@ -62,8 +60,8 @@ public class LocationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/location/{id}/photo", consumes = "application/json")
-	public PhotoResponse addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
-		return mapPhotoDTO(locationService.addLocationPhoto(photoDTO, locationId));
+	public PhotoView addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
+		return locationService.addLocationPhoto(photoDTO, locationId);
 	}
 
 	@ResponseBody

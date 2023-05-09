@@ -6,6 +6,7 @@ import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
+import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
@@ -16,6 +17,7 @@ import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
 import com.parovsky.traver.exception.impl.LocationNotFoundException;
 import com.parovsky.traver.service.LocationService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class LocationServiceImpl implements LocationService {
 	private final PhotoDAO photoDAO;
 
 	private final UserDAO userDAO;
+
+	private final ModelMapper modelMapper;
 
 	@Override
 	public List<LocationDTO> getLocations(@Nullable Long categoryId) throws CategoryNotFoundException {
@@ -78,12 +82,13 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException {
+	public PhotoView addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException {
 		Location location = locationDAO.getLocationById(locationId);
 		if (location == null) {
 			throw new LocationNotFoundException();
 		}
-		return LocationService.mapPhotoToPhotoDTO(photoDAO.addLocationPhoto(photoDTO, location));
+		Photo photo = photoDAO.addLocationPhoto(photoDTO, location);
+		return modelMapper.map(photo, PhotoView.class);
 	}
 
 	@Override
