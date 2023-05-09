@@ -76,8 +76,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new AuthTokenFilter();
 	}
 
-	@Bean BCryptPasswordEncoder bCryptPasswordEncoderBean() { return new BCryptPasswordEncoder(); }
-
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {

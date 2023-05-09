@@ -1,6 +1,6 @@
 package com.parovsky.traver.dao;
 
-import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.entity.User;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

@@ -1,11 +1,11 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,17 +18,12 @@ import java.util.List;
 
 @Component
 @Transactional
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class UserDAOImpl implements UserDAO {
 
 	private final UserRepository userRepository;
 
 	private final BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
-	public UserDAOImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;
-		this.passwordEncoder = new BCryptPasswordEncoder();
-	}
 
 	@Override
 	public List<User> getAllUsers() {
@@ -84,7 +79,7 @@ public class UserDAOImpl implements UserDAO {
 		User user = new User();
 		user.setEmail(userModel.getEmail());
 		user.setName(userModel.getName());
-		user.setPassword(userModel.getPassword());
+		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 		user.setRole(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
 		return userRepository.saveAndFlush(user);
 	}

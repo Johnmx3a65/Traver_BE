@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto;
+package com.parovsky.traver.dto.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

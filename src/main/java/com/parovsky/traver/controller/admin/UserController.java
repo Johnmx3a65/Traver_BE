@@ -1,6 +1,6 @@
 package com.parovsky.traver.controller.admin;
 
-import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
