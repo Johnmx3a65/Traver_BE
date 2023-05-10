@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Setter
 @Getter(onMethod = @__({@org.springframework.lang.NonNull}))
@@ -22,19 +23,13 @@ public class UserModel {
 
     private String verifyCode;
 
-    public UserModel(Long id, String email, String name, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
-
+    @Nullable
     public String getPassword() {
         return password;
     }
 
+    @Nullable
     public String getVerifyCode() {
         return verifyCode;
     }
-
 }
