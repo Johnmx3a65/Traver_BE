@@ -2,10 +2,12 @@ package com.parovsky.traver.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter(onMethod = @__({@org.springframework.lang.NonNull}))
+@NoArgsConstructor
 @AllArgsConstructor
 public class LocationDTO {
 
@@ -22,14 +24,4 @@ public class LocationDTO {
     private String picture;
 
     private Long categoryId;
-
-    public LocationDTO(Long id, String name, String description, String coordinates, Long categoryId, String picture, String subtitle) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.coordinates = coordinates;
-        this.categoryId = categoryId;
-        this.picture = picture;
-        this.subtitle = subtitle;
-    }
 }

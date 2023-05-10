@@ -32,15 +32,4 @@ public interface LocationDAO {
 	FavouriteLocation addFavouriteLocation(String email, Long locationId);
 
 	void deleteFavouriteLocation(String email, Long locationId);
-
-	static Location transformLocationDTO(LocationDTO locationDTO) {
-		Location location = new Location();
-		location.setId(locationDTO.getId());
-		location.setName(locationDTO.getName());
-		location.setSubtitle(locationDTO.getSubtitle());
-		location.setDescription(locationDTO.getDescription());
-		location.setCoordinates(locationDTO.getCoordinates());
-		location.setPicture(locationDTO.getPicture());
-		return location;
-	}
 }

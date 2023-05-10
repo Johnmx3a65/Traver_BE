@@ -50,7 +50,10 @@ public class LocationServiceImpl implements LocationService {
 		} else {
 			result = locationDAO.getAllLocations();
 		}
-		return result.stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
+		return result
+				.stream()
+				.map(l -> modelMapper.map(l, LocationDTO.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -64,13 +67,17 @@ public class LocationServiceImpl implements LocationService {
 		if (location == null) {
 			throw new LocationNotFoundException();
 		}
-		return LocationService.transformLocationToLocationDTO(location);
+		return modelMapper.map(location, LocationDTO.class);
 	}
 
 	@Override
 	public List<LocationDTO> getFavoriteLocations() {
 		String userEmail = userDAO.getCurrentUserEmail();
-		return locationDAO.getFavouriteLocationsByUserEmail(userEmail).stream().map(LocationService::transformLocationToLocationDTO).collect(Collectors.toList());
+		List<Location> result = locationDAO.getFavouriteLocationsByUserEmail(userEmail);
+		return result
+				.stream()
+				.map(l -> modelMapper.map(l, LocationDTO.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -97,13 +104,14 @@ public class LocationServiceImpl implements LocationService {
 		if (category == null) {
 			throw new CategoryNotFoundException();
 		}
-		return LocationService.transformLocationToLocationDTO(locationDAO.saveLocation(locationDTO, category));
+		Location result = locationDAO.saveLocation(locationDTO, category);
+		return modelMapper.map(result, LocationDTO.class);
 	}
 
 	@Override
 	public void addFavoriteLocation(@NonNull Long locationId) throws LocationNotFoundException, FavouriteLocationIsAlreadyExistException {
 		String email = userDAO.getCurrentUserEmail();
-		if (!locationDAO.isFavouriteLocationExist(email, locationId)) {
+		if (locationDAO.isFavouriteLocationExist(email, locationId)) {
 			throw new FavouriteLocationIsAlreadyExistException();
 		}
 		FavouriteLocation favouriteLocation = locationDAO.addFavouriteLocation(email, locationId);
@@ -121,7 +129,8 @@ public class LocationServiceImpl implements LocationService {
 		if (category == null) {
 			throw new CategoryNotFoundException();
 		}
-		return LocationService.transformLocationToLocationDTO(locationDAO.updateLocation(locationDTO, category));
+		Location result = locationDAO.updateLocation(locationDTO, category);
+		return modelMapper.map(result, LocationDTO.class);
 	}
 
 	@Override
