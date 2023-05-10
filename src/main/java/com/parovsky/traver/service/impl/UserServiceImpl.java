@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
 		int code = generateVerificationCode();
 		emailService.sendEmail(userModel.getEmail(), "Verification code", "Your verification code is: " + code);
 		userModel.setVerifyCode(String.valueOf(code));
-		userDAO.updateUser(userModel);
+		userDAO.updateVerificationCode(userModel);
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
 		}
 		userModel.setPassword(generateRandomString(10));
 		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
-		userDAO.updateUser(userModel);
+		userDAO.updatePassword(userModel);
 	}
 
 	@Override

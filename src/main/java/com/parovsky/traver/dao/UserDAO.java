@@ -30,5 +30,9 @@ public interface UserDAO {
 
 	User updateUser(@NonNull UserModel userModel);
 
+	void updatePassword(@NonNull UserModel userModel);
+
+	void updateVerificationCode(@NonNull UserModel userModel);
+
 	void deleteUser(Long id);
 }

@@ -100,6 +100,20 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
+	public void updatePassword(@NonNull UserModel userModel) {
+		User user = userRepository.getByEmail(userModel.getEmail());
+		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+		userRepository.saveAndFlush(user);
+	}
+
+	@Override
+	public void updateVerificationCode(@NonNull UserModel userModel) {
+		User user = userRepository.getByEmail(userModel.getEmail());
+		user.setVerifyCode(userModel.getVerifyCode());
+		userRepository.saveAndFlush(user);
+	}
+
+	@Override
 	public void deleteUser(Long id) {
 		userRepository.deleteById(id);
 	}
