@@ -1,7 +1,6 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.model.SaveCategoryModel;
-import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
@@ -17,9 +16,9 @@ public interface CategoryService {
 
     Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
 
-    Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException;
+    Category saveCategory(@NonNull CategoryModel categoryModel) throws CategoryIsAlreadyExistException;
 
-    Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException;
+    Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException;
 
     void deleteCategory(@NonNull Long id) throws CategoryNotFoundException;
 }

@@ -1,7 +1,6 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.SaveCategoryModel;
-import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
@@ -39,14 +38,14 @@ public class CategoryController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", consumes = "application/json")
-    public Category saveCategory(@RequestBody SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException {
-        return categoryService.saveCategory(saveCategoryModel);
+    public Category saveCategory(@RequestBody CategoryModel categoryModel) throws CategoryIsAlreadyExistException {
+        return categoryService.saveCategory(categoryModel);
     }
 
     @ResponseBody
     @PutMapping(value = "/category", consumes = "application/json")
-    public Category updateCategory(@RequestBody UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException {
-        return categoryService.updateCategory(updateCategoryModel);
+    public Category updateCategory(@RequestBody CategoryModel categoryModel) throws CategoryNotFoundException {
+        return categoryService.updateCategory(categoryModel);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

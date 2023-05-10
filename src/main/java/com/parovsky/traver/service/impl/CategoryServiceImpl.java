@@ -2,8 +2,7 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.model.SaveCategoryModel;
-import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
@@ -43,19 +42,19 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException {
-		if (categoryDAO.isCategoryExistByName(saveCategoryModel.getName())) {
+	public Category saveCategory(@NonNull CategoryModel categoryModel) throws CategoryIsAlreadyExistException {
+		if (categoryDAO.isCategoryExistByName(categoryModel.getName())) {
 			throw new CategoryIsAlreadyExistException();
 		}
-		return categoryDAO.saveCategory(saveCategoryModel);
+		return categoryDAO.saveCategory(categoryModel);
 	}
 
 	@Override
-	public Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException {
-		if (!categoryDAO.isCategoryExistById(updateCategoryModel.getId())) {
+	public Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException {
+		if (!categoryDAO.isCategoryExistById(categoryModel.getId())) {
 			throw new CategoryNotFoundException();
 		}
-		return categoryDAO.updateCategory(updateCategoryModel);
+		return categoryDAO.updateCategory(categoryModel);
 	}
 
 	@Override
