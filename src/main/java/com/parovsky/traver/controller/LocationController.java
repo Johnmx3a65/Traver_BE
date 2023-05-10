@@ -2,7 +2,6 @@ package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
-import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
@@ -60,7 +59,7 @@ public class LocationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/location/{id}/photo", consumes = "application/json")
-	public PhotoView addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
+	public PhotoDTO addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
 		return locationService.addLocationPhoto(photoDTO, locationId);
 	}
 

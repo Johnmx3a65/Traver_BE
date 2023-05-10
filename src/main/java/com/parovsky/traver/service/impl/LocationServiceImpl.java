@@ -6,7 +6,6 @@ import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
-import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
@@ -89,13 +88,13 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public PhotoView addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException {
+	public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException {
 		Location location = locationDAO.getLocationById(locationId);
 		if (location == null) {
 			throw new LocationNotFoundException();
 		}
 		Photo photo = photoDAO.addLocationPhoto(photoDTO, location);
-		return modelMapper.map(photo, PhotoView.class);
+		return modelMapper.map(photo, PhotoDTO.class);
 	}
 
 	@Override

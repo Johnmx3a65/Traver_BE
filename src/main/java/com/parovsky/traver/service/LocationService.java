@@ -2,7 +2,6 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.PhotoDTO;
-import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
@@ -34,5 +33,5 @@ public interface LocationService {
 
 	List<String> getPhotos(@NonNull Long id) throws LocationNotFoundException;
 
-	PhotoView addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException;
+	PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException;
 }

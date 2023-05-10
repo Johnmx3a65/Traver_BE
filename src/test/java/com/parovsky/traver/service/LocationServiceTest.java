@@ -5,7 +5,6 @@ import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.PhotoDTO;
-import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
 import com.parovsky.traver.exception.impl.LocationNotFoundException;
@@ -84,7 +83,7 @@ class LocationServiceTest {
 				.id(1L)
 				.url("photo-url")
 				.build();
-		PhotoView expected = PhotoView
+		PhotoDTO expected = PhotoDTO
 				.builder()
 				.id(1L)
 				.url("photo-url")
@@ -94,7 +93,7 @@ class LocationServiceTest {
 		doReturn(location).when(locationDAO).getLocationById(1L);
 		doReturn(photo).when(photoDAO).addLocationPhoto(photoDTO, location);
 
-		PhotoView actual = subject.addLocationPhoto(photoDTO, 1L);
+		PhotoDTO actual = subject.addLocationPhoto(photoDTO, 1L);
 
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getUrl(), actual.getUrl());
