@@ -1,6 +1,7 @@
 package com.parovsky.traver.dao;
 
-import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -19,9 +20,9 @@ public interface CategoryDAO {
 
     boolean isCategoryExistByName(String name);
 
-    Category updateCategory(@NonNull CategoryDTO categoryDTO);
+    Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel);
 
-    Category saveCategory(@NonNull CategoryDTO categoryDTO);
+    Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel);
 
     void deleteCategory(Long id);
 }

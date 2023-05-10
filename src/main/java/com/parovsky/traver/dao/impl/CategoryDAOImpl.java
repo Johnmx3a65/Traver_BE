@@ -1,7 +1,8 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
-import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,19 +51,19 @@ public class CategoryDAOImpl implements CategoryDAO {
 	}
 
 	@Override
-	public Category updateCategory(@NonNull CategoryDTO categoryDTO) {
-		Category category = categoryRepository.getById(categoryDTO.getId());
-		category.setName(categoryDTO.getName());
-		category.setPicture(categoryDTO.getPicture());
+	public Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel) {
+		Category category = categoryRepository.getById(updateCategoryModel.getId());
+		category.setName(updateCategoryModel.getName());
+		category.setPicture(updateCategoryModel.getPicture());
 		categoryRepository.saveAndFlush(category);
 		return category;
 	}
 
 	@Override
-	public Category saveCategory(@NonNull CategoryDTO categoryDTO) {
+	public Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel) {
 		Category category = new Category();
-		category.setName(categoryDTO.getName());
-		category.setPicture(categoryDTO.getPicture());
+		category.setName(saveCategoryModel.getName());
+		category.setPicture(saveCategoryModel.getPicture());
 		categoryRepository.saveAndFlush(category);
 		return category;
 	}

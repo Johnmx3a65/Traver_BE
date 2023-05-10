@@ -1,6 +1,8 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.service.CategoryService;
@@ -18,33 +20,33 @@ public class CategoryController {
 
     @ResponseBody
     @GetMapping(value = "/categories")
-    public List<CategoryDTO> getCategories() {
+    public List<Category> getCategories() {
         return categoryService.getAllCategories();
     }
 
     @ResponseBody
     @GetMapping("/categories/favorite")
-    public List<CategoryDTO> getFavoriteCategories() {
+    public List<Category> getFavoriteCategories() {
         return categoryService.getFavoriteCategories();
     }
 
     @ResponseBody
     @GetMapping(value = "/category/{id}")
-    public CategoryDTO getCategory(@PathVariable Long id) throws CategoryNotFoundException {
+    public Category getCategory(@PathVariable Long id) throws CategoryNotFoundException {
         return categoryService.getCategoryById(id);
     }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", consumes = "application/json")
-    public CategoryDTO saveCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
-        return categoryService.saveCategory(categoryDTO);
+    public Category saveCategory(@RequestBody SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException {
+        return categoryService.saveCategory(saveCategoryModel);
     }
 
     @ResponseBody
     @PutMapping(value = "/category", consumes = "application/json")
-    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDTO) throws CategoryNotFoundException {
-        return categoryService.updateCategory(categoryDTO);
+    public Category updateCategory(@RequestBody UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException {
+        return categoryService.updateCategory(updateCategoryModel);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

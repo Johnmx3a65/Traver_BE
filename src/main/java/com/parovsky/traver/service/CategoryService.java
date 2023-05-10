@@ -1,6 +1,7 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
@@ -10,23 +11,15 @@ import java.util.List;
 
 public interface CategoryService {
 
-    List<CategoryDTO> getAllCategories();
+    List<Category> getAllCategories();
 
-    List<CategoryDTO> getFavoriteCategories();
+    List<Category> getFavoriteCategories();
 
-    CategoryDTO getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
+    Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
 
-    CategoryDTO saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException;
+    Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException;
 
-    CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException;
+    Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException;
 
     void deleteCategory(@NonNull Long id) throws CategoryNotFoundException;
-
-    static CategoryDTO transformCategoryToCategoryDTO(Category category) {
-        return new CategoryDTO(
-                category.getId(),
-                category.getName(),
-                category.getPicture()
-        );
-    }
 }

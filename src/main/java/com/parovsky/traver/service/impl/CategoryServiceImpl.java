@@ -2,7 +2,8 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.UserDAO;
-import com.parovsky.traver.dto.CategoryDTO;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
@@ -12,7 +13,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
@@ -23,41 +23,39 @@ public class CategoryServiceImpl implements CategoryService {
 	private final UserDAO userDAO;
 
 	@Override
-	public List<CategoryDTO> getAllCategories() {
-		List<Category> categories = categoryDAO.getAllCategories();
-		return categories.stream().map(CategoryService::transformCategoryToCategoryDTO).collect(Collectors.toList());
+	public List<Category> getAllCategories() {
+		return categoryDAO.getAllCategories();
 	}
 
 	@Override
-	public List<CategoryDTO> getFavoriteCategories() {
+	public List<Category> getFavoriteCategories() {
 		String userEmail = userDAO.getCurrentUserEmail();
-		List<Category> categories = categoryDAO.getFavoriteCategories(userEmail);
-		return categories.stream().map(CategoryService::transformCategoryToCategoryDTO).collect(Collectors.toList());
+		return categoryDAO.getFavoriteCategories(userEmail);
 	}
 
 	@Override
-	public CategoryDTO getCategoryById(@NonNull Long id) throws CategoryNotFoundException {
+	public Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException {
 		Category category = categoryDAO.getCategoryById(id);
 		if (category == null) {
 			throw new CategoryNotFoundException();
 		}
-		return CategoryService.transformCategoryToCategoryDTO(category);
+		return category;
 	}
 
 	@Override
-	public CategoryDTO saveCategory(@NonNull CategoryDTO categoryDTO) throws CategoryIsAlreadyExistException {
-		if (categoryDAO.isCategoryExistByName(categoryDTO.getName())) {
+	public Category saveCategory(@NonNull SaveCategoryModel saveCategoryModel) throws CategoryIsAlreadyExistException {
+		if (categoryDAO.isCategoryExistByName(saveCategoryModel.getName())) {
 			throw new CategoryIsAlreadyExistException();
 		}
-		return CategoryService.transformCategoryToCategoryDTO(categoryDAO.saveCategory(categoryDTO));
+		return categoryDAO.saveCategory(saveCategoryModel);
 	}
 
 	@Override
-	public CategoryDTO updateCategory(@NonNull CategoryDTO categoryDTO) throws CategoryNotFoundException {
-		if (!categoryDAO.isCategoryExistById(categoryDTO.getId())) {
+	public Category updateCategory(@NonNull UpdateCategoryModel updateCategoryModel) throws CategoryNotFoundException {
+		if (!categoryDAO.isCategoryExistById(updateCategoryModel.getId())) {
 			throw new CategoryNotFoundException();
 		}
-		return CategoryService.transformCategoryToCategoryDTO(categoryDAO.updateCategory(categoryDTO));
+		return categoryDAO.updateCategory(updateCategoryModel);
 	}
 
 	@Override
