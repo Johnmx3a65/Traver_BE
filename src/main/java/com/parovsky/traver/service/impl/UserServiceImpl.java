@@ -140,10 +140,23 @@ public class UserServiceImpl implements UserService {
 		if (userDAO.isUserExistByEmail(userModel.getEmail())) {
 			throw new UserIsAlreadyExistException();
 		}
-		if (userModel.getPassword() == null) {
-			userModel.setPassword(generateRandomString(10));
-			emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
+
+		int code = generateVerificationCode();
+		emailService.sendEmail(userModel.getEmail(), "Verification code", "Your verification code is: " + code);
+		userModel.setVerifyCode(String.valueOf(code));
+
+		User user = userDAO.saveUser(userModel);
+		return modelMapper.map(user, UserView.class);
+	}
+
+	@Override
+	public UserView saveUserByAdmin(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
+		if (userDAO.isUserExistByEmail(userModel.getEmail())) {
+			throw new UserIsAlreadyExistException();
 		}
+		userModel.setPassword(generateRandomString(10));
+		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
+
 		User user = userDAO.saveUser(userModel);
 		return modelMapper.map(user, UserView.class);
 	}

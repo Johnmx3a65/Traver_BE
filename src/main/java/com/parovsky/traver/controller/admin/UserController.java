@@ -47,7 +47,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
 	public UserView saveUser(@RequestBody UserModel userModel) throws UserIsAlreadyExistException {
-		return userService.saveUser(userModel);
+		return userService.saveUserByAdmin(userModel);
 	}
 
 	@ResponseBody

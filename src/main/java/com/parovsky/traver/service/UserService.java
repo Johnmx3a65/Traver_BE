@@ -30,6 +30,8 @@ public interface UserService {
 
 	UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException;
 
+	UserView saveUserByAdmin(@NonNull UserModel userModel) throws UserIsAlreadyExistException;
+
 	UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException;
 
 	void deleteUser(@NonNull Long id) throws UserNotFoundException;

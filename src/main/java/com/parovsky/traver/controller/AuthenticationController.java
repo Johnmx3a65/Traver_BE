@@ -25,7 +25,7 @@ public class AuthenticationController {
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	@PostMapping(value = "/signup", consumes = "application/json")
+	@PostMapping(value = "/sign-up", consumes = "application/json")
 	public UserView saveUser(@RequestBody UserModel userModel) throws UserIsAlreadyExistException {
 		return userService.saveUser(userModel);
 	}

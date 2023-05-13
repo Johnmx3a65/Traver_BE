@@ -81,6 +81,7 @@ public class UserDAOImpl implements UserDAO {
 		user.setName(userModel.getName());
 		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 		user.setRole(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name());
+		user.setVerifyCode(userModel.getVerifyCode());
 		return userRepository.saveAndFlush(user);
 	}
 
