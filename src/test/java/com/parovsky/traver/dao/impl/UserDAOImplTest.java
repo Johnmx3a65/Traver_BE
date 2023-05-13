@@ -1,11 +1,12 @@
 package com.parovsky.traver.dao.impl;
 
-import com.parovsky.traver.dto.UserModel;
+import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,10 +67,13 @@ class UserDAOImplTest {
 
 	private UserRepository userRepository;
 
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 	@BeforeEach
 	void setUp() {
 		userRepository = mock(UserRepository.class);
-		subject = new UserDAOImpl(userRepository);
+		bCryptPasswordEncoder = mock(BCryptPasswordEncoder.class);
+		subject = new UserDAOImpl(userRepository, bCryptPasswordEncoder);
 	}
 
 	@Test
