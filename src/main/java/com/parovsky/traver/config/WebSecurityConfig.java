@@ -1,6 +1,6 @@
 package com.parovsky.traver.config;
 
-import com.parovsky.traver.security.jwt.AuthEntryPointJwt;
+import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.AuthTokenFilter;
 import io.pivotal.cfenv.core.CfEnv;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -36,12 +37,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
 
-	private final AuthEntryPointJwt unauthorizedHandler;
-
 	@Autowired
-	public WebSecurityConfig(@Qualifier("AppUserDetailsService") UserDetailsService userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
+	public WebSecurityConfig(@Qualifier("AppUserDetailsService") UserDetailsService userDetailsService) {
 		this.userDetailsService = userDetailsService;
-		this.unauthorizedHandler = unauthorizedHandler;
 	}
 
 	@Override
@@ -51,23 +49,43 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable()
-				.exceptionHandling().accessDeniedPage("/error").authenticationEntryPoint(unauthorizedHandler).and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.authorizeRequests()
+		// Enable CORS and disable CSRF
+		http = http.cors().and().csrf().disable();
+
+		// Set session management to stateless
+		http = http
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and();
+
+		// Set unauthorized requests exception handler
+		http = http
+				.exceptionHandling()
+				.authenticationEntryPoint(
+						(request, response, ex) -> response.sendError(
+								HttpServletResponse.SC_UNAUTHORIZED,
+								ex.getMessage()
+						)
+				)
+				.and();
+
+		// Set permissions on endpoints
+		http.authorizeRequests()
+				// public endpoints
 				.antMatchers("/api/auth/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/").permitAll()
-				.antMatchers(HttpMethod.POST, "/register").permitAll()
-				.antMatchers(HttpMethod.PUT, "/reset-password").permitAll()
-				.antMatchers(HttpMethod.POST, "/send-verification-code").permitAll()
-				.antMatchers(HttpMethod.POST, "/check-verification-code").permitAll()
-				.antMatchers(HttpMethod.GET, "/categories").permitAll()
-				.antMatchers(HttpMethod.GET, "/category/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/locations").permitAll()
-				.antMatchers(HttpMethod.GET, "/location/**").permitAll()
-				.antMatchers("/users").hasRole("ADMIN")
-				.antMatchers("/user/**").hasRole("ADMIN")
-				.anyRequest().authenticated();
+				// private endpoints
+				.antMatchers(HttpMethod.GET, "/categories").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/categories/favorite").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/category/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/locations").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/locations/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/location/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.POST, "/location/favourite/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.DELETE, "/location/favourite/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				// admin endpoints
+				.anyRequest().hasRole(Role.ADMIN.name());
+
+		// Add JWT token filter
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
