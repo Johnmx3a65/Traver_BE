@@ -2,7 +2,6 @@ package com.parovsky.traver.dao;
 
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -29,7 +28,7 @@ public interface LocationDAO {
 
 	List<Location> getFavouriteLocationsByUserEmail(String email);
 
-	FavouriteLocation addFavouriteLocation(String email, Long locationId);
+	void addFavouriteLocation(String email, Long locationId);
 
 	void deleteFavouriteLocation(String email, Long locationId);
 }

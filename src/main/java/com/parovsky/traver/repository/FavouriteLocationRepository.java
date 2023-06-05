@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FavouriteLocationRepository extends JpaRepository<FavouriteLocation, FavouriteLocation.FavouriteLocationPK> {
@@ -19,8 +18,8 @@ public interface FavouriteLocationRepository extends JpaRepository<FavouriteLoca
 	boolean existsByUserEmailAndLocationId(String email, Long locationId);
 
 	@Modifying
-	@Query(value = "INSERT INTO users_favourite_locations (user_id, location_id) VALUES (SELECT id FROM users WHERE email like ?1, ?2)", nativeQuery = true)
-	Optional<FavouriteLocation> save(String email, Long locationId);
+	@Query(value = "INSERT INTO users_favourite_locations (user_id, location_id) VALUES ((SELECT id FROM users WHERE email like ?1), ?2)", nativeQuery = true)
+	void save(String email, Long locationId);
 
 	@Modifying
 	@Query(value = "DELETE FROM users_favourite_locations WHERE user_id IN (SELECT id FROM users WHERE email like ?1) AND location_id = ?2", nativeQuery = true)

@@ -24,4 +24,6 @@ public class LocationDTO {
     private String picture;
 
     private Long categoryId;
+
+    private Boolean isFavorite;
 }

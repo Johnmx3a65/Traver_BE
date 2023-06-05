@@ -23,7 +23,7 @@ public class Photo {
     @Column(name = "url", nullable = false, columnDefinition="TEXT")
     private String url;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     private Location location;
 

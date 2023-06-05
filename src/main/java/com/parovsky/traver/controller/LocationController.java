@@ -1,7 +1,6 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
-import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
@@ -26,12 +25,6 @@ public class LocationController {
 	}
 
 	@ResponseBody
-	@GetMapping("location/{id}/photos")
-	public List<String> getPhotos(@PathVariable Long id) throws LocationNotFoundException {
-		return locationService.getPhotos(id);
-	}
-
-	@ResponseBody
 	@GetMapping("/locations/favourite")
 	public List<LocationDTO> getFavouriteLocations() {
 		return locationService.getFavoriteLocations();
@@ -52,15 +45,8 @@ public class LocationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/location/favourite/{locationId}")
-	public void addFavouriteLocation(@PathVariable Long locationId) throws FavouriteLocationIsAlreadyExistException, LocationNotFoundException {
+	public void addFavouriteLocation(@PathVariable Long locationId) throws FavouriteLocationIsAlreadyExistException {
 		locationService.addFavoriteLocation(locationId);
-	}
-
-	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
-	@PostMapping(value = "/location/{id}/photo", consumes = "application/json")
-	public PhotoDTO addLocationPhoto(@PathVariable(name = "id") Long locationId, @RequestBody PhotoDTO photoDTO) throws LocationNotFoundException {
-		return locationService.addLocationPhoto(photoDTO, locationId);
 	}
 
 	@ResponseBody

@@ -2,14 +2,10 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
-import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.LocationDTO;
-import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
-import com.parovsky.traver.entity.Photo;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.FavouriteLocationIsNotFoundException;
@@ -31,8 +27,6 @@ public class LocationServiceImpl implements LocationService {
 	private final LocationDAO locationDAO;
 
 	private final CategoryDAO categoryDAO;
-
-	private final PhotoDAO photoDAO;
 
 	private final UserDAO userDAO;
 
@@ -66,7 +60,12 @@ public class LocationServiceImpl implements LocationService {
 		if (location == null) {
 			throw new LocationNotFoundException();
 		}
-		return modelMapper.map(location, LocationDTO.class);
+		LocationDTO locationDTO = modelMapper.map(location, LocationDTO.class);
+		String email = userDAO.getCurrentUserEmail();
+		if (locationDAO.isFavouriteLocationExist(email, location.getId())) {
+			locationDTO.setIsFavorite(true);
+		}
+		return locationDTO;
 	}
 
 	@Override
@@ -80,24 +79,6 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public List<String> getPhotos(@NonNull Long id) throws LocationNotFoundException {
-		if (!locationDAO.isLocationExist(id)) {
-			throw new LocationNotFoundException();
-		}
-		return photoDAO.findAllByLocationId(id).stream().map(Photo::getUrl).collect(Collectors.toList());
-	}
-
-	@Override
-	public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO, @NonNull Long locationId) throws LocationNotFoundException {
-		Location location = locationDAO.getLocationById(locationId);
-		if (location == null) {
-			throw new LocationNotFoundException();
-		}
-		Photo photo = photoDAO.addLocationPhoto(photoDTO, location);
-		return modelMapper.map(photo, PhotoDTO.class);
-	}
-
-	@Override
 	public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException {
 		Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
 		if (category == null) {
@@ -108,15 +89,12 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public void addFavoriteLocation(@NonNull Long locationId) throws LocationNotFoundException, FavouriteLocationIsAlreadyExistException {
+	public void addFavoriteLocation(@NonNull Long locationId) throws FavouriteLocationIsAlreadyExistException {
 		String email = userDAO.getCurrentUserEmail();
 		if (locationDAO.isFavouriteLocationExist(email, locationId)) {
 			throw new FavouriteLocationIsAlreadyExistException();
 		}
-		FavouriteLocation favouriteLocation = locationDAO.addFavouriteLocation(email, locationId);
-		if (favouriteLocation == null) {
-			throw new LocationNotFoundException();
-		}
+		locationDAO.addFavouriteLocation(email, locationId);
 	}
 
 	@Override

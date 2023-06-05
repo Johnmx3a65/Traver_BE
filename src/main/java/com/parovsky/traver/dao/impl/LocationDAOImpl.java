@@ -3,7 +3,6 @@ package com.parovsky.traver.dao.impl;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.repository.FavouriteLocationRepository;
 import com.parovsky.traver.repository.LocationRepository;
@@ -81,10 +80,9 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
-	public FavouriteLocation addFavouriteLocation(String email, Long locationId) {
-		FavouriteLocation favouriteLocation = favouriteLocationRepository.save(email, locationId).orElse(null);
+	public void addFavouriteLocation(String email, Long locationId) {
+		favouriteLocationRepository.save(email, locationId);
 		favouriteLocationRepository.flush();
-		return favouriteLocation;
 	}
 
 	@Override

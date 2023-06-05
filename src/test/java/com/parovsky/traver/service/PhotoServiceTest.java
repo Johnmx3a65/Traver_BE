@@ -1,9 +1,7 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.PhotoDAO;
-import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
@@ -15,32 +13,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import static com.parovsky.traver.service.LocationServiceTest.LocationServiceTestContextConfiguration.locationDAO;
-import static com.parovsky.traver.service.LocationServiceTest.LocationServiceTestContextConfiguration.photoDAO;
+import static com.parovsky.traver.service.PhotoServiceTest.PhotoServiceTestContextConfiguration.locationDAO;
+import static com.parovsky.traver.service.PhotoServiceTest.PhotoServiceTestContextConfiguration.photoDAO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
-class LocationServiceTest {
+class PhotoServiceTest {
 
-	private final LocationService subject;
+	private final PhotoService subject;
 
 	@Autowired
-	public LocationServiceTest(LocationService locationService) {
-		this.subject = locationService;
+	public PhotoServiceTest(PhotoService photoService) {
+		this.subject = photoService;
 	}
 
 	@TestConfiguration
-	static class LocationServiceTestContextConfiguration {
+	static class PhotoServiceTestContextConfiguration {
 
 		public static final LocationDAO locationDAO = mock(LocationDAO.class);
 
-		public static final CategoryDAO categoryDAO = mock(CategoryDAO.class);
-
 		public static final PhotoDAO photoDAO = mock(PhotoDAO.class);
-
-		public static final UserDAO userDAO = mock(UserDAO.class);
 
 		@Bean
 		public LocationDAO locationDAO() {
@@ -48,18 +42,8 @@ class LocationServiceTest {
 		}
 
 		@Bean
-		public CategoryDAO categoryDAO() {
-			return categoryDAO;
-		}
-
-		@Bean
 		public PhotoDAO photoDAO() {
 			return photoDAO;
-		}
-
-		@Bean
-		public UserDAO userDAO() {
-			return userDAO;
 		}
 	}
 
@@ -82,6 +66,7 @@ class LocationServiceTest {
 				.builder()
 				.id(1L)
 				.url("photo-url")
+				.locationId(1L)
 				.build();
 		PhotoDTO expected = PhotoDTO
 				.builder()
@@ -93,7 +78,7 @@ class LocationServiceTest {
 		doReturn(location).when(locationDAO).getLocationById(1L);
 		doReturn(photo).when(photoDAO).addLocationPhoto(photoDTO, location);
 
-		PhotoDTO actual = subject.addLocationPhoto(photoDTO, 1L);
+		PhotoDTO actual = subject.addLocationPhoto(photoDTO);
 
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getUrl(), actual.getUrl());
