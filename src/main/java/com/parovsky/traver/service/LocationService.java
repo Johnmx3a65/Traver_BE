@@ -18,7 +18,7 @@ public interface LocationService {
 
 	LocationDTO getLocationById(@NonNull Long id) throws LocationNotFoundException;
 
-	List<LocationDTO> getFavoriteLocations();
+	List<LocationDTO> getFavoriteLocations(@Nullable Long categoryId) throws CategoryNotFoundException;
 
 	LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException;
 

@@ -28,6 +28,8 @@ public interface LocationDAO {
 
 	List<Location> getFavouriteLocationsByUserEmail(String email);
 
+	List<Location> getFavouriteLocationsByUserEmailAndCategoryId(String email, Long categoryId);
+
 	void addFavouriteLocation(String email, Long locationId);
 
 	void deleteFavouriteLocation(String email, Long locationId);

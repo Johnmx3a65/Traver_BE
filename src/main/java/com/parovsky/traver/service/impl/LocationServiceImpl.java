@@ -69,9 +69,17 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public List<LocationDTO> getFavoriteLocations() {
+	public List<LocationDTO> getFavoriteLocations(@Nullable Long categoryId) throws CategoryNotFoundException {
+		List<Location> result;
 		String userEmail = userDAO.getCurrentUserEmail();
-		List<Location> result = locationDAO.getFavouriteLocationsByUserEmail(userEmail);
+		if (categoryId == null) {
+			result = locationDAO.getFavouriteLocationsByUserEmail(userEmail);
+		} else {
+			if (!categoryDAO.isCategoryExistById(categoryId)) {
+				throw new CategoryNotFoundException();
+			}
+			result = locationDAO.getFavouriteLocationsByUserEmailAndCategoryId(userEmail, categoryId);
+		}
 		return result
 				.stream()
 				.map(l -> modelMapper.map(l, LocationDTO.class))

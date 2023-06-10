@@ -80,6 +80,11 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
+	public List<Location> getFavouriteLocationsByUserEmailAndCategoryId(String email, Long categoryId) {
+		return favouriteLocationRepository.findAllLocationsByUserEmailAndCategoryId(email, categoryId);
+	}
+
+	@Override
 	public void addFavouriteLocation(String email, Long locationId) {
 		favouriteLocationRepository.save(email, locationId);
 		favouriteLocationRepository.flush();

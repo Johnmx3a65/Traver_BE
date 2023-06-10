@@ -26,8 +26,8 @@ public class LocationController {
 
 	@ResponseBody
 	@GetMapping("/locations/favourite")
-	public List<LocationDTO> getFavouriteLocations() {
-		return locationService.getFavoriteLocations();
+	public List<LocationDTO> getFavouriteLocations(@RequestParam(required = false) Long categoryId) throws CategoryNotFoundException {
+		return locationService.getFavoriteLocations(categoryId);
 	}
 
 	@ResponseBody
