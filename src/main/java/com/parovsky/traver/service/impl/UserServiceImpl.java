@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
 				.id(userDetails.getId())
 				.email(userDetails.getUsername())
 				.name(userDetails.getName())
-				.role(roles.get(0))
+				.role(roles.get(0).replace("ROLE_", ""))
 				.build();
 
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userView);

@@ -74,6 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// public endpoints
 				.antMatchers("/api/auth/**").permitAll()
 				// private endpoints
+				.antMatchers(HttpMethod.GET, "/current-user").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/photos/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
 				.antMatchers(HttpMethod.GET, "/categories").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
 				.antMatchers(HttpMethod.GET, "/categories/favorite").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
 				.antMatchers(HttpMethod.GET, "/category/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())

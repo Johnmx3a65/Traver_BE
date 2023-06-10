@@ -1,4 +1,4 @@
-package com.parovsky.traver.controller.admin;
+package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
