@@ -1,5 +1,6 @@
 package com.parovsky.traver.dao;
 
+import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.entity.User;
 import org.springframework.lang.NonNull;
@@ -30,7 +31,7 @@ public interface UserDAO {
 
 	User updateUser(@NonNull UserModel userModel);
 
-	void updatePassword(@NonNull UserModel userModel);
+	void updatePassword(@NonNull ResetPasswordModel resetPasswordModel);
 
 	void updateVerificationCode(@NonNull UserModel userModel);
 

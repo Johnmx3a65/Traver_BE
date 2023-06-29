@@ -1,5 +1,6 @@
 package com.parovsky.traver.service;
 
+import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
@@ -36,5 +37,5 @@ public interface UserService {
 
 	void deleteUser(@NonNull Long id) throws UserNotFoundException;
 
-	void resetPassword(@NonNull UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException;
+	void resetPassword(@NonNull ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException;
 }

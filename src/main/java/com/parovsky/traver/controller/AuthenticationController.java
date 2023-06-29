@@ -1,5 +1,6 @@
 package com.parovsky.traver.controller;
 
+import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
@@ -49,8 +50,8 @@ public class AuthenticationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping(value = "/reset-password", consumes = "application/json")
-	public void resetPassword(@RequestBody UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		userService.resetPassword(userModel);
+	public void resetPassword(@RequestBody ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException {
+		userService.resetPassword(resetPasswordModel);
 	}
 
 }

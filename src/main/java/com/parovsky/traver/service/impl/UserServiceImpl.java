@@ -2,6 +2,7 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.dao.UserDAO;
+import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
@@ -130,7 +131,7 @@ public class UserServiceImpl implements UserService {
 		if (user == null) {
 			throw new UserNotFoundException();
 		}
-		if (isCodeNotMatch(userModel, user)) {
+		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
 	}
@@ -171,17 +172,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void resetPassword(@NonNull UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getUserByEmail(userModel.getEmail());
+	public void resetPassword(@NonNull ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException {
+		User user = userDAO.getUserByEmail(resetPasswordModel.getEmail());
 		if (user == null) {
 			throw new UserNotFoundException();
 		}
-		if (isCodeNotMatch(userModel, user)) {
+		if (!user.getVerifyCode().equals(resetPasswordModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
-		userModel.setPassword(generateRandomString(10));
-		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
-		userDAO.updatePassword(userModel);
+		userDAO.updatePassword(resetPasswordModel);
 	}
 
 	@Override
@@ -190,9 +189,5 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException();
 		}
 		userDAO.deleteUser(id);
-	}
-
-	private boolean isCodeNotMatch(@NonNull UserModel userModel, @NonNull User user) {
-		return !user.getVerifyCode().equals(userModel.getVerifyCode());
 	}
 }

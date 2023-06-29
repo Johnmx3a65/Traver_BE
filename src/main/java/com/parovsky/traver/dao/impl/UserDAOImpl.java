@@ -1,6 +1,7 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.UserDAO;
+import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.UserRepository;
@@ -101,9 +102,9 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public void updatePassword(@NonNull UserModel userModel) {
-		User user = userRepository.getByEmail(userModel.getEmail());
-		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+	public void updatePassword(@NonNull ResetPasswordModel resetPasswordModel) {
+		User user = userRepository.getByEmail(resetPasswordModel.getEmail());
+		user.setPassword(passwordEncoder.encode(resetPasswordModel.getPassword()));
 		userRepository.saveAndFlush(user);
 	}
 
