@@ -55,8 +55,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 		Category category = categoryRepository.getById(categoryModel.getId());
 		category.setName(categoryModel.getName());
 		category.setPicture(categoryModel.getPicture());
-		categoryRepository.saveAndFlush(category);
-		return category;
+		return categoryRepository.saveAndFlush(category);
 	}
 
 	@Override
@@ -64,8 +63,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 		Category category = new Category();
 		category.setName(categoryModel.getName());
 		category.setPicture(categoryModel.getPicture());
-		categoryRepository.saveAndFlush(category);
-		return category;
+		return categoryRepository.saveAndFlush(category);
 	}
 
 	@Override

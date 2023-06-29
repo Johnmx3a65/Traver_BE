@@ -57,16 +57,14 @@ public class LocationDAOImpl implements LocationDAO {
 	public Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) {
 		Location location = new Location();
 		fillProperties(locationDTO, category, location);
-		locationRepository.saveAndFlush(location);
-		return location;
+		return locationRepository.saveAndFlush(location);
 	}
 
 	@Override
 	public Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) {
 		Location location = locationRepository.getById(locationDTO.getId());
 		fillProperties(locationDTO, category, location);
-		locationRepository.saveAndFlush(location);
-		return location;
+		return locationRepository.saveAndFlush(location);
 	}
 
 	@Override
