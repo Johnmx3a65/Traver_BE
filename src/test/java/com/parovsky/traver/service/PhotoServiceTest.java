@@ -59,19 +59,19 @@ class PhotoServiceTest {
 		Photo photo = Photo
 				.builder()
 				.id(1L)
-				.url("photo-url")
+				.previewUrl("photo-url")
 				.location(location)
 				.build();
 		PhotoDTO photoDTO = PhotoDTO
 				.builder()
 				.id(1L)
-				.url("photo-url")
+				.previewUrl("photo-url")
 				.locationId(1L)
 				.build();
 		PhotoDTO expected = PhotoDTO
 				.builder()
 				.id(1L)
-				.url("photo-url")
+				.previewUrl("photo-url")
 				.locationId(1L)
 				.build();
 
@@ -81,7 +81,7 @@ class PhotoServiceTest {
 		PhotoDTO actual = subject.addLocationPhoto(photoDTO);
 
 		assertEquals(expected.getId(), actual.getId());
-		assertEquals(expected.getUrl(), actual.getUrl());
+		assertEquals(expected.getPreviewUrl(), actual.getPreviewUrl());
 		assertEquals(expected.getLocationId(), actual.getLocationId());
 	}
 }

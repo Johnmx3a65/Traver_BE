@@ -20,8 +20,12 @@ public class Photo {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "url", nullable = false, columnDefinition="TEXT")
-    private String url;
+    @Column(name = "preview_url", nullable = false, columnDefinition="TEXT")
+    private String previewUrl;
+
+    //todo change nullable to false
+    @Column(name = "full_url", nullable = true, columnDefinition="TEXT")
+    private String fullUrl;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")

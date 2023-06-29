@@ -33,7 +33,8 @@ public class PhotoDAOImpl implements PhotoDAO {
 
 	public Photo addLocationPhoto(PhotoDTO photoDTO, Location location) {
 		Photo photo = Photo.builder()
-				.url(photoDTO.getUrl())
+				.previewUrl(photoDTO.getPreviewUrl())
+				.fullUrl(photoDTO.getFullUrl())
 				.location(location)
 				.build();
 		return photoRepository.save(photo);
@@ -42,7 +43,8 @@ public class PhotoDAOImpl implements PhotoDAO {
 	@Override
 	public Photo updatePhoto(@NonNull PhotoDTO photoDTO) {
 		Photo photo = photoRepository.getById(photoDTO.getId());
-		photo.setUrl(photoDTO.getUrl());
+		photo.setPreviewUrl(photoDTO.getPreviewUrl());
+		photo.setFullUrl(photoDTO.getFullUrl());
 		return photoRepository.saveAndFlush(photo);
 	}
 
