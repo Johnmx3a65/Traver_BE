@@ -1,12 +1,14 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
-import com.parovsky.traver.dao.UserDAO;
 import com.parovsky.traver.dto.model.CategoryModel;
+import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.CategoryService;
+import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	private final CategoryDAO categoryDAO;
 
-	private final UserDAO userDAO;
+	private final UserService userService;
 
 	@Override
 	public List<Category> getAllCategories() {
@@ -27,9 +29,9 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public List<Category> getFavoriteCategories() {
-		String userEmail = userDAO.getCurrentUserEmail();
-		return categoryDAO.getFavoriteCategories(userEmail);
+	public List<Category> getFavoriteCategories() throws UserNotFoundException {
+		UserView user = userService.getCurrentUser();
+		return categoryDAO.getFavoriteCategories(user.getEmail());
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException {
-		if (!categoryDAO.isCategoryExistById(categoryModel.getId())) {
+		if (categoryModel.getId() == null || !categoryDAO.isCategoryExistById(categoryModel.getId())) {
 			throw new CategoryNotFoundException();
 		}
 		return categoryDAO.updateCategory(categoryModel);

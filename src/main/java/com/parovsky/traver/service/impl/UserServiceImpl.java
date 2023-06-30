@@ -1,7 +1,7 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
-import com.parovsky.traver.dao.UserDAO;
+import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
@@ -9,6 +9,7 @@ import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
+import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +37,7 @@ import static com.parovsky.traver.utils.Utils.generateVerificationCode;
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class UserServiceImpl implements UserService {
 
-	private final UserDAO userDAO;
+	private final UserDao userDAO;
 
 	private final EmailServiceImpl emailService;
 
@@ -44,39 +47,26 @@ public class UserServiceImpl implements UserService {
 
 	private final JwtUtils jwtUtils;
 
+	private final BCryptPasswordEncoder passwordEncoder;
+
 	@Override
 	public List<UserView> getAllUsers() {
-		List<User> users = userDAO.getAllUsers();
-		return users
-				.stream()
-				.map(user -> modelMapper.map(user, UserView.class))
-				.collect(Collectors.toList());
+		List<User> users = userDAO.getAll();
+		return users.stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList());
 	}
 
 	@Override
 	public UserView getUserById(@NonNull Long id) throws UserNotFoundException {
-		User user = userDAO.getUserById(id);
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
+		User user = userDAO.get(id).orElseThrow(UserNotFoundException::new);
 		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public UserView getUserByEmail(@NonNull String email) throws UserNotFoundException {
-		User user = userDAO.getUserByEmail(email);
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
+	public UserView getCurrentUser() throws UserNotFoundException {
+		String userEmail = getCurrentUserEmail();
+		User user = userDAO.getByEmail(userEmail).orElseThrow(UserNotFoundException::new);
 		return modelMapper.map(user, UserView.class);
 	}
-
-	@Override
-	public UserView getCurrentUser() {
-		User user = userDAO.getCurrentUser();
-		return modelMapper.map(user, UserView.class);
-	}
-
 
 	@Override
 	public ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) {
@@ -115,22 +105,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void sendVerificationEmail(@NonNull UserModel userModel) throws UserNotFoundException {
-		User user = userDAO.getUserByEmail(userModel.getEmail());
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
+		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(UserNotFoundException::new);
 		int code = generateVerificationCode();
-		emailService.sendEmail(userModel.getEmail(), "Verification code", "Your verification code is: " + code);
-		userModel.setVerifyCode(String.valueOf(code));
-		userDAO.updateVerificationCode(userModel);
+		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
+		userDAO.update(user, new String[]{
+				user.getName(),
+				user.getEmail(),
+				user.getRole(),
+				user.getPassword(),
+				String.valueOf(code)
+		});
 	}
 
 	@Override
 	public void checkVerificationCode(@NonNull UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getUserByEmail(userModel.getEmail());
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
+		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(UserNotFoundException::new);
 		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
@@ -138,56 +127,85 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
-		if (userDAO.isUserExistByEmail(userModel.getEmail())) {
+		if (userDAO.isExistByEmail(userModel.getEmail())) {
 			throw new UserIsAlreadyExistException();
 		}
 
 		int code = generateVerificationCode();
-		emailService.sendEmail(userModel.getEmail(), "Verification code", "Your verification code is: " + code);
-		userModel.setVerifyCode(String.valueOf(code));
+		emailService.sendEmail(userModel.getEmail(), "TRAVER VERIFICATION CODE", "Your verification code is: " + code);
 
-		User user = userDAO.saveUser(userModel);
-		return modelMapper.map(user, UserView.class);
+		User user = User.builder()
+				.name(userModel.getName())
+				.email(userModel.getEmail())
+				.role(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name())
+				.password(passwordEncoder.encode(userModel.getPassword()))
+				.verifyCode(String.valueOf(code))
+				.build();
+		User newUser = userDAO.save(user);
+		return modelMapper.map(newUser, UserView.class);
 	}
 
 	@Override
 	public UserView saveUserByAdmin(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
-		if (userDAO.isUserExistByEmail(userModel.getEmail())) {
+		if (userDAO.isExistByEmail(userModel.getEmail())) {
 			throw new UserIsAlreadyExistException();
 		}
 		userModel.setPassword(generateRandomString(10));
 		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
 
-		User user = userDAO.saveUser(userModel);
-		return modelMapper.map(user, UserView.class);
+		User user = User.builder()
+				.name(userModel.getName())
+				.email(userModel.getEmail())
+				.role(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name())
+				.password(passwordEncoder.encode(userModel.getPassword()))
+				.build();
+		User newUser = userDAO.save(user);
+		return modelMapper.map(newUser, UserView.class);
 	}
 
 	@Override
 	public UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException {
-		if (!userDAO.isUserExist(userModel.getId())) {
-			throw new UserNotFoundException();
-		}
-		User user = userDAO.updateUser(userModel);
-		return modelMapper.map(user, UserView.class);
+		User user = userDAO.get(userModel.getId()).orElseThrow(UserNotFoundException::new);
+		User updatedUser = userDAO.update(user, new String[]{
+				userModel.getName(),
+				userModel.getEmail(),
+				userModel.getRole(),
+				user.getPassword(),
+		});
+		return modelMapper.map(updatedUser, UserView.class);
 	}
 
 	@Override
 	public void resetPassword(@NonNull ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getUserByEmail(resetPasswordModel.getEmail());
-		if (user == null) {
-			throw new UserNotFoundException();
-		}
+		User user = userDAO.getByEmail(resetPasswordModel.getEmail()).orElseThrow(UserNotFoundException::new);
 		if (!user.getVerifyCode().equals(resetPasswordModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
-		userDAO.updatePassword(resetPasswordModel);
+		userDAO.update(user, new String[]{
+				user.getName(),
+				user.getEmail(),
+				user.getRole(),
+				passwordEncoder.encode(resetPasswordModel.getPassword())
+		});
 	}
 
 	@Override
 	public void deleteUser(@NonNull Long id) throws UserNotFoundException {
-		if (!userDAO.isUserExist(id)) {
-			throw new UserNotFoundException();
+		User user = userDAO.get(id).orElseThrow(UserNotFoundException::new);
+		userDAO.delete(user);
+	}
+
+	private String getCurrentUserEmail() {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String userEmail;
+
+		if (principal instanceof UserDetails) {
+			userEmail = ((UserDetails) principal).getUsername();
+		} else {
+			userEmail = principal.toString();
 		}
-		userDAO.deleteUser(id);
+
+		return userEmail;
 	}
 }

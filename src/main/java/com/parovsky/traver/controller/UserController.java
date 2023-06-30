@@ -29,16 +29,9 @@ public class UserController {
 		return userService.getUserById(id);
 	}
 
-	//todo spring doesn't see the difference between /user/1 and /user/ivan@gmail.com
-	/*@ResponseBody
-	@GetMapping("/user/{email}")
-	public UserView getUserByEmail(@PathVariable String email) throws UserNotFoundException {
-		return userService.getUserByEmail(email);
-	}*/
-
 	@ResponseBody
 	@GetMapping("/current-user")
-	public UserView getCurrentUser() {
+	public UserView getCurrentUser() throws UserNotFoundException {
 		return userService.getCurrentUser();
 	}
 

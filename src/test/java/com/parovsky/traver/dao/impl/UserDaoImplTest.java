@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-class UserDAOImplTest {
+class UserDaoImplTest {
 
 	private final Long user1Id = 1L;
 
@@ -63,7 +63,7 @@ class UserDAOImplTest {
 			Role.USER.name()
 	);
 
-	private UserDAOImpl subject;
+	private UserDaoImpl subject;
 
 	private UserRepository userRepository;
 
@@ -73,7 +73,7 @@ class UserDAOImplTest {
 	void setUp() {
 		userRepository = mock(UserRepository.class);
 		bCryptPasswordEncoder = mock(BCryptPasswordEncoder.class);
-		subject = new UserDAOImpl(userRepository, bCryptPasswordEncoder);
+		subject = new UserDaoImpl(userRepository, bCryptPasswordEncoder);
 	}
 
 	@Test

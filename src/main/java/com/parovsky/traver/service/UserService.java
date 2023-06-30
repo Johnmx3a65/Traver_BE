@@ -17,9 +17,7 @@ public interface UserService {
 
 	UserView getUserById(@NonNull Long id) throws UserNotFoundException;
 
-	UserView getUserByEmail(String email) throws UserNotFoundException;
-
-	UserView getCurrentUser();
+	UserView getCurrentUser() throws UserNotFoundException;
 
 	ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel);
 

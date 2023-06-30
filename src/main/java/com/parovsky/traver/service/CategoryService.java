@@ -4,6 +4,7 @@ import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface CategoryService {
 
     List<Category> getAllCategories();
 
-    List<Category> getFavoriteCategories();
+    List<Category> getFavoriteCategories() throws UserNotFoundException;
 
     Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
 

@@ -4,6 +4,7 @@ import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
 import com.parovsky.traver.exception.impl.CategoryNotFoundException;
+import com.parovsky.traver.exception.impl.UserNotFoundException;
 import com.parovsky.traver.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class CategoryController {
 
     @ResponseBody
     @GetMapping("/categories/favorite")
-    public List<Category> getFavoriteCategories() {
+    public List<Category> getFavoriteCategories() throws UserNotFoundException {
         return categoryService.getFavoriteCategories();
     }
 
