@@ -28,37 +28,35 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public List<PhotoDTO> getPhotos(@NonNull Long locationId) throws LocationNotFoundException {
-        if (!locationDAO.isLocationExist(locationId)) {
-            throw new LocationNotFoundException();
-        }
-        List<Photo> photos = photoDAO.findAllByLocationId(locationId);
+        Location location = locationDAO.get(locationId).orElseThrow(LocationNotFoundException::new);
+        List<Photo> photos = photoDAO.getAllByLocation(location);
         return photos.stream().map(photo -> modelMapper.map(photo, PhotoDTO.class)).collect(Collectors.toList());
     }
 
     @Override
     public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO) throws LocationNotFoundException {
-        Location location = locationDAO.getLocationById(photoDTO.getLocationId());
-        if (location == null) {
-            throw new LocationNotFoundException();
-        }
-        Photo photo = photoDAO.addLocationPhoto(photoDTO, location);
-        return modelMapper.map(photo, PhotoDTO.class);
+        Location location = locationDAO.get(photoDTO.getLocationId()).orElseThrow(LocationNotFoundException::new);
+        Photo photo = Photo.builder()
+                .previewUrl(photoDTO.getPreviewUrl())
+                .fullUrl(photoDTO.getFullUrl())
+                .location(location)
+                .build();
+        Photo result = photoDAO.save(photo);
+        return modelMapper.map(result, PhotoDTO.class);
     }
 
     @Override
     public PhotoDTO updatePhoto(@NonNull PhotoDTO photoDTO) throws PhotoNotFoundException {
-        if (!photoDAO.isPhotoExist(photoDTO.getId())) {
-            throw new PhotoNotFoundException();
-        }
-        Photo result = photoDAO.updatePhoto(photoDTO);
+        Photo photo = photoDAO.get(photoDTO.getId()).orElseThrow(PhotoNotFoundException::new);
+        photo.setPreviewUrl(photoDTO.getPreviewUrl());
+        photo.setFullUrl(photoDTO.getFullUrl());
+        Photo result = photoDAO.save(photo);
         return modelMapper.map(result, PhotoDTO.class);
     }
 
     @Override
     public void deletePhoto(@NonNull Long id) throws PhotoNotFoundException {
-        if (!photoDAO.isPhotoExist(id)) {
-            throw new PhotoNotFoundException();
-        }
-        photoDAO.deletePhoto(id);
+        Photo photo = photoDAO.get(id).orElseThrow(PhotoNotFoundException::new);
+        photoDAO.delete(photo);
     }
 }

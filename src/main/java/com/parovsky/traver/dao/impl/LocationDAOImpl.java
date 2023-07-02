@@ -1,105 +1,86 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.LocationDAO;
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
+import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
+import com.parovsky.traver.entity.User;
 import com.parovsky.traver.repository.FavouriteLocationRepository;
 import com.parovsky.traver.repository.LocationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class LocationDAOImpl implements LocationDAO {
 
 	private final LocationRepository locationRepository;
 
 	private final FavouriteLocationRepository favouriteLocationRepository;
 
-	@Autowired
-	public LocationDAOImpl(LocationRepository locationRepository, FavouriteLocationRepository favouriteLocationRepository) {
-		this.locationRepository = locationRepository;
-		this.favouriteLocationRepository = favouriteLocationRepository;
-	}
-
 	@Override
-	public List<Location> getAllLocations() {
+	public List<Location> getAll() {
 		return locationRepository.findAll();
 	}
 
-	public List<Location> getLocationsByCategoryId(Long categoryId) {
+	public List<Location> getAllByCategoryId(Long categoryId) {
 		return locationRepository.findAllByCategoryId(categoryId);
 	}
 
 	@Override
-	public @Nullable Location getLocationById(@NonNull Long id) {
-		return locationRepository.findById(id).orElse(null);
+	public Optional<Location> get(@NonNull Long id) {
+		return locationRepository.findById(id);
 	}
 
 	@Override
-	public boolean isLocationExist(Long id) {
-		return locationRepository.existsById(id);
-	}
-
-	@Override
-	public boolean isFavouriteLocationExist(String email, Long locationId) {
+	public boolean isFavouriteExist(String email, Long locationId) {
 		return favouriteLocationRepository.existsByUserEmailAndLocationId(email, locationId);
 	}
 
 	@Override
-	public Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) {
-		Location location = new Location();
-		fillProperties(locationDTO, category, location);
+	public Location save(@NonNull Location location) {
 		return locationRepository.saveAndFlush(location);
 	}
 
 	@Override
-	public Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category) {
-		Location location = locationRepository.getById(locationDTO.getId());
-		fillProperties(locationDTO, category, location);
-		return locationRepository.saveAndFlush(location);
+	public void delete(@NonNull Location location) {
+		locationRepository.deleteById(location.getId());
 	}
 
 	@Override
-	public void deleteLocation(Long id) {
-		locationRepository.deleteById(id);
+	public List<Location> getFavouritesByUser(User user) {
+		return favouriteLocationRepository
+				.findAllByUser(user)
+				.stream()
+				.map(FavouriteLocation::getLocation)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Location> getFavouriteLocationsByUserEmail(String email) {
-		return favouriteLocationRepository.findAllLocationsByUserEmail(email);
+	public List<Location> getFavouritesByUserAndCategory(User user, Category category) {
+		return favouriteLocationRepository
+				.findAllByUserAndLocationCategory(user, category)
+				.stream()
+				.map(FavouriteLocation::getLocation)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Location> getFavouriteLocationsByUserEmailAndCategoryId(String email, Long categoryId) {
-		return favouriteLocationRepository.findAllLocationsByUserEmailAndCategoryId(email, categoryId);
-	}
-
-	@Override
-	public void addFavouriteLocation(String email, Long locationId) {
+	public void addFavourite(String email, Long locationId) {
 		favouriteLocationRepository.save(email, locationId);
 		favouriteLocationRepository.flush();
 	}
 
 	@Override
-	public void deleteFavouriteLocation(String email, Long locationId) {
+	public void deleteFavourite(String email, Long locationId) {
 		favouriteLocationRepository.delete(email, locationId);
 		favouriteLocationRepository.flush();
-	}
-
-	private void fillProperties(@NonNull LocationDTO locationDTO, @NonNull Category category, Location location) {
-		location.setName(locationDTO.getName());
-		location.setSubtitle(locationDTO.getSubtitle());
-		location.setDescription(locationDTO.getDescription());
-		location.setCoordinates(locationDTO.getCoordinates());
-		location.setPicture(locationDTO.getPicture());
-		location.setCategory(category);
 	}
 }

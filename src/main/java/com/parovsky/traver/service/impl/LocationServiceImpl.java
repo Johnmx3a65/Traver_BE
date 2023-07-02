@@ -2,10 +2,12 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
+import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
+import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.impl.*;
 import com.parovsky.traver.service.LocationService;
 import com.parovsky.traver.service.UserService;
@@ -30,16 +32,18 @@ public class LocationServiceImpl implements LocationService {
 
 	private final UserService userService;
 
+	private final UserDao userDao;
+
 	@Override
 	public List<LocationDTO> getLocations(@Nullable Long categoryId) throws CategoryNotFoundException {
 		List<Location> result;
 		if (categoryId != null) {
-			if (!categoryDAO.isCategoryExistById(categoryId)) {
+			if (!categoryDAO.isExistById(categoryId)) {
 				throw new CategoryNotFoundException();
 			}
-			result = locationDAO.getLocationsByCategoryId(categoryId);
+			result = locationDAO.getAllByCategoryId(categoryId);
 		} else {
-			result = locationDAO.getAllLocations();
+			result = locationDAO.getAll();
 		}
 		return result
 				.stream()
@@ -48,19 +52,11 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public boolean isLocationExist(Long id) {
-		return locationDAO.isLocationExist(id);
-	}
-
-	@Override
 	public LocationDTO getLocationById(@NonNull Long id) throws LocationNotFoundException, UserNotFoundException {
-		Location location = locationDAO.getLocationById(id);
-		if (location == null) {
-			throw new LocationNotFoundException();
-		}
+		Location location = locationDAO.get(id).orElseThrow(LocationNotFoundException::new);
 		LocationDTO locationDTO = modelMapper.map(location, LocationDTO.class);
 		UserView user = userService.getCurrentUser();
-		if (locationDAO.isFavouriteLocationExist(user.getEmail(), location.getId())) {
+		if (locationDAO.isFavouriteExist(user.getEmail(), location.getId())) {
 			locationDTO.setIsFavorite(true);
 		}
 		return locationDTO;
@@ -69,14 +65,13 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public List<LocationDTO> getFavoriteLocations(@Nullable Long categoryId) throws CategoryNotFoundException, UserNotFoundException {
 		List<Location> result;
-		UserView user = userService.getCurrentUser();
+		UserView currentUser = userService.getCurrentUser();
+		User user = userDao.getByEmail(currentUser.getEmail()).orElseThrow(UserNotFoundException::new);
 		if (categoryId == null) {
-			result = locationDAO.getFavouriteLocationsByUserEmail(user.getEmail());
+			result = locationDAO.getFavouritesByUser(user);
 		} else {
-			if (!categoryDAO.isCategoryExistById(categoryId)) {
-				throw new CategoryNotFoundException();
-			}
-			result = locationDAO.getFavouriteLocationsByUserEmailAndCategoryId(user.getEmail(), categoryId);
+			Category category = categoryDAO.get(categoryId).orElseThrow(CategoryNotFoundException::new);
+			result = locationDAO.getFavouritesByUserAndCategory(user, category);
 		}
 		return result
 				.stream()
@@ -86,50 +81,56 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws CategoryNotFoundException {
-		Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-		if (category == null) {
-			throw new CategoryNotFoundException();
-		}
-		Location result = locationDAO.saveLocation(locationDTO, category);
+		Category category = categoryDAO.get(locationDTO.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
+		Location location = Location.builder()
+				.name(locationDTO.getName())
+				.subtitle(locationDTO.getSubtitle())
+				.description(locationDTO.getDescription())
+				.picture(locationDTO.getPicture())
+				.coordinates(locationDTO.getCoordinates())
+				.category(category)
+				.build();
+		Location result = locationDAO.save(location);
 		return modelMapper.map(result, LocationDTO.class);
 	}
 
 	@Override
 	public void addFavoriteLocation(@NonNull Long locationId) throws FavouriteLocationIsAlreadyExistException, UserNotFoundException {
 		UserView user = userService.getCurrentUser();
-		if (locationDAO.isFavouriteLocationExist(user.getEmail(), locationId)) {
+		if (locationDAO.isFavouriteExist(user.getEmail(), locationId)) {
 			throw new FavouriteLocationIsAlreadyExistException();
 		}
-		locationDAO.addFavouriteLocation(user.getEmail(), locationId);
+		locationDAO.addFavourite(user.getEmail(), locationId);
 	}
 
 	@Override
 	public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws LocationNotFoundException, CategoryNotFoundException {
-		if (!locationDAO.isLocationExist(locationDTO.getId())) {
-			throw new LocationNotFoundException();
-		}
-		Category category = categoryDAO.getCategoryById(locationDTO.getCategoryId());
-		if (category == null) {
-			throw new CategoryNotFoundException();
-		}
-		Location result = locationDAO.updateLocation(locationDTO, category);
+		Category category = categoryDAO.get(locationDTO.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
+		Location location = locationDAO.get(locationDTO.getId()).orElseThrow(LocationNotFoundException::new);
+
+		location.setName(locationDTO.getName());
+		location.setSubtitle(locationDTO.getSubtitle());
+		location.setDescription(locationDTO.getDescription());
+		location.setPicture(locationDTO.getPicture());
+		location.setCoordinates(locationDTO.getCoordinates());
+		location.setCategory(category);
+
+		Location result = locationDAO.save(location);
 		return modelMapper.map(result, LocationDTO.class);
 	}
 
 	@Override
 	public void deleteLocation(@NonNull Long id) throws LocationNotFoundException {
-		if (!isLocationExist(id)) {
-			throw new LocationNotFoundException();
-		}
-		locationDAO.deleteLocation(id);
+		Location location = locationDAO.get(id).orElseThrow(LocationNotFoundException::new);
+		locationDAO.delete(location);
 	}
 
 	@Override
 	public void deleteFavoriteLocation(@NonNull Long locationId) throws FavouriteLocationIsNotFoundException, UserNotFoundException {
 		UserView user = userService.getCurrentUser();
-		if (!locationDAO.isFavouriteLocationExist(user.getEmail(), locationId)) {
+		if (!locationDAO.isFavouriteExist(user.getEmail(), locationId)) {
 			throw new FavouriteLocationIsNotFoundException();
 		}
-		locationDAO.deleteFavouriteLocation(user.getEmail(), locationId);
+		locationDAO.deleteFavourite(user.getEmail(), locationId);
 	}
 }

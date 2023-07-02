@@ -1,55 +1,46 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.PhotoDAO;
-import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
 import com.parovsky.traver.repository.PhotoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@Transactional
+@AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class PhotoDAOImpl implements PhotoDAO {
 
 	private final PhotoRepository photoRepository;
 
-	@Autowired
-	public PhotoDAOImpl(PhotoRepository photoRepository) {
-		this.photoRepository = photoRepository;
+	@Override
+	public Optional<Photo> get(@NonNull Long id) {
+		return photoRepository.findById(id);
 	}
 
 	@Override
-	public List<Photo> findAllByLocationId(Long id) {
-		return photoRepository.findAllByLocationId(id);
+	public List<Photo> getAll() {
+		return photoRepository.findAll();
 	}
 
 	@Override
-	public boolean isPhotoExist(Long id) {
-		return photoRepository.existsById(id);
-	}
-
-	public Photo addLocationPhoto(PhotoDTO photoDTO, Location location) {
-		Photo photo = Photo.builder()
-				.previewUrl(photoDTO.getPreviewUrl())
-				.fullUrl(photoDTO.getFullUrl())
-				.location(location)
-				.build();
-		return photoRepository.save(photo);
+	public List<Photo> getAllByLocation(Location location) {
+		return photoRepository.findAllByLocation(location);
 	}
 
 	@Override
-	public Photo updatePhoto(@NonNull PhotoDTO photoDTO) {
-		Photo photo = photoRepository.getById(photoDTO.getId());
-		photo.setPreviewUrl(photoDTO.getPreviewUrl());
-		photo.setFullUrl(photoDTO.getFullUrl());
+	public Photo save(@NonNull Photo photo) {
 		return photoRepository.saveAndFlush(photo);
 	}
 
 	@Override
-	public void deletePhoto(@NonNull Long id) {
-		photoRepository.deleteById(id);
+	public void delete(@NonNull Photo photo) {
+		photoRepository.delete(photo);
 	}
 }

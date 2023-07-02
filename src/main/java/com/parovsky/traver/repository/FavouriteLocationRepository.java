@@ -1,7 +1,9 @@
 package com.parovsky.traver.repository;
 
+import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.FavouriteLocation;
 import com.parovsky.traver.entity.Location;
+import com.parovsky.traver.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,5 +29,9 @@ public interface FavouriteLocationRepository extends JpaRepository<FavouriteLoca
 	@Modifying
 	@Query(value = "DELETE FROM users_favourite_locations WHERE user_id IN (SELECT id FROM users WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
 	void delete(String email, Long locationId);
+
+	List<FavouriteLocation> findAllByUser(User user);
+
+	List<FavouriteLocation> findAllByUserAndLocationCategory(User user, Category category);
 }
 

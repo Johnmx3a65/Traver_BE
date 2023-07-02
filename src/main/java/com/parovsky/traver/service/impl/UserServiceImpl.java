@@ -108,13 +108,8 @@ public class UserServiceImpl implements UserService {
 		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(UserNotFoundException::new);
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
-		userDAO.update(user, new String[]{
-				user.getName(),
-				user.getEmail(),
-				user.getRole(),
-				user.getPassword(),
-				String.valueOf(code)
-		});
+		user.setVerifyCode(String.valueOf(code));
+		userDAO.save(user);
 	}
 
 	@Override
@@ -166,13 +161,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException {
 		User user = userDAO.get(userModel.getId()).orElseThrow(UserNotFoundException::new);
-		User updatedUser = userDAO.update(user, new String[]{
-				userModel.getName(),
-				userModel.getEmail(),
-				userModel.getRole(),
-				user.getPassword(),
-		});
-		return modelMapper.map(updatedUser, UserView.class);
+
+		user.setName(userModel.getName());
+		user.setEmail(userModel.getEmail());
+		user.setRole(userModel.getRole());
+
+		User result = userDAO.save(user);
+		return modelMapper.map(result, UserView.class);
 	}
 
 	@Override
@@ -181,12 +176,9 @@ public class UserServiceImpl implements UserService {
 		if (!user.getVerifyCode().equals(resetPasswordModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
-		userDAO.update(user, new String[]{
-				user.getName(),
-				user.getEmail(),
-				user.getRole(),
-				passwordEncoder.encode(resetPasswordModel.getPassword())
-		});
+
+		user.setPassword(passwordEncoder.encode(resetPasswordModel.getPassword()));
+		userDAO.save(user);
 	}
 
 	@Override

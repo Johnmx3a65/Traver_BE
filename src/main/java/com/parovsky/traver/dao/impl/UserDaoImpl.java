@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -41,16 +40,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User save(@NonNull User user) {
-		return userRepository.saveAndFlush(user);
-	}
-
-	@Override
-	public User update(@NonNull User user, String[] params) {
-		user.setName(Objects.requireNonNull(params[0], "Name cannot be null"));
-		user.setEmail(Objects.requireNonNull(params[1], "Email cannot be null"));
-		user.setRole(Objects.requireNonNull(params[2], "Role cannot be null"));
-		user.setPassword(Objects.requireNonNull(params[3], "Password cannot be null"));
-		user.setVerifyCode(params[4]);
 		return userRepository.saveAndFlush(user);
 	}
 

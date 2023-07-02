@@ -25,45 +25,43 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<Category> getAllCategories() {
-		return categoryDAO.getAllCategories();
+		return categoryDAO.getAll();
 	}
 
 	@Override
 	public List<Category> getFavoriteCategories() throws UserNotFoundException {
 		UserView user = userService.getCurrentUser();
-		return categoryDAO.getFavoriteCategories(user.getEmail());
+		return categoryDAO.getAllFavorite(user.getEmail());
 	}
 
 	@Override
 	public Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException {
-		Category category = categoryDAO.getCategoryById(id);
-		if (category == null) {
-			throw new CategoryNotFoundException();
-		}
-		return category;
+		return categoryDAO.get(id).orElseThrow(CategoryNotFoundException::new);
 	}
 
 	@Override
 	public Category saveCategory(@NonNull CategoryModel categoryModel) throws CategoryIsAlreadyExistException {
-		if (categoryDAO.isCategoryExistByName(categoryModel.getName())) {
+		if (categoryDAO.isExistByName(categoryModel.getName())) {
 			throw new CategoryIsAlreadyExistException();
 		}
-		return categoryDAO.saveCategory(categoryModel);
+		Category category = Category.builder()
+				.name(categoryModel.getName())
+				.picture(categoryModel.getPicture())
+				.build();
+		return categoryDAO.save(category);
 	}
 
 	@Override
 	public Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException {
-		if (categoryModel.getId() == null || !categoryDAO.isCategoryExistById(categoryModel.getId())) {
-			throw new CategoryNotFoundException();
-		}
-		return categoryDAO.updateCategory(categoryModel);
+		Category category = categoryDAO.get(categoryModel.getId()).orElseThrow(CategoryNotFoundException::new);
+		category.setName(categoryModel.getName());
+		category.setPicture(categoryModel.getPicture());
+		return categoryDAO.save(category);
 	}
 
 	@Override
 	public void deleteCategory(@NonNull Long id) throws CategoryNotFoundException {
-		if (!categoryDAO.isCategoryExistById(id)) {
-			throw new CategoryNotFoundException();
-		}
-		categoryDAO.deleteCategory(id);
+		Category category = categoryDAO.get(id).orElseThrow(CategoryNotFoundException::new);
+		categoryDAO.delete(category);
 	}
 }

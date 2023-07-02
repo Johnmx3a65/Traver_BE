@@ -1,19 +1,17 @@
 package com.parovsky.traver.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
+@Data
+@Builder
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "locations")
 public class Location {
     @Id

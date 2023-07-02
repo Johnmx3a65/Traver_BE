@@ -1,36 +1,22 @@
 package com.parovsky.traver.dao;
 
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
+import com.parovsky.traver.entity.User;
 
 import java.util.List;
 
-public interface LocationDAO {
+public interface LocationDAO extends Dao<Location> {
 
-	List<Location> getAllLocations();
+	List<Location> getAllByCategoryId(Long categoryId);
 
-	@Nullable Location getLocationById(@NonNull Long id);
+	boolean isFavouriteExist(String email, Long locationId);
 
-	List<Location> getLocationsByCategoryId(Long categoryId);
+	List<Location> getFavouritesByUser(User user);
 
-	boolean isLocationExist(Long id);
+	List<Location> getFavouritesByUserAndCategory(User user, Category category);
 
-	boolean isFavouriteLocationExist(String email, Long locationId);
+	void addFavourite(String email, Long locationId);
 
-	Location saveLocation(@NonNull LocationDTO locationDTO, @NonNull Category category);
-
-	Location updateLocation(@NonNull LocationDTO locationDTO, @NonNull Category category);
-
-	void deleteLocation(Long id);
-
-	List<Location> getFavouriteLocationsByUserEmail(String email);
-
-	List<Location> getFavouriteLocationsByUserEmailAndCategoryId(String email, Long categoryId);
-
-	void addFavouriteLocation(String email, Long locationId);
-
-	void deleteFavouriteLocation(String email, Long locationId);
+	void deleteFavourite(String email, Long locationId);
 }

@@ -1,16 +1,15 @@
 package com.parovsky.traver.dao.impl;
 
 import com.parovsky.traver.dao.CategoryDAO;
-import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Transactional
@@ -25,50 +24,38 @@ public class CategoryDAOImpl implements CategoryDAO {
 
 	@Override
 	@NonNull
-	public List<Category> getAllCategories() {
+	public List<Category> getAll() {
 		return categoryRepository.findAll();
 	}
 
 	@Override
-	public List<Category> getFavoriteCategories(@NonNull String email) {
+	public List<Category> getAllFavorite(@NonNull String email) {
 		return categoryRepository.findFavouriteCategories(email);
 	}
 
 	@Override
-	@Nullable
-	public Category getCategoryById(@NonNull Long id) {
-		return categoryRepository.findById(id).orElse(null);
+	public Optional<Category> get(@NonNull Long id) {
+		return categoryRepository.findById(id);
 	}
 
 	@Override
-	public boolean isCategoryExistById(@NonNull Long id) {
+	public boolean isExistById(@NonNull Long id) {
 		return categoryRepository.existsById(id);
 	}
 
 	@Override
-	public boolean isCategoryExistByName(@NonNull String name) {
+	public boolean isExistByName(@NonNull String name) {
 		return categoryRepository.existsByName(name);
 	}
 
 	@Override
-	public Category updateCategory(@NonNull CategoryModel categoryModel) {
-		Category category = categoryRepository.getById(categoryModel.getId());
-		category.setName(categoryModel.getName());
-		category.setPicture(categoryModel.getPicture());
+	public Category save(@NonNull Category category) {
 		return categoryRepository.saveAndFlush(category);
 	}
 
 	@Override
-	public Category saveCategory(@NonNull CategoryModel categoryModel) {
-		Category category = new Category();
-		category.setName(categoryModel.getName());
-		category.setPicture(categoryModel.getPicture());
-		return categoryRepository.saveAndFlush(category);
-	}
-
-	@Override
-	public void deleteCategory(@NonNull Long id) {
-		categoryRepository.deleteById(id);
+	public void delete(@NonNull Category category) {
+		categoryRepository.delete(category);
 	}
 }
 
