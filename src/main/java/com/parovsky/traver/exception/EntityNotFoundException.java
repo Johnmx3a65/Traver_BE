@@ -1,4 +1,7 @@
 package com.parovsky.traver.exception;
 
-public interface EntityNotFoundException {
+public class EntityNotFoundException extends Exception {
+	public EntityNotFoundException(String message) {
+		super(message);
+	}
 }

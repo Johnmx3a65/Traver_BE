@@ -2,9 +2,8 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -13,13 +12,13 @@ public interface CategoryService {
 
     List<Category> getAllCategories();
 
-    List<Category> getFavoriteCategories() throws UserNotFoundException;
+    List<Category> getFavoriteCategories() throws EntityNotFoundException;
 
-    Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException;
+    Category getCategoryById(@NonNull Long id) throws EntityNotFoundException;
 
-    Category saveCategory(@NonNull CategoryModel categoryModel) throws CategoryIsAlreadyExistException;
+    Category saveCategory(@NonNull CategoryModel categoryModel) throws EntityAlreadyExistsException;
 
-    Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException;
+    Category updateCategory(@NonNull CategoryModel categoryModel) throws EntityNotFoundException;
 
-    void deleteCategory(@NonNull Long id) throws CategoryNotFoundException;
+    void deleteCategory(@NonNull Long id) throws EntityNotFoundException;
 }

@@ -2,14 +2,13 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.dao.UserDao;
-import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
-import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
-import com.parovsky.traver.role.Role;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
+import com.parovsky.traver.exception.UnprocessableEntityException;
+import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
@@ -56,20 +55,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView getUserById(@NonNull Long id) throws UserNotFoundException {
-		User user = userDAO.get(id).orElseThrow(UserNotFoundException::new);
+	public UserView getUserById(@NonNull Long id) throws EntityNotFoundException {
+		User user = userDAO.get(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public UserView getCurrentUser() throws UserNotFoundException {
+	public UserView getCurrentUser() throws EntityNotFoundException {
 		String userEmail = getCurrentUserEmail();
-		User user = userDAO.getByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+		User user = userDAO.getByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) {
+	public ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) throws UnprocessableEntityException {
+		if (userModel.getPassword() == null) {
+			throw new UnprocessableEntityException("user password cannot be null");
+		}
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						userModel.getEmail(),
@@ -104,8 +106,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendVerificationEmail(@NonNull UserModel userModel) throws UserNotFoundException {
-		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(UserNotFoundException::new);
+	public void sendVerificationEmail(@NonNull UserModel userModel) throws EntityNotFoundException {
+		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
 		user.setVerifyCode(String.valueOf(code));
@@ -113,17 +115,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void checkVerificationCode(@NonNull UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(UserNotFoundException::new);
+	public void checkVerificationCode(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException {
+		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+		if (user.getVerifyCode() == null) {
+			throw new UnprocessableEntityException("user verification code cannot be null");
+		}
 		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
 	}
 
 	@Override
-	public UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
+	public UserView saveUser(@NonNull UserModel userModel) throws EntityAlreadyExistsException, UnprocessableEntityException {
 		if (userDAO.isExistByEmail(userModel.getEmail())) {
-			throw new UserIsAlreadyExistException();
+			throw new EntityAlreadyExistsException("User already exist");
+		}
+
+		if (userModel.getPassword() == null) {
+			throw new UnprocessableEntityException("user password cannot be null");
 		}
 
 		int code = generateVerificationCode();
@@ -132,7 +141,7 @@ public class UserServiceImpl implements UserService {
 		User user = User.builder()
 				.name(userModel.getName())
 				.email(userModel.getEmail())
-				.role(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name())
+				.role(userModel.getRole().name())
 				.password(passwordEncoder.encode(userModel.getPassword()))
 				.verifyCode(String.valueOf(code))
 				.build();
@@ -141,9 +150,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView saveUserByAdmin(@NonNull UserModel userModel) throws UserIsAlreadyExistException {
+	public UserView saveUserByAdmin(@NonNull UserModel userModel) throws EntityAlreadyExistsException {
 		if (userDAO.isExistByEmail(userModel.getEmail())) {
-			throw new UserIsAlreadyExistException();
+			throw new EntityAlreadyExistsException("User already exist");
 		}
 		userModel.setPassword(generateRandomString(10));
 		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
@@ -151,7 +160,7 @@ public class UserServiceImpl implements UserService {
 		User user = User.builder()
 				.name(userModel.getName())
 				.email(userModel.getEmail())
-				.role(userModel.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name())
+				.role(userModel.getRole().name())
 				.password(passwordEncoder.encode(userModel.getPassword()))
 				.build();
 		User newUser = userDAO.save(user);
@@ -159,31 +168,39 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException {
-		User user = userDAO.get(userModel.getId()).orElseThrow(UserNotFoundException::new);
+	public UserView updateUser(@NonNull UserModel userModel) throws EntityNotFoundException, UnprocessableEntityException {
+		if (userModel.getId() == null) {
+			throw new UnprocessableEntityException("user id cannot be null");
+		}
+		User user = userDAO.get(userModel.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
 		user.setName(userModel.getName());
 		user.setEmail(userModel.getEmail());
-		user.setRole(userModel.getRole());
+		user.setRole(userModel.getRole().name());
 
 		User result = userDAO.save(user);
 		return modelMapper.map(result, UserView.class);
 	}
 
 	@Override
-	public void resetPassword(@NonNull ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getByEmail(resetPasswordModel.getEmail()).orElseThrow(UserNotFoundException::new);
-		if (!user.getVerifyCode().equals(resetPasswordModel.getVerifyCode())) {
+	public void resetPassword(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException {
+		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+		if (user.getVerifyCode() == null) {
+			throw new UnprocessableEntityException("user verification code cannot be null");
+		}
+		if (user.getPassword() == null) {
+			throw new UnprocessableEntityException("user password cannot be null");
+		}
+		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
-
-		user.setPassword(passwordEncoder.encode(resetPasswordModel.getPassword()));
+		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 		userDAO.save(user);
 	}
 
 	@Override
-	public void deleteUser(@NonNull Long id) throws UserNotFoundException {
-		User user = userDAO.get(id).orElseThrow(UserNotFoundException::new);
+	public void deleteUser(@NonNull Long id) throws EntityNotFoundException {
+		User user = userDAO.get(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		userDAO.delete(user);
 	}
 

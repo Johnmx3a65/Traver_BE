@@ -1,11 +1,10 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
-import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
+import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,7 @@ public class AuthenticationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
-	public UserView saveUser(@RequestBody UserModel userModel) throws UserIsAlreadyExistException {
+	public UserView saveUser(@RequestBody UserModel userModel) throws EntityAlreadyExistsException {
 		return userService.saveUser(userModel);
 	}
 
@@ -38,20 +37,20 @@ public class AuthenticationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
-	public void verifyEmail(@RequestBody UserModel userModel) throws UserNotFoundException {
+	public void verifyEmail(@RequestBody UserModel userModel) throws EntityNotFoundException {
 		userService.sendVerificationEmail(userModel);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
-	public void checkVerificationCode(@RequestBody UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException {
+	public void checkVerificationCode(@RequestBody UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException {
 		userService.checkVerificationCode(userModel);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping(value = "/reset-password", consumes = "application/json")
-	public void resetPassword(@RequestBody ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException {
-		userService.resetPassword(resetPasswordModel);
+	public void resetPassword(@RequestBody UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException {
+		userService.resetPassword(userModel);
 	}
 
 }

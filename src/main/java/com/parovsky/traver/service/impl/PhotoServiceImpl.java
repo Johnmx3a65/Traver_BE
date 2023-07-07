@@ -5,8 +5,7 @@ import com.parovsky.traver.dao.PhotoDAO;
 import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
-import com.parovsky.traver.exception.impl.LocationNotFoundException;
-import com.parovsky.traver.exception.impl.PhotoNotFoundException;
+import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.PhotoService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -27,15 +26,15 @@ public class PhotoServiceImpl implements PhotoService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<PhotoDTO> getPhotos(@NonNull Long locationId) throws LocationNotFoundException {
-        Location location = locationDAO.get(locationId).orElseThrow(LocationNotFoundException::new);
+    public List<PhotoDTO> getPhotos(@NonNull Long locationId) throws EntityNotFoundException {
+        Location location = locationDAO.get(locationId).orElseThrow(() -> new EntityNotFoundException("Location not found"));
         List<Photo> photos = photoDAO.getAllByLocation(location);
         return photos.stream().map(photo -> modelMapper.map(photo, PhotoDTO.class)).collect(Collectors.toList());
     }
 
     @Override
-    public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO) throws LocationNotFoundException {
-        Location location = locationDAO.get(photoDTO.getLocationId()).orElseThrow(LocationNotFoundException::new);
+    public PhotoDTO addLocationPhoto(@NonNull PhotoDTO photoDTO) throws EntityNotFoundException {
+        Location location = locationDAO.get(photoDTO.getLocationId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
         Photo photo = Photo.builder()
                 .previewUrl(photoDTO.getPreviewUrl())
                 .fullUrl(photoDTO.getFullUrl())
@@ -46,8 +45,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public PhotoDTO updatePhoto(@NonNull PhotoDTO photoDTO) throws PhotoNotFoundException {
-        Photo photo = photoDAO.get(photoDTO.getId()).orElseThrow(PhotoNotFoundException::new);
+    public PhotoDTO updatePhoto(@NonNull PhotoDTO photoDTO) throws EntityNotFoundException {
+        Photo photo = photoDAO.get(photoDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Photo not found"));
         photo.setPreviewUrl(photoDTO.getPreviewUrl());
         photo.setFullUrl(photoDTO.getFullUrl());
         Photo result = photoDAO.save(photo);
@@ -55,8 +54,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void deletePhoto(@NonNull Long id) throws PhotoNotFoundException {
-        Photo photo = photoDAO.get(id).orElseThrow(PhotoNotFoundException::new);
+    public void deletePhoto(@NonNull Long id) throws EntityNotFoundException {
+        Photo photo = photoDAO.get(id).orElseThrow(() -> new EntityNotFoundException("Photo not found"));
         photoDAO.delete(photo);
     }
 }

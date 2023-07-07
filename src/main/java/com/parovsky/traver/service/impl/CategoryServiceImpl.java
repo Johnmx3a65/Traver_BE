@@ -4,9 +4,8 @@ import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dto.model.CategoryModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.exception.impl.CategoryIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.CategoryNotFoundException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.CategoryService;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
@@ -29,20 +28,20 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public List<Category> getFavoriteCategories() throws UserNotFoundException {
+	public List<Category> getFavoriteCategories() throws EntityNotFoundException {
 		UserView user = userService.getCurrentUser();
 		return categoryDAO.getAllFavorite(user.getEmail());
 	}
 
 	@Override
-	public Category getCategoryById(@NonNull Long id) throws CategoryNotFoundException {
-		return categoryDAO.get(id).orElseThrow(CategoryNotFoundException::new);
+	public Category getCategoryById(@NonNull Long id) throws EntityNotFoundException {
+		return categoryDAO.get(id).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 	}
 
 	@Override
-	public Category saveCategory(@NonNull CategoryModel categoryModel) throws CategoryIsAlreadyExistException {
+	public Category saveCategory(@NonNull CategoryModel categoryModel) throws EntityAlreadyExistsException {
 		if (categoryDAO.isExistByName(categoryModel.getName())) {
-			throw new CategoryIsAlreadyExistException();
+			throw new EntityAlreadyExistsException("Category already exist");
 		}
 		Category category = Category.builder()
 				.name(categoryModel.getName())
@@ -52,16 +51,16 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Category updateCategory(@NonNull CategoryModel categoryModel) throws CategoryNotFoundException {
-		Category category = categoryDAO.get(categoryModel.getId()).orElseThrow(CategoryNotFoundException::new);
+	public Category updateCategory(@NonNull CategoryModel categoryModel) throws EntityNotFoundException {
+		Category category = categoryDAO.get(categoryModel.getId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 		category.setName(categoryModel.getName());
 		category.setPicture(categoryModel.getPicture());
 		return categoryDAO.save(category);
 	}
 
 	@Override
-	public void deleteCategory(@NonNull Long id) throws CategoryNotFoundException {
-		Category category = categoryDAO.get(id).orElseThrow(CategoryNotFoundException::new);
+	public void deleteCategory(@NonNull Long id) throws EntityNotFoundException {
+		Category category = categoryDAO.get(id).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 		categoryDAO.delete(category);
 	}
 }

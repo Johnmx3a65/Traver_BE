@@ -13,9 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Optional;
+
 import static com.parovsky.traver.service.PhotoServiceTest.PhotoServiceTestContextConfiguration.locationDAO;
 import static com.parovsky.traver.service.PhotoServiceTest.PhotoServiceTestContextConfiguration.photoDAO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -60,28 +63,31 @@ class PhotoServiceTest {
 				.builder()
 				.id(1L)
 				.previewUrl("photo-url")
+				.fullUrl("full-photo-url")
 				.location(location)
 				.build();
-		PhotoDTO photoDTO = PhotoDTO
+		PhotoDTO model = PhotoDTO
 				.builder()
-				.id(1L)
 				.previewUrl("photo-url")
+				.fullUrl("full-photo-url")
 				.locationId(1L)
 				.build();
 		PhotoDTO expected = PhotoDTO
 				.builder()
 				.id(1L)
 				.previewUrl("photo-url")
+				.fullUrl("full-photo-url")
 				.locationId(1L)
 				.build();
 
-		doReturn(location).when(locationDAO).getLocationById(1L);
-		doReturn(photo).when(photoDAO).addLocationPhoto(photoDTO, location);
+		doReturn(Optional.of(location)).when(locationDAO).get(1L);
+		doReturn(photo).when(photoDAO).save(any(Photo.class));
 
-		PhotoDTO actual = subject.addLocationPhoto(photoDTO);
+		PhotoDTO actual = subject.addLocationPhoto(model);
 
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getPreviewUrl(), actual.getPreviewUrl());
+		assertEquals(expected.getFullUrl(), actual.getFullUrl());
 		assertEquals(expected.getLocationId(), actual.getLocationId());
 	}
 }

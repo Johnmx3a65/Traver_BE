@@ -1,4 +1,4 @@
-package com.parovsky.traver.exception.impl;
+package com.parovsky.traver.exception;
 
 public class VerificationCodeNotMatchException extends Exception {
     @Override

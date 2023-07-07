@@ -2,8 +2,8 @@ package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,32 +25,32 @@ public class UserController {
 
 	@ResponseBody
 	@GetMapping("/user/{id}")
-	public UserView getUserById(@PathVariable Long id) throws UserNotFoundException {
+	public UserView getUserById(@PathVariable Long id) throws EntityNotFoundException {
 		return userService.getUserById(id);
 	}
 
 	@ResponseBody
 	@GetMapping("/current-user")
-	public UserView getCurrentUser() throws UserNotFoundException {
+	public UserView getCurrentUser() throws EntityNotFoundException {
 		return userService.getCurrentUser();
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
-	public UserView saveUser(@RequestBody UserModel userModel) throws UserIsAlreadyExistException {
+	public UserView saveUser(@RequestBody UserModel userModel) throws EntityAlreadyExistsException {
 		return userService.saveUserByAdmin(userModel);
 	}
 
 	@ResponseBody
 	@PutMapping(value = "/user", consumes = "application/json")
-	public UserView updateUser(@RequestBody UserModel userModel) throws UserNotFoundException {
+	public UserView updateUser(@RequestBody UserModel userModel) throws EntityNotFoundException {
 		return userService.updateUser(userModel);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(value = "/user/{id}")
-	public void deleteUser(@PathVariable Long id) throws UserNotFoundException {
+	public void deleteUser(@PathVariable Long id) throws EntityNotFoundException {
 		userService.deleteUser(id);
 	}
 }

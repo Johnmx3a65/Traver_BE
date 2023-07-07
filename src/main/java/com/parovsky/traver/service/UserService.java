@@ -1,11 +1,11 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.model.ResetPasswordModel;
 import com.parovsky.traver.dto.model.UserModel;
 import com.parovsky.traver.dto.view.UserView;
-import com.parovsky.traver.exception.impl.UserIsAlreadyExistException;
-import com.parovsky.traver.exception.impl.UserNotFoundException;
-import com.parovsky.traver.exception.impl.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.EntityAlreadyExistsException;
+import com.parovsky.traver.exception.EntityNotFoundException;
+import com.parovsky.traver.exception.UnprocessableEntityException;
+import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
@@ -15,25 +15,25 @@ public interface UserService {
 
 	List<UserView> getAllUsers();
 
-	UserView getUserById(@NonNull Long id) throws UserNotFoundException;
+	UserView getUserById(@NonNull Long id) throws EntityNotFoundException;
 
-	UserView getCurrentUser() throws UserNotFoundException;
+	UserView getCurrentUser() throws EntityNotFoundException;
 
-	ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel);
+	ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) throws UnprocessableEntityException;
 
 	ResponseEntity<Void> logoutUser();
 
-	void sendVerificationEmail(@NonNull UserModel userModel) throws UserNotFoundException;
+	void sendVerificationEmail(@NonNull UserModel userModel) throws EntityNotFoundException;
 
-	void checkVerificationCode(@NonNull UserModel userModel) throws UserNotFoundException, VerificationCodeNotMatchException;
+	void checkVerificationCode(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
 
-	UserView saveUser(@NonNull UserModel userModel) throws UserIsAlreadyExistException;
+	UserView saveUser(@NonNull UserModel userModel) throws EntityAlreadyExistsException, UnprocessableEntityException;
 
-	UserView saveUserByAdmin(@NonNull UserModel userModel) throws UserIsAlreadyExistException;
+	UserView saveUserByAdmin(@NonNull UserModel userModel) throws EntityAlreadyExistsException;
 
-	UserView updateUser(@NonNull UserModel userModel) throws UserNotFoundException;
+	UserView updateUser(@NonNull UserModel userModel) throws EntityNotFoundException, UnprocessableEntityException;
 
-	void deleteUser(@NonNull Long id) throws UserNotFoundException;
+	void deleteUser(@NonNull Long id) throws EntityNotFoundException;
 
-	void resetPassword(@NonNull ResetPasswordModel resetPasswordModel) throws UserNotFoundException, VerificationCodeNotMatchException;
+	void resetPassword(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
 }
