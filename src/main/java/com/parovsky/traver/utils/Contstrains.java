@@ -18,8 +18,12 @@ public class Contstrains {
 	public static final String DESCRIPTION_MIN_LENGTH = "Description should be at least 2 characters";
 	public static final String EMPTY_DESCRIPTION = "Description cannot be empty";
 
+	public static final String EMPTY_COORDINATES = "Coordinates cannot be empty";
 	public static final String COORDINATES_PATTERN = "Coordinates should be two float numbers divided by semicolon";
+
+	public static final String EMPTY_PICTURE = "Picture cannot be empty";
 	public static final String URL_PATTERN = "Picture should be url";
+
 	public static final String VERIFICATION_CODE_PATTERN = "Verification code should be 4 digits";
 	public static final String ROLE_PATTERN = "Role should be USER or ADMIN";
 

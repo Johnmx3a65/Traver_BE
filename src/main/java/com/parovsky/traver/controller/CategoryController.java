@@ -1,6 +1,7 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.CategoryModel;
+import com.parovsky.traver.dto.model.SaveCategoryModel;
+import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,14 +40,14 @@ public class CategoryController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", consumes = "application/json")
-    public Category saveCategory(@RequestBody CategoryModel categoryModel) throws EntityAlreadyExistsException {
-        return categoryService.saveCategory(categoryModel);
+    public Category saveCategory(@Valid @RequestBody SaveCategoryModel model) throws EntityAlreadyExistsException {
+        return categoryService.saveCategory(model);
     }
 
     @ResponseBody
     @PutMapping(value = "/category", consumes = "application/json")
-    public Category updateCategory(@RequestBody CategoryModel categoryModel) throws EntityNotFoundException {
-        return categoryService.updateCategory(categoryModel);
+    public Category updateCategory(@Valid @RequestBody UpdateCategoryModel model) throws EntityNotFoundException {
+        return categoryService.updateCategory(model);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -33,11 +33,13 @@ public class UpdateLocationModel {
 	@NonNull
 	//pattern two float numbers divided by semicolon
 	@Pattern(regexp = "^(\\d+\\.\\d+);(\\d+\\.\\d+)$", message = COORDINATES_PATTERN)
+	@NotBlank(message = EMPTY_COORDINATES)
 	private String coordinates;
 
 	@NonNull
 	//pattern url
 	@Pattern(regexp = "^(http|https)://.*$", message = URL_PATTERN)
+	@NotBlank(message = EMPTY_PICTURE)
 	private String picture;
 
 	@NonNull
