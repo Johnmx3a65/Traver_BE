@@ -7,7 +7,6 @@ import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.UnprocessableEntityException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
@@ -142,33 +141,30 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView saveUserByAdmin(@NonNull UserModel userModel) throws EntityAlreadyExistsException {
-		if (userDAO.isExistByEmail(userModel.getEmail())) {
+	public UserView saveUserByAdmin(@NonNull @Valid SaveUserModel model) throws EntityAlreadyExistsException {
+		if (userDAO.isExistByEmail(model.getEmail())) {
 			throw new EntityAlreadyExistsException("User already exist");
 		}
-		userModel.setPassword(generateRandomString(10));
-		emailService.sendEmail(userModel.getEmail(), "TRAVER PASSWORD UPDATE", "Your new password is " + userModel.getPassword());
+		String password = generateRandomString(10);
+		emailService.sendEmail(model.getEmail(), "TRAVER CREDENTIALS", "Your password is " + password);
 
 		User user = User.builder()
-				.name(userModel.getName())
-				.email(userModel.getEmail())
-				.role(userModel.getRole().name())
-				.password(passwordEncoder.encode(userModel.getPassword()))
+				.name(model.getName())
+				.email(model.getEmail())
+				.role(model.getRole().name())
+				.password(passwordEncoder.encode(password))
 				.build();
 		User newUser = userDAO.save(user);
 		return modelMapper.map(newUser, UserView.class);
 	}
 
 	@Override
-	public UserView updateUser(@NonNull UserModel userModel) throws EntityNotFoundException, UnprocessableEntityException {
-		if (userModel.getId() == null) {
-			throw new UnprocessableEntityException("user id cannot be null");
-		}
-		User user = userDAO.get(userModel.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public UserView updateUser(@NonNull @Valid UpdateUserModel model) throws EntityNotFoundException {
+		User user = userDAO.get(model.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-		user.setName(userModel.getName());
-		user.setEmail(userModel.getEmail());
-		user.setRole(userModel.getRole().name());
+		user.setName(model.getName());
+		user.setEmail(model.getEmail());
+		user.setRole(model.getRole().name());
 
 		User result = userDAO.save(user);
 		return modelMapper.map(result, UserView.class);

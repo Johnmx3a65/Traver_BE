@@ -1,6 +1,7 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.UserModel;
+import com.parovsky.traver.dto.model.SaveUserModel;
+import com.parovsky.traver.dto.model.UpdateUserModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,14 +40,14 @@ public class UserController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
-	public UserView saveUser(@RequestBody UserModel userModel) throws EntityAlreadyExistsException {
-		return userService.saveUserByAdmin(userModel);
+	public UserView saveUser(@Valid @RequestBody SaveUserModel model) throws EntityAlreadyExistsException {
+		return userService.saveUserByAdmin(model);
 	}
 
 	@ResponseBody
 	@PutMapping(value = "/user", consumes = "application/json")
-	public UserView updateUser(@RequestBody UserModel userModel) throws EntityNotFoundException {
-		return userService.updateUser(userModel);
+	public UserView updateUser(@Valid @RequestBody UpdateUserModel model) throws EntityNotFoundException {
+		return userService.updateUser(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)

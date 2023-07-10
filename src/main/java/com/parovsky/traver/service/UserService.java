@@ -4,7 +4,6 @@ import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.UnprocessableEntityException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -26,13 +25,13 @@ public interface UserService {
 
 	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) throws EntityNotFoundException;
 
-	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
+	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException;
 
 	UserView saveUser(@Valid @NonNull SignUpModel model) throws EntityAlreadyExistsException;
 
-	UserView saveUserByAdmin(@NonNull UserModel userModel) throws EntityAlreadyExistsException;
+	UserView saveUserByAdmin(@Valid @NonNull SaveUserModel model) throws EntityAlreadyExistsException;
 
-	UserView updateUser(@NonNull UserModel userModel) throws EntityNotFoundException, UnprocessableEntityException;
+	UserView updateUser(@Valid @NonNull UpdateUserModel model) throws EntityNotFoundException;
 
 	void deleteUser(@NonNull Long id) throws EntityNotFoundException;
 
