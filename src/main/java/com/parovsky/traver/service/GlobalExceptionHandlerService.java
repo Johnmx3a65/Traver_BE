@@ -7,6 +7,9 @@ import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.Map;
 
 public interface GlobalExceptionHandlerService {
 
@@ -21,6 +24,8 @@ public interface GlobalExceptionHandlerService {
 	ResponseEntity<String> handleException(UnprocessableEntityException e);
 
 	ResponseEntity<String> handleException(HttpMessageNotReadableException e);
+
+	Map<String, String> handleException(MethodArgumentNotValidException e);
 
 	ResponseEntity<String> handleException(Throwable e);
 }

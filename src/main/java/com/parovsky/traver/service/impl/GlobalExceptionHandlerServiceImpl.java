@@ -11,6 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -18,38 +23,49 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 
 	@Override
 	public ResponseEntity<String> handleException(EntityNotFoundException e) {
-		log.error("Entity not found", e);
+		log.error("Entity not found");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 	@Override
 	public ResponseEntity<String> handleException(EntityAlreadyExistsException e) {
-		log.error("Entity already exists", e);
+		log.error("Entity already exists");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
 	}
 
 	@Override
 	public ResponseEntity<String> handleException(AuthenticationException e) {
-		log.error("User is unauthorised", e);
+		log.error("User is unauthorised");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
 
 	@Override
 	public ResponseEntity<String> handleException(VerificationCodeNotMatchException e) {
-		log.error("Verification code doesn't match", e);
+		log.error("Verification code doesn't match");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
 
 	@Override
 	public ResponseEntity<String> handleException(UnprocessableEntityException e) {
-		log.error("Unprocessable entity.", e);
+		log.error("Unprocessable entity.");
 		return new ResponseEntity<>(e.getReason(), e.getStatus());
 	}
 
 	@Override
 	public ResponseEntity<String> handleException(HttpMessageNotReadableException e) {
-		log.error("Parsing error", e);
+		log.error("Parsing error");
 		return new ResponseEntity<>("Error parsing request body.", HttpStatus.BAD_REQUEST);
+	}
+
+	@Override
+	public Map<String, String> handleException(MethodArgumentNotValidException e) {
+		Map<String, String> errors = new HashMap<>();
+		e.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
+		return errors;
 	}
 
 	@Override

@@ -2,13 +2,14 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.dao.UserDao;
-import com.parovsky.traver.dto.model.UserModel;
+import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.UnprocessableEntityException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
+import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,14 +70,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) throws UnprocessableEntityException {
-		if (userModel.getPassword() == null) {
-			throw new UnprocessableEntityException("user password cannot be null");
-		}
+	public ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						userModel.getEmail(),
-						userModel.getPassword()
+						model.getEmail(),
+						model.getPassword()
 				)
 		);
 
@@ -106,8 +105,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendVerificationEmail(@NonNull UserModel userModel) throws EntityNotFoundException {
-		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) throws EntityNotFoundException {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
 		user.setVerifyCode(String.valueOf(code));
@@ -115,34 +114,27 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void checkVerificationCode(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException {
-		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
-		if (user.getVerifyCode() == null) {
-			throw new UnprocessableEntityException("user verification code cannot be null");
-		}
-		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
+	public void checkVerificationCode(@NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
 	}
 
 	@Override
-	public UserView saveUser(@NonNull UserModel userModel) throws EntityAlreadyExistsException, UnprocessableEntityException {
-		if (userDAO.isExistByEmail(userModel.getEmail())) {
+	public UserView saveUser(@Valid @NonNull SignUpModel model) throws EntityAlreadyExistsException {
+		if (userDAO.isExistByEmail(model.getEmail())) {
 			throw new EntityAlreadyExistsException("User already exist");
 		}
 
-		if (userModel.getPassword() == null) {
-			throw new UnprocessableEntityException("user password cannot be null");
-		}
-
 		int code = generateVerificationCode();
-		emailService.sendEmail(userModel.getEmail(), "TRAVER VERIFICATION CODE", "Your verification code is: " + code);
+		emailService.sendEmail(model.getEmail(), "TRAVER VERIFICATION CODE", "Your verification code is: " + code);
 
 		User user = User.builder()
-				.name(userModel.getName())
-				.email(userModel.getEmail())
-				.role(userModel.getRole().name())
-				.password(passwordEncoder.encode(userModel.getPassword()))
+				.name(model.getName())
+				.email(model.getEmail())
+				.role(Role.USER.name())
+				.password(passwordEncoder.encode(model.getPassword()))
 				.verifyCode(String.valueOf(code))
 				.build();
 		User newUser = userDAO.save(user);
@@ -183,18 +175,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void resetPassword(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException {
-		User user = userDAO.getByEmail(userModel.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
-		if (user.getVerifyCode() == null) {
-			throw new UnprocessableEntityException("user verification code cannot be null");
-		}
-		if (user.getPassword() == null) {
-			throw new UnprocessableEntityException("user password cannot be null");
-		}
-		if (!user.getVerifyCode().equals(userModel.getVerifyCode())) {
+	public void resetPassword(@Valid @NonNull ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new VerificationCodeNotMatchException();
 		}
-		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+		user.setPassword(passwordEncoder.encode(model.getPassword()));
 		userDAO.save(user);
 	}
 

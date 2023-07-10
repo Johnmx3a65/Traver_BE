@@ -1,6 +1,6 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.UserModel;
+import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
@@ -19,15 +21,15 @@ public class AuthenticationController {
 	private final UserService userService;
 
 	@PostMapping("/sign-in")
-	public ResponseEntity<UserView> authenticateUser(@RequestBody UserModel loginRequest) {
-		return userService.authenticateUser(loginRequest);
+	public ResponseEntity<UserView> authenticateUser(@Valid @RequestBody SignInModel model) {
+		return userService.authenticateUser(model);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
-	public UserView saveUser(@RequestBody UserModel userModel) throws EntityAlreadyExistsException {
-		return userService.saveUser(userModel);
+	public UserView saveUser(@Valid @RequestBody SignUpModel model) throws EntityAlreadyExistsException {
+		return userService.saveUser(model);
 	}
 
 	@PostMapping("/sign-out")
@@ -37,20 +39,20 @@ public class AuthenticationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
-	public void verifyEmail(@RequestBody UserModel userModel) throws EntityNotFoundException {
-		userService.sendVerificationEmail(userModel);
+	public void verifyEmail(@Valid @RequestBody SendVerificationCodeModel model) throws EntityNotFoundException {
+		userService.sendVerificationEmail(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
-	public void checkVerificationCode(@RequestBody UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException {
-		userService.checkVerificationCode(userModel);
+	public void checkVerificationCode(@Valid @RequestBody CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+		userService.checkVerificationCode(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping(value = "/reset-password", consumes = "application/json")
-	public void resetPassword(@RequestBody UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException {
-		userService.resetPassword(userModel);
+	public void resetPassword(@Valid @RequestBody ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+		userService.resetPassword(model);
 	}
 
 }

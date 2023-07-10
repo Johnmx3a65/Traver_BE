@@ -1,6 +1,6 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.model.UserModel;
+import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
@@ -9,6 +9,7 @@ import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public interface UserService {
@@ -19,15 +20,15 @@ public interface UserService {
 
 	UserView getCurrentUser() throws EntityNotFoundException;
 
-	ResponseEntity<UserView> authenticateUser(@NonNull UserModel userModel) throws UnprocessableEntityException;
+	ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model);
 
 	ResponseEntity<Void> logoutUser();
 
-	void sendVerificationEmail(@NonNull UserModel userModel) throws EntityNotFoundException;
+	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) throws EntityNotFoundException;
 
-	void checkVerificationCode(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
+	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
 
-	UserView saveUser(@NonNull UserModel userModel) throws EntityAlreadyExistsException, UnprocessableEntityException;
+	UserView saveUser(@Valid @NonNull SignUpModel model) throws EntityAlreadyExistsException;
 
 	UserView saveUserByAdmin(@NonNull UserModel userModel) throws EntityAlreadyExistsException;
 
@@ -35,5 +36,5 @@ public interface UserService {
 
 	void deleteUser(@NonNull Long id) throws EntityNotFoundException;
 
-	void resetPassword(@NonNull UserModel userModel) throws EntityNotFoundException, VerificationCodeNotMatchException, UnprocessableEntityException;
+	void resetPassword(@Valid @NonNull ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException;
 }
