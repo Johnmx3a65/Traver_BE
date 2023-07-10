@@ -1,6 +1,8 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.LocationDTO;
+import com.parovsky.traver.dto.model.SaveLocationModel;
+import com.parovsky.traver.dto.model.UpdateLocationModel;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.LocationService;
@@ -8,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,8 +40,8 @@ public class LocationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
-    public LocationDTO saveLocation(@RequestBody LocationDTO locationDTO) throws EntityNotFoundException {
-        return locationService.saveLocation(locationDTO);
+    public LocationDTO saveLocation(@Valid @RequestBody SaveLocationModel model) throws EntityNotFoundException {
+        return locationService.saveLocation(model);
     }
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -49,8 +52,8 @@ public class LocationController {
 
 	@ResponseBody
 	@PutMapping(value = "/location", consumes = "application/json")
-	public LocationDTO updateLocation(@RequestBody LocationDTO locationDTO) throws EntityNotFoundException {
-		return locationService.updateLocation(locationDTO);
+	public LocationDTO updateLocation(@Valid @RequestBody UpdateLocationModel model) throws EntityNotFoundException {
+		return locationService.updateLocation(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)

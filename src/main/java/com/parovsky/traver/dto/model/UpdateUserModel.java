@@ -6,25 +6,26 @@ import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.*;
 
+import static com.parovsky.traver.utils.Contstrains.*;
+
 @Data
 public class UpdateUserModel {
 	@NonNull
-	@NotNull(message = "Id cannot be null")
+	@NotNull(message = EMPTY_USER_ID)
 	private Long id;
 
 	@NonNull
-	@Min(value = 2, message = "Name should be at least 2 characters")
-	@Max(value = 255, message = "Name should be less than 255 characters")
-	@NotBlank(message = "Name cannot be empty")
+	@Max(value = 255, message = NAME_MAX_LENGTH)
+	@NotBlank(message = EMPTY_NAME)
 	private String name;
 
 	@NonNull
-	@Max(value = 255, message = "Email should be less than 255 characters")
-	@Email(message = "Email should be valid")
-	@NotBlank(message ="Email cannot be empty")
+	@Max(value = 255, message = EMAIL_MAX_LENGTH)
+	@Email(message = EMAIL_PATTERN)
+	@NotBlank(message = EMPTY_EMAIL)
 	private String email;
 
 	@NonNull
-	@Pattern(regexp = "^(USER|ADMIN)$", message = "Role must be USER or ADMIN")
+	@Pattern(regexp = "^(USER|ADMIN)$", message = ROLE_PATTERN)
 	private Role role;
 }

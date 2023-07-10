@@ -8,16 +8,18 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import static com.parovsky.traver.utils.Contstrains.*;
+
 @Data
 public class SignInModel {
 	@NonNull
-	@Max(value = 255, message = "Email should be less than 255 characters")
-	@Email(message = "Email should be valid")
-	@NotBlank(message ="Email cannot be empty")
+	@Max(value = 255, message = EMAIL_MAX_LENGTH)
+	@Email(message = EMAIL_PATTERN)
+	@NotBlank(message = EMPTY_EMAIL)
 	private String email;
 
 	@NonNull
-	@Pattern(regexp = "^[a-zA-Z0-9_]{6,255}$", message = "Password should be 6-255 characters, only letters, numbers and underscore")
-	@NotBlank(message = "Password cannot be empty")
+	@Pattern(regexp = "^[a-zA-Z0-9_]{6,255}$", message = PASSWORD_PATTERN)
+	@NotBlank(message = EMPTY_PASSWORD)
 	private String password;
 }

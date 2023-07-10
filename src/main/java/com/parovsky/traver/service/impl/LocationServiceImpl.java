@@ -4,6 +4,8 @@ import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.LocationDTO;
+import com.parovsky.traver.dto.model.SaveLocationModel;
+import com.parovsky.traver.dto.model.UpdateLocationModel;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
@@ -18,6 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,14 +84,14 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationDTO saveLocation(@NonNull LocationDTO locationDTO) throws EntityNotFoundException {
-		Category category = categoryDAO.get(locationDTO.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
+	public LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException {
+		Category category = categoryDAO.get(model.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 		Location location = Location.builder()
-				.name(locationDTO.getName())
-				.subtitle(locationDTO.getSubtitle())
-				.description(locationDTO.getDescription())
-				.picture(locationDTO.getPicture())
-				.coordinates(locationDTO.getCoordinates())
+				.name(model.getName())
+				.subtitle(model.getSubtitle())
+				.description(model.getDescription())
+				.picture(model.getPicture())
+				.coordinates(model.getCoordinates())
 				.category(category)
 				.build();
 		Location result = locationDAO.save(location);
@@ -105,15 +108,15 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationDTO updateLocation(@NonNull LocationDTO locationDTO) throws EntityNotFoundException {
-		Category category = categoryDAO.get(locationDTO.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
-		Location location = locationDAO.get(locationDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
+	public LocationDTO updateLocation(@NonNull @Valid UpdateLocationModel model) throws EntityNotFoundException {
+		Category category = categoryDAO.get(model.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
+		Location location = locationDAO.get(model.getId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
 
-		location.setName(locationDTO.getName());
-		location.setSubtitle(locationDTO.getSubtitle());
-		location.setDescription(locationDTO.getDescription());
-		location.setPicture(locationDTO.getPicture());
-		location.setCoordinates(locationDTO.getCoordinates());
+		location.setName(model.getName());
+		location.setSubtitle(model.getSubtitle());
+		location.setDescription(model.getDescription());
+		location.setPicture(model.getPicture());
+		location.setCoordinates(model.getCoordinates());
 		location.setCategory(category);
 
 		Location result = locationDAO.save(location);
