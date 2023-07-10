@@ -1,12 +1,15 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.PhotoDTO;
+import com.parovsky.traver.dto.model.SavePhotoModel;
+import com.parovsky.traver.dto.model.UpdatePhotoModel;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.PhotoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,14 +27,14 @@ public class PhotoController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/photo", consumes = "application/json")
-    public PhotoDTO addLocationPhoto(@RequestBody PhotoDTO photoDTO) throws EntityNotFoundException {
-        return photoService.addLocationPhoto(photoDTO);
+    public PhotoDTO addLocationPhoto(@Valid @RequestBody SavePhotoModel model) throws EntityNotFoundException {
+        return photoService.addLocationPhoto(model);
     }
 
     @ResponseBody
     @PutMapping(value = "/photo", consumes = "application/json")
-    public PhotoDTO updatePhoto(@RequestBody PhotoDTO photoDTO) throws EntityNotFoundException {
-        return photoService.updatePhoto(photoDTO);
+    public PhotoDTO updatePhoto(@Valid @RequestBody UpdatePhotoModel model) throws EntityNotFoundException {
+        return photoService.updatePhoto(model);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

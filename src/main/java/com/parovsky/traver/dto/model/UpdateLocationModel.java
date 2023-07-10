@@ -38,7 +38,7 @@ public class UpdateLocationModel {
 
 	@NonNull
 	//pattern url
-	@Pattern(regexp = "^(http|https)://.*$", message = URL_PATTERN)
+	@Pattern(regexp = "^(http|https)://.*$", message = PICTURE_PATTERN)
 	@NotBlank(message = EMPTY_PICTURE)
 	private String picture;
 

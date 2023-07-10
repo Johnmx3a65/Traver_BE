@@ -22,7 +22,13 @@ public class Contstrains {
 	public static final String COORDINATES_PATTERN = "Coordinates should be two float numbers divided by semicolon";
 
 	public static final String EMPTY_PICTURE = "Picture cannot be empty";
-	public static final String URL_PATTERN = "Picture should be url";
+	public static final String PICTURE_PATTERN = "Picture should be url";
+
+	public static final String EMPTY_PREVIEW_URL = "Preview photo cannot be empty";
+	public static final String PREVIEW_PHOTO_PATTERN = "Preview photo should be url";
+
+	public static final String EMPTY_FULL_URL = "Full photo cannot be empty";
+	public static final String FULL_PHOTO_PATTERN = "Full photo should be url";
 
 	public static final String VERIFICATION_CODE_PATTERN = "Verification code should be 4 digits";
 	public static final String ROLE_PATTERN = "Role should be USER or ADMIN";
@@ -30,4 +36,5 @@ public class Contstrains {
 	public static final String EMPTY_LOCATION_ID = "Location id cannot be empty";
 	public static final String EMPTY_CATEGORY_ID = "Category id cannot be empty";
 	public static final String EMPTY_USER_ID = "User id cannot be empty";
+	public static final String EMPTY_PHOTO_ID = "Photo id cannot be empty";
 }

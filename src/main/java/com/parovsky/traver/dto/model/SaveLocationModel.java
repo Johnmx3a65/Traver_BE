@@ -32,7 +32,7 @@ public class SaveLocationModel {
 
 	@NonNull
 	//pattern url
-	@Pattern(regexp = "^(http|https)://.*$", message = URL_PATTERN)
+	@Pattern(regexp = "^(http|https)://.*$", message = PICTURE_PATTERN)
 	private String picture;
 
 	@NonNull
