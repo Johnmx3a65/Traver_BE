@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
 		User user = User.builder()
 				.name(model.getName())
 				.email(model.getEmail())
-				.role(model.getRole().name())
+				.role(Role.valueOf(model.getRole()).name())
 				.password(passwordEncoder.encode(password))
 				.build();
 		User newUser = userDAO.save(user);
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
 		user.setName(model.getName());
 		user.setEmail(model.getEmail());
-		user.setRole(model.getRole().name());
+		user.setRole(Role.valueOf(model.getRole()).name());
 
 		User result = userDAO.save(user);
 		return modelMapper.map(result, UserView.class);

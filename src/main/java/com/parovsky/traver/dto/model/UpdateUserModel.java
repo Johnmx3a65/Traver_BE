@@ -1,6 +1,5 @@
 package com.parovsky.traver.dto.model;
 
-import com.parovsky.traver.role.Role;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -22,5 +21,5 @@ public class UpdateUserModel {
 	private String email;
 
 	@Pattern(regexp = "^(USER|ADMIN)$", message = ROLE_PATTERN)
-	private Role role;
+	private String role;
 }
