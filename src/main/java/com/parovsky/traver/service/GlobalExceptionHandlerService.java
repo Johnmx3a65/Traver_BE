@@ -25,7 +25,7 @@ public interface GlobalExceptionHandlerService {
 
 	ResponseEntity<String> handleException(HttpMessageNotReadableException e);
 
-	Map<String, String> handleException(MethodArgumentNotValidException e);
+	ResponseEntity<Map<String, String>> handleException(MethodArgumentNotValidException e);
 
 	ResponseEntity<String> handleException(Throwable e);
 }

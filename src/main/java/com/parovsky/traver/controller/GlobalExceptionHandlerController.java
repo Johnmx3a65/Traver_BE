@@ -52,7 +52,7 @@ public class GlobalExceptionHandlerController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleExceptions(MethodArgumentNotValidException e) {
+    public ResponseEntity<Map<String, String>> handleExceptions(MethodArgumentNotValidException e) {
         return exceptionHandlerService.handleException(e);
     }
 

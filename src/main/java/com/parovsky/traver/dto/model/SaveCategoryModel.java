@@ -1,22 +1,19 @@
 package com.parovsky.traver.dto.model;
 
 import lombok.Data;
-import org.springframework.lang.NonNull;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import static com.parovsky.traver.utils.Contstrains.*;
 
 @Data
 public class SaveCategoryModel {
-	@NonNull
-	@Max(value = 255, message = NAME_MAX_LENGTH)
+	@Size(min = 1, max = 255, message = NAME_LENGTH)
 	@NotBlank(message = EMPTY_NAME)
 	private String name;
 
-	@NonNull
 	//pattern url
 	@Pattern(regexp = "^(http|https)://.*$", message = PICTURE_PATTERN)
 	@NotBlank(message = EMPTY_PICTURE)

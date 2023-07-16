@@ -58,14 +58,14 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 	}
 
 	@Override
-	public Map<String, String> handleException(MethodArgumentNotValidException e) {
+	public ResponseEntity<Map<String, String>> handleException(MethodArgumentNotValidException e) {
 		Map<String, String> errors = new HashMap<>();
 		e.getBindingResult().getAllErrors().forEach((error) -> {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
-		return errors;
+		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
