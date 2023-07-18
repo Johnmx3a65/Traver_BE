@@ -2,7 +2,6 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.UnprocessableEntityException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.service.GlobalExceptionHandlerService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,12 +42,6 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 	public ResponseEntity<String> handleException(VerificationCodeNotMatchException e) {
 		log.error("Verification code doesn't match");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-	}
-
-	@Override
-	public ResponseEntity<String> handleException(UnprocessableEntityException e) {
-		log.error("Unprocessable entity.");
-		return new ResponseEntity<>(e.getReason(), e.getStatus());
 	}
 
 	@Override

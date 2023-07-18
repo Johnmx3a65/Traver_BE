@@ -2,7 +2,6 @@ package com.parovsky.traver.controller;
 
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.UnprocessableEntityException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.service.GlobalExceptionHandlerService;
 import lombok.AllArgsConstructor;
@@ -38,11 +37,6 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(VerificationCodeNotMatchException.class)
     public ResponseEntity<String> handleExceptions(VerificationCodeNotMatchException e) {
-        return exceptionHandlerService.handleException(e);
-    }
-
-    @ExceptionHandler(UnprocessableEntityException.class)
-    public ResponseEntity<String> handleExceptions(UnprocessableEntityException e) {
         return exceptionHandlerService.handleException(e);
     }
 
