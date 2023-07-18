@@ -45,6 +45,11 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
+	public boolean isLocationExist(String name, String subtitle) {
+		return locationRepository.existsByNameAndSubtitle(name, subtitle);
+	}
+
+	@Override
 	public Location save(@NonNull Location location) {
 		return locationRepository.saveAndFlush(location);
 	}

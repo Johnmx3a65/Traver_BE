@@ -84,7 +84,10 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException {
+	public LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
+		if (locationDAO.isLocationExist(model.getName(), model.getSubtitle())) {
+			throw new EntityAlreadyExistsException("Location already exist");
+		}
 		Category category = categoryDAO.get(model.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 		Location location = Location.builder()
 				.name(model.getName())

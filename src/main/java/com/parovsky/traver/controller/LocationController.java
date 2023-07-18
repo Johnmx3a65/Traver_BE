@@ -40,7 +40,7 @@ public class LocationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
-    public LocationDTO saveLocation(@Valid @RequestBody SaveLocationModel model) throws EntityNotFoundException {
+    public LocationDTO saveLocation(@Valid @RequestBody SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
         return locationService.saveLocation(model);
     }
 

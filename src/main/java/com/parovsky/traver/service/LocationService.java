@@ -19,7 +19,7 @@ public interface LocationService {
 
 	List<LocationDTO> getFavoriteLocations(@Nullable Long categoryId) throws EntityNotFoundException;
 
-	LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException;
+	LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException;
 
 	void addFavoriteLocation(@NonNull Long locationId) throws EntityAlreadyExistsException, EntityNotFoundException;
 
