@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto;
+package com.parovsky.traver.dto.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter(onMethod = @__({@org.springframework.lang.NonNull}))
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationDTO {
+public class LocationView {
 
     private Long id;
 

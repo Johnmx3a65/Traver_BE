@@ -1,8 +1,8 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.model.SaveLocationModel;
 import com.parovsky.traver.dto.model.UpdateLocationModel;
+import com.parovsky.traver.dto.view.LocationView;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.LocationService;
@@ -21,26 +21,26 @@ public class LocationController {
 
 	@ResponseBody
 	@GetMapping("/locations")
-	public List<LocationDTO> getLocations(@RequestParam(required = false) Long categoryId) throws EntityNotFoundException {
+	public List<LocationView> getLocations(@RequestParam(required = false) Long categoryId) throws EntityNotFoundException {
 		return locationService.getLocations(categoryId);
 	}
 
 	@ResponseBody
 	@GetMapping("/locations/favourite")
-	public List<LocationDTO> getFavouriteLocations(@RequestParam(required = false) Long categoryId) throws EntityNotFoundException {
+	public List<LocationView> getFavouriteLocations(@RequestParam(required = false) Long categoryId) throws EntityNotFoundException {
 		return locationService.getFavoriteLocations(categoryId);
 	}
 
 	@ResponseBody
 	@GetMapping("/location/{id}")
-	public LocationDTO getLocation(@PathVariable Long id) throws EntityNotFoundException {
+	public LocationView getLocation(@PathVariable Long id) throws EntityNotFoundException {
 		return locationService.getLocationById(id);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
-    public LocationDTO saveLocation(@Valid @RequestBody SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public LocationView saveLocation(@Valid @RequestBody SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
         return locationService.saveLocation(model);
     }
 
@@ -52,7 +52,7 @@ public class LocationController {
 
 	@ResponseBody
 	@PutMapping(value = "/location", consumes = "application/json")
-	public LocationDTO updateLocation(@Valid @RequestBody UpdateLocationModel model) throws EntityNotFoundException {
+	public LocationView updateLocation(@Valid @RequestBody UpdateLocationModel model) throws EntityNotFoundException {
 		return locationService.updateLocation(model);
 	}
 

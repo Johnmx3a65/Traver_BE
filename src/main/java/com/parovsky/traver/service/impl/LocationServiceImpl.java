@@ -3,9 +3,9 @@ package com.parovsky.traver.service.impl;
 import com.parovsky.traver.dao.CategoryDAO;
 import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDao;
-import com.parovsky.traver.dto.LocationDTO;
 import com.parovsky.traver.dto.model.SaveLocationModel;
 import com.parovsky.traver.dto.model.UpdateLocationModel;
+import com.parovsky.traver.dto.view.LocationView;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
@@ -39,7 +39,7 @@ public class LocationServiceImpl implements LocationService {
 	private final UserDao userDao;
 
 	@Override
-	public List<LocationDTO> getLocations(@Nullable Long categoryId) throws EntityNotFoundException {
+	public List<LocationView> getLocations(@Nullable Long categoryId) throws EntityNotFoundException {
 		List<Location> result;
 		if (categoryId != null) {
 			if (!categoryDAO.isExistById(categoryId)) {
@@ -51,23 +51,23 @@ public class LocationServiceImpl implements LocationService {
 		}
 		return result
 				.stream()
-				.map(l -> modelMapper.map(l, LocationDTO.class))
+				.map(l -> modelMapper.map(l, LocationView.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public LocationDTO getLocationById(@NonNull Long id) throws EntityNotFoundException {
+	public LocationView getLocationById(@NonNull Long id) throws EntityNotFoundException {
 		Location location = locationDAO.get(id).orElseThrow(() -> new EntityNotFoundException("Location not found"));
-		LocationDTO locationDTO = modelMapper.map(location, LocationDTO.class);
+		LocationView locationView = modelMapper.map(location, LocationView.class);
 		UserView user = userService.getCurrentUser();
 		if (locationDAO.isFavouriteExist(user.getEmail(), location.getId())) {
-			locationDTO.setIsFavorite(true);
+			locationView.setIsFavorite(true);
 		}
-		return locationDTO;
+		return locationView;
 	}
 
 	@Override
-	public List<LocationDTO> getFavoriteLocations(@Nullable Long categoryId) throws EntityNotFoundException {
+	public List<LocationView> getFavoriteLocations(@Nullable Long categoryId) throws EntityNotFoundException {
 		List<Location> result;
 		UserView currentUser = userService.getCurrentUser();
 		User user = userDao.getByEmail(currentUser.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -79,12 +79,12 @@ public class LocationServiceImpl implements LocationService {
 		}
 		return result
 				.stream()
-				.map(l -> modelMapper.map(l, LocationDTO.class))
+				.map(l -> modelMapper.map(l, LocationView.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public LocationDTO saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
+	public LocationView saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException {
 		if (locationDAO.isLocationExist(model.getName(), model.getSubtitle())) {
 			throw new EntityAlreadyExistsException("Location already exist");
 		}
@@ -98,7 +98,7 @@ public class LocationServiceImpl implements LocationService {
 				.category(category)
 				.build();
 		Location result = locationDAO.save(location);
-		return modelMapper.map(result, LocationDTO.class);
+		return modelMapper.map(result, LocationView.class);
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationDTO updateLocation(@NonNull @Valid UpdateLocationModel model) throws EntityNotFoundException {
+	public LocationView updateLocation(@NonNull @Valid UpdateLocationModel model) throws EntityNotFoundException {
 		Category category = categoryDAO.get(model.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
 		Location location = locationDAO.get(model.getId()).orElseThrow(() -> new EntityNotFoundException("Location not found"));
 
@@ -123,7 +123,7 @@ public class LocationServiceImpl implements LocationService {
 		location.setCategory(category);
 
 		Location result = locationDAO.save(location);
-		return modelMapper.map(result, LocationDTO.class);
+		return modelMapper.map(result, LocationView.class);
 	}
 
 	@Override

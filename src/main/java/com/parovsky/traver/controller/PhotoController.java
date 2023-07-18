@@ -1,8 +1,8 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.PhotoDTO;
 import com.parovsky.traver.dto.model.SavePhotoModel;
 import com.parovsky.traver.dto.model.UpdatePhotoModel;
+import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.service.PhotoService;
 import lombok.AllArgsConstructor;
@@ -20,20 +20,20 @@ public class PhotoController {
 
     @ResponseBody
     @GetMapping("/photos/{locationId}")
-    public List<PhotoDTO> getPhotos(@PathVariable Long locationId) throws EntityNotFoundException {
+    public List<PhotoView> getPhotos(@PathVariable Long locationId) throws EntityNotFoundException {
         return photoService.getPhotos(locationId);
     }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/photo", consumes = "application/json")
-    public PhotoDTO addLocationPhoto(@Valid @RequestBody SavePhotoModel model) throws EntityNotFoundException {
+    public PhotoView addLocationPhoto(@Valid @RequestBody SavePhotoModel model) throws EntityNotFoundException {
         return photoService.addLocationPhoto(model);
     }
 
     @ResponseBody
     @PutMapping(value = "/photo", consumes = "application/json")
-    public PhotoDTO updatePhoto(@Valid @RequestBody UpdatePhotoModel model) throws EntityNotFoundException {
+    public PhotoView updatePhoto(@Valid @RequestBody UpdatePhotoModel model) throws EntityNotFoundException {
         return photoService.updatePhoto(model);
     }
 
