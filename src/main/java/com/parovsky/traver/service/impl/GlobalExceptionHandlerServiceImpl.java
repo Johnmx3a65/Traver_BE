@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
@@ -41,7 +42,7 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 	@Override
 	public ResponseEntity<String> handleException(VerificationCodeNotMatchException e) {
 		log.error("Verification code doesn't match");
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
@@ -59,6 +60,12 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 			errors.put(fieldName, errorMessage);
 		});
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+	}
+
+	@Override
+	public ResponseEntity<String> handleException(BadCredentialsException e) {
+		log.error("Bad credentials");
+		return new ResponseEntity<>("Bad credentials.", HttpStatus.BAD_REQUEST);
 	}
 
 	@Override

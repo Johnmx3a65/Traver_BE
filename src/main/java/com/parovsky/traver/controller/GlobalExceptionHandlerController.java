@@ -7,6 +7,7 @@ import com.parovsky.traver.service.GlobalExceptionHandlerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,6 +48,11 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleExceptions(MethodArgumentNotValidException e) {
+        return exceptionHandlerService.handleException(e);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleExceptions(BadCredentialsException e) {
         return exceptionHandlerService.handleException(e);
     }
 
