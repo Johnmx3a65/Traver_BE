@@ -20,7 +20,7 @@ public class AuthenticationController {
 
 	private final UserService userService;
 
-	@PostMapping("/sign-in")
+	@PostMapping(value = "/sign-in", consumes = "application/json")
 	public ResponseEntity<UserView> authenticateUser(@Valid @RequestBody SignInModel model) {
 		return userService.authenticateUser(model);
 	}
