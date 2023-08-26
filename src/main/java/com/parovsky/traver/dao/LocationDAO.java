@@ -12,8 +12,6 @@ public interface LocationDAO extends Dao<Location> {
 
 	boolean isFavouriteExist(String email, Long locationId);
 
-	boolean isFavouriteExist(Long userId);
-
 	boolean isLocationExist(String name, String subtitle);
 
 	List<Location> getFavouritesByUser(User user);

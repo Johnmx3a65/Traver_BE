@@ -1,6 +1,5 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.exception.DeletionException;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
@@ -21,8 +20,6 @@ public interface GlobalExceptionHandlerService {
 	ResponseEntity<String> handleException(AuthenticationException e);
 
 	ResponseEntity<String> handleException(VerificationCodeNotMatchException e);
-
-	ResponseEntity<String> handleException(DeletionException e);
 
 	ResponseEntity<String> handleException(HttpMessageNotReadableException e);
 

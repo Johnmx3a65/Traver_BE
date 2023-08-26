@@ -1,6 +1,5 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.exception.DeletionException;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
@@ -39,11 +38,6 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(VerificationCodeNotMatchException.class)
     public ResponseEntity<String> handleExceptions(VerificationCodeNotMatchException e) {
-        return exceptionHandlerService.handleException(e);
-    }
-
-    @ExceptionHandler(DeletionException.class)
-    public ResponseEntity<String> handleExceptions(DeletionException e) {
         return exceptionHandlerService.handleException(e);
     }
 
