@@ -1,10 +1,12 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
+import com.parovsky.traver.dao.LocationDAO;
 import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
+import com.parovsky.traver.exception.DeletionException;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
@@ -38,6 +40,8 @@ import static com.parovsky.traver.utils.Utils.generateVerificationCode;
 public class UserServiceImpl implements UserService {
 
 	private final UserDao userDAO;
+
+	private final LocationDAO locationDAO;
 
 	private final EmailServiceImpl emailService;
 
@@ -182,6 +186,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(@NonNull Long id) throws EntityNotFoundException {
+		if (locationDAO.isFavouriteExist(id)) {
+			throw new DeletionException("Deletion failed. User has favourite locations");
+		}
 		User user = userDAO.get(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
 		userDAO.delete(user);
 	}

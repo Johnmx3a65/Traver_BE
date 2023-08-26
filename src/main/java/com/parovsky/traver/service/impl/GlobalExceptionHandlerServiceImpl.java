@@ -1,5 +1,6 @@
 package com.parovsky.traver.service.impl;
 
+import com.parovsky.traver.exception.DeletionException;
 import com.parovsky.traver.exception.EntityAlreadyExistsException;
 import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
@@ -42,6 +43,12 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 	@Override
 	public ResponseEntity<String> handleException(VerificationCodeNotMatchException e) {
 		log.error("Verification code doesn't match");
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@Override
+	public ResponseEntity<String> handleException(DeletionException e) {
+		log.error("Deletion failed. Entity has dependencies");
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 

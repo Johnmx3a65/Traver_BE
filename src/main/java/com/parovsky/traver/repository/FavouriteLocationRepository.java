@@ -22,6 +22,9 @@ public interface FavouriteLocationRepository extends JpaRepository<FavouriteLoca
 	@Query(value = "SELECT CAST(CAST(COUNT (1) as int) as bool) FROM users_favourite_locations WHERE user_id IN (SELECT id FROM users WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
 	boolean existsByUserEmailAndLocationId(String email, Long locationId);
 
+	@Query(value = "SELECT CAST(CAST(COUNT (1) as int) as bool) FROM users_favourite_locations WHERE user_id = ?1", nativeQuery = true)
+	boolean existsByUserId(Long userId);
+
 	@Modifying
 	@Query(value = "INSERT INTO users_favourite_locations (user_id, location_id) VALUES ((SELECT id FROM users WHERE email like ?1), ?2)", nativeQuery = true)
 	void save(String email, Long locationId);

@@ -45,6 +45,11 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
+	public boolean isFavouriteExist(Long userId) {
+		return favouriteLocationRepository.existsByUserId(userId);
+	}
+
+	@Override
 	public boolean isLocationExist(String name, String subtitle) {
 		return locationRepository.existsByNameAndSubtitle(name, subtitle);
 	}
