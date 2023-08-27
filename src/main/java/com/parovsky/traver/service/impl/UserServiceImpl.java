@@ -10,6 +10,7 @@ import com.parovsky.traver.exception.EntityNotFoundException;
 import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
+import com.parovsky.traver.service.EmailService;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserDao userDAO;
 
-	private final EmailServiceImpl emailService;
+	private final EmailService emailService;
 
 	private final ModelMapper modelMapper;
 
