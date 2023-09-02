@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PhotoDAO extends Dao<Photo> {
 	List<Photo> getAllByLocation(Location location);
+
+	boolean isPhotoExistsByLocationId(Long locationId);
 }

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import static com.parovsky.traver.utils.Contstrains.*;
+import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
 public class UpdatePhotoModel {

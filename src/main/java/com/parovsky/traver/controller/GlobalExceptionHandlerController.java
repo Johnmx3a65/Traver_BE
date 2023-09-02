@@ -1,17 +1,15 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.service.GlobalExceptionHandlerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Map;
 
@@ -21,24 +19,9 @@ public class GlobalExceptionHandlerController {
 
     private final GlobalExceptionHandlerService exceptionHandlerService;
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleExceptions(EntityNotFoundException e) {
-        return exceptionHandlerService.handleException(e);
-    }
-
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<String> handleExceptions(EntityAlreadyExistsException e) {
-        return exceptionHandlerService.handleException(e);
-    }
-
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleExceptions(AuthenticationException e) {
-        return exceptionHandlerService.handleException(e);
-    }
-
-    @ExceptionHandler(VerificationCodeNotMatchException.class)
-    public ResponseEntity<String> handleExceptions(VerificationCodeNotMatchException e) {
-        return exceptionHandlerService.handleException(e);
+    public ResponseEntity<Map<String, Object>> handleExceptions(AuthenticationException e, WebRequest request) {
+        return exceptionHandlerService.handleException(e, request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -51,13 +34,13 @@ public class GlobalExceptionHandlerController {
         return exceptionHandlerService.handleException(e);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleExceptions(BadCredentialsException e) {
-        return exceptionHandlerService.handleException(e);
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<Map<String, Object>> handleExceptions(ApplicationException e, WebRequest request) {
+        return exceptionHandlerService.handleException(e, request);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleExceptions(Throwable e) {
-        return exceptionHandlerService.handleException(e);
+    public ResponseEntity<Map<String, Object>> handleExceptions(Throwable e, WebRequest request) {
+        return exceptionHandlerService.handleException(e, request);
     }
 }

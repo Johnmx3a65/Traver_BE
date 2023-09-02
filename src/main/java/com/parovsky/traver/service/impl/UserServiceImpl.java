@@ -5,9 +5,7 @@ import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;
@@ -28,9 +26,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.parovsky.traver.exception.Errors.*;
+import static com.parovsky.traver.utils.Constraints.EMAIL;
+import static com.parovsky.traver.utils.Constraints.ID;
 import static com.parovsky.traver.utils.Utils.generateRandomString;
 import static com.parovsky.traver.utils.Utils.generateVerificationCode;
 
@@ -57,15 +59,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView getUserById(@NonNull Long id) throws EntityNotFoundException {
-		User user = userDAO.get(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public UserView getUserById(@NonNull Long id) {
+		User user = userDAO.get(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
 		return modelMapper.map(user, UserView.class);
 	}
 
 	@Override
-	public UserView getCurrentUser() throws EntityNotFoundException {
+	public UserView getCurrentUser() {
 		String userEmail = getCurrentUserEmail();
-		User user = userDAO.getByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("User not found"));
+		User user = userDAO.getByEmail(userEmail).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, userEmail)));
 		return modelMapper.map(user, UserView.class);
 	}
 
@@ -105,8 +107,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) throws EntityNotFoundException {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
 		user.setVerifyCode(String.valueOf(code));
@@ -114,17 +116,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void checkVerificationCode(@NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public void checkVerificationCode(@NonNull CheckVerificationCodeModel model) {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
-			throw new VerificationCodeNotMatchException();
+			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);
 		}
 	}
 
 	@Override
-	public UserView saveUser(@Valid @NonNull SignUpModel model) throws EntityAlreadyExistsException {
+	public UserView saveUser(@Valid @NonNull SignUpModel model) {
 		if (userDAO.isExistByEmail(model.getEmail())) {
-			throw new EntityAlreadyExistsException("User already exist");
+			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
 
 		int code = generateVerificationCode();
@@ -142,9 +144,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView saveUserByAdmin(@NonNull @Valid SaveUserModel model) throws EntityAlreadyExistsException {
+	public UserView saveUserByAdmin(@NonNull @Valid SaveUserModel model) {
 		if (userDAO.isExistByEmail(model.getEmail())) {
-			throw new EntityAlreadyExistsException("User already exist");
+			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
 		String password = generateRandomString(10);
 		emailService.sendEmail(model.getEmail(), "TRAVER CREDENTIALS", "Your password is " + password);
@@ -160,8 +162,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView updateUser(@NonNull @Valid UpdateUserModel model) throws EntityNotFoundException {
-		User user = userDAO.get(model.getId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public UserView updateUser(@NonNull @Valid UpdateUserModel model) {
+		User user = userDAO.get(model.getId()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
 
 		user.setName(model.getName());
 		user.setEmail(model.getEmail());
@@ -172,18 +174,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void resetPassword(@Valid @NonNull ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public void resetPassword(@Valid @NonNull ResetPasswordModel model) {
+		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
-			throw new VerificationCodeNotMatchException();
+			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);
 		}
 		user.setPassword(passwordEncoder.encode(model.getPassword()));
 		userDAO.save(user);
 	}
 
 	@Override
-	public void deleteUser(@NonNull Long id) throws EntityNotFoundException {
-		User user = userDAO.get(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public void deleteUser(@NonNull Long id) {
+		User user = userDAO.get(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
 		userDAO.delete(user);
 	}
 

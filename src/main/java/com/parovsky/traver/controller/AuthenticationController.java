@@ -2,9 +2,6 @@ package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +25,7 @@ public class AuthenticationController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
-	public UserView saveUser(@Valid @RequestBody SignUpModel model) throws EntityAlreadyExistsException {
+	public UserView saveUser(@Valid @RequestBody SignUpModel model) {
 		return userService.saveUser(model);
 	}
 
@@ -39,19 +36,19 @@ public class AuthenticationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
-	public void verifyEmail(@Valid @RequestBody SendVerificationCodeModel model) throws EntityNotFoundException {
+	public void verifyEmail(@Valid @RequestBody SendVerificationCodeModel model) {
 		userService.sendVerificationEmail(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
-	public void checkVerificationCode(@Valid @RequestBody CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+	public void checkVerificationCode(@Valid @RequestBody CheckVerificationCodeModel model) {
 		userService.checkVerificationCode(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping(value = "/reset-password", consumes = "application/json")
-	public void resetPassword(@Valid @RequestBody ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException {
+	public void resetPassword(@Valid @RequestBody ResetPasswordModel model) {
 		userService.resetPassword(model);
 	}
 

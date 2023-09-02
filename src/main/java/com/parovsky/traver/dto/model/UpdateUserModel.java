@@ -4,7 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 
-import static com.parovsky.traver.utils.Contstrains.*;
+import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
 public class UpdateUserModel {

@@ -13,26 +13,26 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "locations")
+@Table()
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(nullable = false)
     private Long id;
 
     @Column(name = "location_name", nullable = false)
     private String name;
 
-    @Column(name = "location_subtitle", nullable = false)
+    @Column(nullable = false)
     private String subtitle;
 
-    @Column(name = "description", nullable = false)
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "coordinates", nullable = false)
+    @Column(nullable = false)
     private String coordinates;
 
-    @Column(name = "location_picture", nullable = false, columnDefinition="TEXT")
+    @Column(nullable = false, columnDefinition="TEXT")
     private String picture;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

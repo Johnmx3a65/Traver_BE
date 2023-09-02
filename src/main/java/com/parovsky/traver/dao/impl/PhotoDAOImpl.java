@@ -35,6 +35,11 @@ public class PhotoDAOImpl implements PhotoDAO {
 	}
 
 	@Override
+	public boolean isPhotoExistsByLocationId(Long locationId) {
+		return photoRepository.existsByLocationId(locationId);
+	}
+
+	@Override
 	public Photo save(@NonNull Photo photo) {
 		return photoRepository.saveAndFlush(photo);
 	}

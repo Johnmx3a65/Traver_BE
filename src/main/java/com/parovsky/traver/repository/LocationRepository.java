@@ -12,4 +12,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 	List<Location> findAllByCategoryId(Long categoryId);
 
 	boolean existsByNameAndSubtitle(String name, String subtitle);
+
+	boolean existsByCategoryId(Long categoryId);
 }

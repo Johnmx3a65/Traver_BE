@@ -3,8 +3,6 @@ package com.parovsky.traver.service;
 import com.parovsky.traver.dto.model.SaveLocationModel;
 import com.parovsky.traver.dto.model.UpdateLocationModel;
 import com.parovsky.traver.dto.view.LocationView;
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -13,19 +11,19 @@ import java.util.List;
 
 public interface LocationService {
 
-	List<LocationView> getLocations(@Nullable Long categoryId) throws EntityNotFoundException;
+	List<LocationView> getLocations(@Nullable Long categoryId);
 
-	LocationView getLocationById(@NonNull Long id) throws EntityNotFoundException;
+	LocationView getLocationById(@NonNull Long id);
 
-	List<LocationView> getFavoriteLocations(@Nullable Long categoryId) throws EntityNotFoundException;
+	List<LocationView> getFavoriteLocations(@Nullable Long categoryId);
 
-	LocationView saveLocation(@Valid @NonNull SaveLocationModel model) throws EntityNotFoundException, EntityAlreadyExistsException;
+	LocationView saveLocation(@Valid @NonNull SaveLocationModel model);
 
-	void addFavoriteLocation(@NonNull Long locationId) throws EntityAlreadyExistsException, EntityNotFoundException;
+	void addFavoriteLocation(@NonNull Long locationId);
 
-	LocationView updateLocation(@Valid @NonNull UpdateLocationModel model) throws EntityNotFoundException;
+	LocationView updateLocation(@Valid @NonNull UpdateLocationModel model);
 
-	void deleteLocation(@NonNull Long id) throws EntityNotFoundException;
+	void deleteLocation(@NonNull Long id);
 
-	void deleteFavoriteLocation(@NonNull Long locationId) throws EntityNotFoundException;
+	void deleteFavoriteLocation(@NonNull Long locationId);
 }

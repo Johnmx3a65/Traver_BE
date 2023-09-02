@@ -19,15 +19,15 @@ public interface FavouriteLocationRepository extends JpaRepository<FavouriteLoca
 	@Query("SELECT f.location FROM FavouriteLocation f WHERE f.user.email = :email and f.location.category.id = :categoryId")
 	List<Location> findAllLocationsByUserEmailAndCategoryId(String email, Long categoryId);
 
-	@Query(value = "SELECT CAST(CAST(COUNT (1) as int) as bool) FROM users_favourite_locations WHERE user_id IN (SELECT id FROM users WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT CAST(CAST(COUNT (1) as int) as bool) FROM location_user WHERE user_id IN (SELECT id FROM \"user\" WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
 	boolean existsByUserEmailAndLocationId(String email, Long locationId);
 
 	@Modifying
-	@Query(value = "INSERT INTO users_favourite_locations (user_id, location_id) VALUES ((SELECT id FROM users WHERE email like ?1), ?2)", nativeQuery = true)
+	@Query(value = "INSERT INTO location_user (user_id, location_id) VALUES ((SELECT id FROM \"user\" WHERE email like ?1), ?2)", nativeQuery = true)
 	void save(String email, Long locationId);
 
 	@Modifying
-	@Query(value = "DELETE FROM users_favourite_locations WHERE user_id IN (SELECT id FROM users WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
+	@Query(value = "DELETE FROM location_user WHERE user_id IN (SELECT id FROM \"user\" WHERE email like ?1) AND location_id = ?2", nativeQuery = true)
 	void delete(String email, Long locationId);
 
 	List<FavouriteLocation> findAllByUser(User user);

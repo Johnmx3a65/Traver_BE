@@ -50,6 +50,11 @@ public class LocationDAOImpl implements LocationDAO {
 	}
 
 	@Override
+	public boolean isLocationExistsByCategoryId(Long categoryId) {
+		return locationRepository.existsByCategoryId(categoryId);
+	}
+
+	@Override
 	public Location save(@NonNull Location location) {
 		return locationRepository.saveAndFlush(location);
 	}

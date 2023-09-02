@@ -1,10 +1,11 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.service.GlobalExceptionHandlerService;
+import com.parovsky.traver.utils.Constraints;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,37 +14,19 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.parovsky.traver.exception.Errors.*;
 
 @Slf4j
 @Service
-public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandlerService {
-
-	@Override
-	public ResponseEntity<String> handleException(EntityNotFoundException e) {
-		log.error("Entity not found");
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
-	@Override
-	public ResponseEntity<String> handleException(EntityAlreadyExistsException e) {
-		log.error("Entity already exists");
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-	}
-
-	@Override
-	public ResponseEntity<String> handleException(AuthenticationException e) {
-		log.error("User is unauthorised");
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-	}
-
-	@Override
-	public ResponseEntity<String> handleException(VerificationCodeNotMatchException e) {
-		log.error("Verification code doesn't match");
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
+public class GlobalExceptionHandlerServiceImpl extends DefaultErrorAttributes implements GlobalExceptionHandlerService {
 
 	@Override
 	public ResponseEntity<String> handleException(HttpMessageNotReadableException e) {
@@ -63,15 +46,43 @@ public class GlobalExceptionHandlerServiceImpl implements GlobalExceptionHandler
 	}
 
 	@Override
-	public ResponseEntity<String> handleException(BadCredentialsException e) {
-		log.error("Bad credentials");
-		return new ResponseEntity<>("Bad credentials.", HttpStatus.BAD_REQUEST);
+	public ResponseEntity<Map<String, Object>> handleException(AuthenticationException e, WebRequest request) {
+		if (e.getCause() instanceof ApplicationException) {
+			ApplicationException ex = (ApplicationException) e.getCause();
+			return ofType(ex, ex.getErrorResponse().getHttpStatus(), request);
+		}
+		if (e instanceof BadCredentialsException) {
+			return ofType(request, BAD_CREDENTIALS.getHttpStatus(), BAD_CREDENTIALS.getMessage(), BAD_CREDENTIALS.getKey(), Collections.emptyList());
+		}
+		return ofType(request, UNAUTHORIZED.getHttpStatus(), UNAUTHORIZED.getMessage(), UNAUTHORIZED.getMessage(), Collections.emptyList());
 	}
 
 	@Override
-	public ResponseEntity<String> handleException(Throwable e) {
+	public ResponseEntity<Map<String, Object>> handleException(ApplicationException e, WebRequest request) {
+		return ofType(e, e.getErrorResponse().getHttpStatus(), request);
+	}
+
+	@Override
+	public ResponseEntity<Map<String, Object>> handleException(Throwable e, WebRequest request) {
 		log.error(e.getMessage());
-		return new ResponseEntity<>("Something went wrong. Unexpected issue...", HttpStatus.INTERNAL_SERVER_ERROR);
+		return ofType(request, SERVER_ERROR.getHttpStatus(), SERVER_ERROR.getMessage(), SERVER_ERROR.getKey(), Collections.emptyList());
+	}
+
+	protected ResponseEntity<Map<String, Object>> ofType(ApplicationException e, HttpStatus status,
+														 WebRequest request) {
+		return ofType(request, status, e.getMessage(), e.getErrorResponse().getKey(), Collections.emptyList());
+	}
+
+	private ResponseEntity<Map<String, Object>> ofType(WebRequest request, HttpStatus status, String message,
+													   String key, List validationErrors) {
+		Map<String, Object> attributes = getErrorAttributes(request, ErrorAttributeOptions.defaults());
+		attributes.put(Constraints.STATUS, status.value());
+		attributes.put(Constraints.ERROR, status);
+		attributes.put(Constraints.MESSAGE, message);
+		attributes.put(Constraints.ERRORS, validationErrors);
+		attributes.put(Constraints.ERROR_KEY, key);
+		attributes.put(Constraints.PATH, ((ServletWebRequest) request).getRequest().getRequestURI());
+		return new ResponseEntity<>(attributes, status);
 	}
 
 }

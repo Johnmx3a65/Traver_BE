@@ -1,6 +1,11 @@
 package com.parovsky.traver.utils;
 
-public class Contstrains {
+public class Constraints {
+
+	private Constraints() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static final String EMAIL_LENGTH = "Email should be between 1 and 255 characters";
 	public static final String EMPTY_EMAIL = "Email cannot be empty";
 	public static final String EMAIL_PATTERN = "Email should be valid";
@@ -36,4 +41,17 @@ public class Contstrains {
 	public static final String EMPTY_CATEGORY_ID = "Category id cannot be empty";
 	public static final String EMPTY_USER_ID = "User id cannot be empty";
 	public static final String EMPTY_PHOTO_ID = "Photo id cannot be empty";
+
+	public static final String STATUS = "status";
+	public static final String MESSAGE = "message";
+	public static final String PATH = "path";
+	public static final String ERROR = "error";
+	public static final String ERRORS = "errors";
+	public static final String ERROR_KEY = "errorKey";
+
+	public static final String ID = "id";
+	public static final String LOCATION_ID = "locationId";
+	public static final String EMAIL = "email";
+	public static final String NAME = "name";
+
 }

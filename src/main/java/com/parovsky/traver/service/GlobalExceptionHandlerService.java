@@ -1,31 +1,23 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
+import com.parovsky.traver.exception.ApplicationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Map;
 
 public interface GlobalExceptionHandlerService {
 
-	ResponseEntity<String> handleException(EntityNotFoundException e);
-
-	ResponseEntity<String> handleException(EntityAlreadyExistsException e);
-
-	ResponseEntity<String> handleException(AuthenticationException e);
-
-	ResponseEntity<String> handleException(VerificationCodeNotMatchException e);
-
 	ResponseEntity<String> handleException(HttpMessageNotReadableException e);
 
 	ResponseEntity<Map<String, String>> handleException(MethodArgumentNotValidException e);
 
-	ResponseEntity<String> handleException(BadCredentialsException e);
+	ResponseEntity<Map<String, Object>> handleException(AuthenticationException e, WebRequest request);
 
-	ResponseEntity<String> handleException(Throwable e);
+	ResponseEntity<Map<String, Object>> handleException(ApplicationException ex, WebRequest request);
+
+	ResponseEntity<Map<String, Object>> handleException(Throwable e, WebRequest request);
 }

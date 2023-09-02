@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import static com.parovsky.traver.utils.Contstrains.*;
+import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
 public class SendVerificationCodeModel {

@@ -12,17 +12,17 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 	boolean existsByName(String name);
 
-	@Query(value = "SELECT id, category_name, category_picture" +
-			" FROM categories" +
-			" WHERE categories.id IN (" +
-			" SELECT locations.category_id" +
-			" FROM locations" +
-			" WHERE locations.id IN (" +
-			" SELECT users_favourite_locations.location_id" +
-			" FROM users_favourite_locations" +
-			" WHERE users_favourite_locations.user_id IN (" +
+	@Query(value = "SELECT id, category_name, picture" +
+			" FROM category" +
+			" WHERE category.id IN (" +
+			" SELECT location.category_id" +
+			" FROM location" +
+			" WHERE location.id IN (" +
+			" SELECT location_user.location_id" +
+			" FROM location_user" +
+			" WHERE location_user.user_id IN (" +
 			" SELECT id" +
-			" FROM users" +
+			" FROM \"user\"" +
 			" WHERE email like ?1)));", nativeQuery = true)
 	List<Category> findFavouriteCategories(String email);
 

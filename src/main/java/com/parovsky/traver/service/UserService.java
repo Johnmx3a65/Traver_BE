@@ -2,9 +2,6 @@ package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
-import com.parovsky.traver.exception.VerificationCodeNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
@@ -15,25 +12,25 @@ public interface UserService {
 
 	List<UserView> getAllUsers();
 
-	UserView getUserById(@NonNull Long id) throws EntityNotFoundException;
+	UserView getUserById(@NonNull Long id);
 
-	UserView getCurrentUser() throws EntityNotFoundException;
+	UserView getCurrentUser();
 
 	ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model);
 
 	ResponseEntity<Void> logoutUser();
 
-	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) throws EntityNotFoundException;
+	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model);
 
-	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model) throws EntityNotFoundException, VerificationCodeNotMatchException;
+	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model);
 
-	UserView saveUser(@Valid @NonNull SignUpModel model) throws EntityAlreadyExistsException;
+	UserView saveUser(@Valid @NonNull SignUpModel model);
 
-	UserView saveUserByAdmin(@Valid @NonNull SaveUserModel model) throws EntityAlreadyExistsException;
+	UserView saveUserByAdmin(@Valid @NonNull SaveUserModel model);
 
-	UserView updateUser(@Valid @NonNull UpdateUserModel model) throws EntityNotFoundException;
+	UserView updateUser(@Valid @NonNull UpdateUserModel model);
 
-	void deleteUser(@NonNull Long id) throws EntityNotFoundException;
+	void deleteUser(@NonNull Long id);
 
-	void resetPassword(@Valid @NonNull ResetPasswordModel model) throws EntityNotFoundException, VerificationCodeNotMatchException;
+	void resetPassword(@Valid @NonNull ResetPasswordModel model);
 }

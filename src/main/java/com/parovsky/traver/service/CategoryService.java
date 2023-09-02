@@ -3,8 +3,6 @@ package com.parovsky.traver.service;
 import com.parovsky.traver.dto.model.SaveCategoryModel;
 import com.parovsky.traver.dto.model.UpdateCategoryModel;
 import com.parovsky.traver.entity.Category;
-import com.parovsky.traver.exception.EntityAlreadyExistsException;
-import com.parovsky.traver.exception.EntityNotFoundException;
 import org.springframework.lang.NonNull;
 
 import javax.validation.Valid;
@@ -14,13 +12,13 @@ public interface CategoryService {
 
     List<Category> getAllCategories();
 
-    List<Category> getFavoriteCategories() throws EntityNotFoundException;
+    List<Category> getFavoriteCategories();
 
-    Category getCategoryById(@NonNull Long id) throws EntityNotFoundException;
+    Category getCategoryById(@NonNull Long id);
 
-    Category saveCategory(@Valid @NonNull SaveCategoryModel model) throws EntityAlreadyExistsException;
+    Category saveCategory(@Valid @NonNull SaveCategoryModel model);
 
-    Category updateCategory(@Valid @NonNull UpdateCategoryModel model) throws EntityNotFoundException;
+    Category updateCategory(@Valid @NonNull UpdateCategoryModel model);
 
-    void deleteCategory(@NonNull Long id) throws EntityNotFoundException;
+    void deleteCategory(@NonNull Long id);
 }
