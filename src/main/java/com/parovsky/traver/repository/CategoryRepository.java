@@ -26,4 +26,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 			" WHERE email like ?1)));", nativeQuery = true)
 	List<Category> findFavouriteCategories(String email);
 
+	List<Category> findByLocationsFavouriteLocationsUserEmail(String email);
+
 }

@@ -1,11 +1,14 @@
 package com.parovsky.traver.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -24,4 +27,9 @@ public class Category {
 
     @Column(nullable = false, columnDefinition="TEXT")
     private String picture;
+
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "category", orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Location> locations = new ArrayList<>();
 }
