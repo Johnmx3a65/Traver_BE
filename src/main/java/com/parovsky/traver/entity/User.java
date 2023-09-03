@@ -1,14 +1,10 @@
 package com.parovsky.traver.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -38,22 +34,6 @@ public class User {
 
     @Column(name="verify_code")
     private String verifyCode;
-
-    @JsonIgnore
-    @Fetch(value= FetchMode.SELECT)
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "location_user", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "location_id", referencedColumnName = "id"))
-    @ToString.Exclude
-    private Set<Location> favouriteLocations;
-
-    public User(Long id, String name, String email, String password, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 
     @Override
     public final boolean equals(Object o) {
