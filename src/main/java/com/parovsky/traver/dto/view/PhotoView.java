@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.response;
+package com.parovsky.traver.dto.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhotoResponse {
+public class PhotoView {
     private Long id;
 
     private String previewUrl;

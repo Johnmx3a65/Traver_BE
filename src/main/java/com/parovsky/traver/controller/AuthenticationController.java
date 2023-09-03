@@ -1,7 +1,7 @@
 package com.parovsky.traver.controller;
 
 import com.parovsky.traver.dto.form.*;
-import com.parovsky.traver.dto.response.UserResponse;
+import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,14 +18,14 @@ public class AuthenticationController {
 	private final UserService userService;
 
 	@PostMapping(value = "/sign-in", consumes = "application/json")
-	public ResponseEntity<UserResponse> authenticateUser(@Valid @RequestBody SignInForm model) {
+	public ResponseEntity<UserView> authenticateUser(@Valid @RequestBody SignInForm model) {
 		return userService.authenticateUser(model);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
-	public UserResponse saveUser(@Valid @RequestBody SignUpForm model) {
+	public UserView saveUser(@Valid @RequestBody SignUpForm model) {
 		return userService.saveUser(model);
 	}
 

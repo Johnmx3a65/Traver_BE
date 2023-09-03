@@ -2,7 +2,7 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dto.form.SavePhotoForm;
 import com.parovsky.traver.dto.form.UpdatePhotoForm;
-import com.parovsky.traver.dto.response.PhotoResponse;
+import com.parovsky.traver.dto.view.PhotoView;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.Photo;
 import com.parovsky.traver.exception.ApplicationException;
@@ -34,16 +34,16 @@ public class PhotoServiceImpl implements PhotoService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<PhotoResponse> getPhotos(@NonNull Long locationId) {
+    public List<PhotoView> getPhotos(@NonNull Long locationId) {
         if (locationRepository.existsById(locationId)) {
             List<Photo> photos = photoRepository.findAllByLocationId(locationId);
-            return photos.stream().map(photo -> modelMapper.map(photo, PhotoResponse.class)).collect(Collectors.toList());
+            return photos.stream().map(photo -> modelMapper.map(photo, PhotoView.class)).collect(Collectors.toList());
         }
         throw new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, locationId));
     }
 
     @Override
-    public PhotoResponse addLocationPhoto(@Valid @NonNull SavePhotoForm model) {
+    public PhotoView addLocationPhoto(@Valid @NonNull SavePhotoForm model) {
         Location location = locationRepository.findById(model.getLocationId()).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, model.getLocationId())));
         Photo photo = Photo.builder()
                 .previewUrl(model.getPreviewUrl())
@@ -51,16 +51,16 @@ public class PhotoServiceImpl implements PhotoService {
                 .location(location)
                 .build();
         Photo result = photoRepository.saveAndFlush(photo);
-        return modelMapper.map(result, PhotoResponse.class);
+        return modelMapper.map(result, PhotoView.class);
     }
 
     @Override
-    public PhotoResponse updatePhoto(@Valid @NonNull UpdatePhotoForm model) {
+    public PhotoView updatePhoto(@Valid @NonNull UpdatePhotoForm model) {
         Photo photo = photoRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(PHOTO_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
         photo.setPreviewUrl(model.getPreviewUrl());
         photo.setFullUrl(model.getFullUrl());
         Photo result = photoRepository.saveAndFlush(photo);
-        return modelMapper.map(result, PhotoResponse.class);
+        return modelMapper.map(result, PhotoView.class);
     }
 
     @Override

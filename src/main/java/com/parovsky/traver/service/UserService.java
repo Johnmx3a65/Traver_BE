@@ -1,7 +1,7 @@
 package com.parovsky.traver.service;
 
 import com.parovsky.traver.dto.form.*;
-import com.parovsky.traver.dto.response.UserResponse;
+import com.parovsky.traver.dto.view.UserView;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface UserService {
 
-	List<UserResponse> getAllUsers();
+	List<UserView> getAllUsers();
 
-	UserResponse getUserById(@NonNull Long id);
+	UserView getUserById(@NonNull Long id);
 
-	ResponseEntity<UserResponse> authenticateUser(@Valid @NonNull SignInForm model);
+	ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInForm model);
 
 	ResponseEntity<Void> logoutUser();
 
@@ -22,11 +22,11 @@ public interface UserService {
 
 	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeForm model);
 
-	UserResponse saveUser(@Valid @NonNull SignUpForm model);
+	UserView saveUser(@Valid @NonNull SignUpForm model);
 
-	UserResponse saveUserByAdmin(@Valid @NonNull SaveUserForm model);
+	UserView saveUserByAdmin(@Valid @NonNull SaveUserForm model);
 
-	UserResponse updateUser(@Valid @NonNull UpdateUserForm model);
+	UserView updateUser(@Valid @NonNull UpdateUserForm model);
 
 	void deleteUser(@NonNull Long id);
 
