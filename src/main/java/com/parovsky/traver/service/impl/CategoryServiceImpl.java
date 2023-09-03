@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<Category> getFavoriteCategories(UserDetails userDetails) {
-		return categoryRepository.findByLocationsFollowersEmail(userDetails.getUsername());
+		return categoryRepository.findAllByLocationsFollowersEmail(userDetails.getUsername());
 	}
 
 	@Override
