@@ -1,9 +1,9 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.UserRepository;
+import com.parovsky.traver.security.UserPrincipal;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.UserDetails;

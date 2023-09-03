@@ -1,6 +1,6 @@
 package com.parovsky.traver.security.jwt;
 
-import com.parovsky.traver.config.UserPrincipal;
+import com.parovsky.traver.security.UserPrincipal;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

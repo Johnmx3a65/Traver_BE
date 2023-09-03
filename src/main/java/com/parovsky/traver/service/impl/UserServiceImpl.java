@@ -1,12 +1,12 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.config.UserPrincipal;
 import com.parovsky.traver.dto.form.*;
 import com.parovsky.traver.dto.response.UserResponse;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
+import com.parovsky.traver.security.UserPrincipal;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;
 import com.parovsky.traver.service.UserService;

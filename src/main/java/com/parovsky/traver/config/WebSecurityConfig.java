@@ -92,6 +92,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	BCryptPasswordEncoder bCryptPasswordEncoderBean() { return new BCryptPasswordEncoder(); }
+
+	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
 		return new AuthTokenFilter();
 	}

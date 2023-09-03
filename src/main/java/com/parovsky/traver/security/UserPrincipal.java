@@ -1,4 +1,4 @@
-package com.parovsky.traver.config;
+package com.parovsky.traver.security;
 
 import com.parovsky.traver.entity.User;
 import org.springframework.security.core.GrantedAuthority;
