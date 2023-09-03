@@ -1,11 +1,11 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
-import com.parovsky.traver.dao.UserDao;
 import com.parovsky.traver.dto.model.*;
 import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
+import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.role.Role;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;
@@ -21,7 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +39,7 @@ import static com.parovsky.traver.utils.Utils.generateVerificationCode;
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class UserServiceImpl implements UserService {
 
-	private final UserDao userDAO;
+	private final UserRepository userRepository;
 
 	private final EmailService emailService;
 
@@ -54,20 +53,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserView> getAllUsers() {
-		List<User> users = userDAO.getAll();
+		List<User> users = userRepository.findAll();
 		return users.stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList());
 	}
 
 	@Override
 	public UserView getUserById(@NonNull Long id) {
-		User user = userDAO.get(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
-		return modelMapper.map(user, UserView.class);
-	}
-
-	@Override
-	public UserView getCurrentUser() {
-		String userEmail = getCurrentUserEmail();
-		User user = userDAO.getByEmail(userEmail).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, userEmail)));
+		User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
 		return modelMapper.map(user, UserView.class);
 	}
 
@@ -108,16 +100,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
+		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
 		user.setVerifyCode(String.valueOf(code));
-		userDAO.save(user);
+		userRepository.saveAndFlush(user);
 	}
 
 	@Override
 	public void checkVerificationCode(@NonNull CheckVerificationCodeModel model) {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
+		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);
 		}
@@ -125,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserView saveUser(@Valid @NonNull SignUpModel model) {
-		if (userDAO.isExistByEmail(model.getEmail())) {
+		if (userRepository.existsByEmail(model.getEmail())) {
 			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
 
@@ -139,13 +131,13 @@ public class UserServiceImpl implements UserService {
 				.password(passwordEncoder.encode(model.getPassword()))
 				.verifyCode(String.valueOf(code))
 				.build();
-		User newUser = userDAO.save(user);
+		User newUser = userRepository.saveAndFlush(user);
 		return modelMapper.map(newUser, UserView.class);
 	}
 
 	@Override
 	public UserView saveUserByAdmin(@NonNull @Valid SaveUserModel model) {
-		if (userDAO.isExistByEmail(model.getEmail())) {
+		if (userRepository.existsByEmail(model.getEmail())) {
 			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
 		String password = generateRandomString(10);
@@ -157,49 +149,35 @@ public class UserServiceImpl implements UserService {
 				.role(Role.valueOf(model.getRole()).name())
 				.password(passwordEncoder.encode(password))
 				.build();
-		User newUser = userDAO.save(user);
+		User newUser = userRepository.saveAndFlush(user);
 		return modelMapper.map(newUser, UserView.class);
 	}
 
 	@Override
 	public UserView updateUser(@NonNull @Valid UpdateUserModel model) {
-		User user = userDAO.get(model.getId()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
+		User user = userRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
 
 		user.setName(model.getName());
 		user.setEmail(model.getEmail());
 		user.setRole(Role.valueOf(model.getRole()).name());
 
-		User result = userDAO.save(user);
+		User result = userRepository.saveAndFlush(user);
 		return modelMapper.map(result, UserView.class);
 	}
 
 	@Override
 	public void resetPassword(@Valid @NonNull ResetPasswordModel model) {
-		User user = userDAO.getByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
+		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);
 		}
 		user.setPassword(passwordEncoder.encode(model.getPassword()));
-		userDAO.save(user);
+		userRepository.saveAndFlush(user);
 	}
 
 	@Override
 	public void deleteUser(@NonNull Long id) {
-		User user = userDAO.get(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
-		userDAO.delete(user);
-	}
-
-	private String getCurrentUserEmail() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String userEmail;
-
-		if (principal instanceof UserDetails) {
-			userEmail = ((UserDetails) principal).getUsername();
-		} else {
-			userEmail = principal.toString();
-		}
-
-		return userEmail;
+		User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
+		userRepository.delete(user);
 	}
 }

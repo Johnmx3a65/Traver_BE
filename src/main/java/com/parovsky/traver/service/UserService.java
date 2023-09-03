@@ -14,8 +14,6 @@ public interface UserService {
 
 	UserView getUserById(@NonNull Long id);
 
-	UserView getCurrentUser();
-
 	ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model);
 
 	ResponseEntity<Void> logoutUser();

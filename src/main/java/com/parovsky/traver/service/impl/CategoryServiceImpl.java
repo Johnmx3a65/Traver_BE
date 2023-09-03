@@ -2,15 +2,14 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dto.model.SaveCategoryModel;
 import com.parovsky.traver.dto.model.UpdateCategoryModel;
-import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.CategoryRepository;
 import com.parovsky.traver.repository.LocationRepository;
 import com.parovsky.traver.service.CategoryService;
-import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -29,17 +28,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 	private final LocationRepository locationRepository;
 
-	private final UserService userService;
-
 	@Override
 	public List<Category> getAllCategories() {
 		return categoryRepository.findAll();
 	}
 
 	@Override
-	public List<Category> getFavoriteCategories() {
-		UserView user = userService.getCurrentUser();
-		return categoryRepository.findByLocationsFollowersEmail(user.getEmail());
+	public List<Category> getFavoriteCategories(UserDetails userDetails) {
+		return categoryRepository.findByLocationsFollowersEmail(userDetails.getUsername());
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,8 +27,8 @@ public class CategoryController {
 
     @ResponseBody
     @GetMapping("/categories/favorite")
-    public List<Category> getFavoriteCategories() {
-        return categoryService.getFavoriteCategories();
+    public List<Category> getFavoriteCategories(@AuthenticationPrincipal() UserDetails userDetails) {
+        return categoryService.getFavoriteCategories(userDetails);
     }
 
     @ResponseBody

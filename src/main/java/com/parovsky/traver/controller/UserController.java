@@ -30,12 +30,6 @@ public class UserController {
 	}
 
 	@ResponseBody
-	@GetMapping("/current-user")
-	public UserView getCurrentUser() {
-		return userService.getCurrentUser();
-	}
-
-	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
 	public UserView saveUser(@Valid @RequestBody SaveUserModel model) {

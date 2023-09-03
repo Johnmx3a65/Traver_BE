@@ -6,6 +6,8 @@ import com.parovsky.traver.dto.view.LocationView;
 import com.parovsky.traver.service.LocationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,14 +27,14 @@ public class LocationController {
 
 	@ResponseBody
 	@GetMapping("/locations/favourite")
-	public List<LocationView> getFavouriteLocations(@RequestParam(required = false) Long categoryId) {
-		return locationService.getFavoriteLocations(categoryId);
+	public List<LocationView> getFavouriteLocations(@RequestParam(required = false) Long categoryId, @AuthenticationPrincipal() UserDetails userDetails) {
+		return locationService.getFavoriteLocations(categoryId, userDetails);
 	}
 
 	@ResponseBody
 	@GetMapping("/location/{id}")
-	public LocationView getLocation(@PathVariable Long id) {
-		return locationService.getLocationById(id);
+	public LocationView getLocation(@PathVariable Long id, @AuthenticationPrincipal() UserDetails userDetails) {
+		return locationService.getLocationById(id, userDetails);
 	}
 
 	@ResponseBody
@@ -44,8 +46,8 @@ public class LocationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/location/favourite/{locationId}")
-	public void addFavouriteLocation(@PathVariable Long locationId) {
-		locationService.addFavoriteLocation(locationId);
+	public void addFavouriteLocation(@PathVariable Long locationId, @AuthenticationPrincipal() UserDetails userDetails) {
+		locationService.addFavoriteLocation(locationId, userDetails);
 	}
 
 	@ResponseBody
@@ -56,8 +58,8 @@ public class LocationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(value = "/location/favourite/{locationId}")
-	public void deleteFavouriteLocation(@PathVariable Long locationId) {
-		locationService.deleteFavoriteLocation(locationId);
+	public void deleteFavouriteLocation(@PathVariable Long locationId, @AuthenticationPrincipal() UserDetails userDetails) {
+		locationService.deleteFavoriteLocation(locationId, userDetails);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)

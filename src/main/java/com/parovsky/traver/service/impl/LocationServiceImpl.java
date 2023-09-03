@@ -13,11 +13,11 @@ import com.parovsky.traver.repository.LocationRepository;
 import com.parovsky.traver.repository.PhotoRepository;
 import com.parovsky.traver.repository.UserRepository;
 import com.parovsky.traver.service.LocationService;
-import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -33,8 +33,6 @@ import static com.parovsky.traver.utils.Constraints.*;
 @Service
 @AllArgsConstructor(onConstructor = @__({@org.springframework.beans.factory.annotation.Autowired}))
 public class LocationServiceImpl implements LocationService {
-
-	private final UserService userService;
 
 	private final LocationRepository locationRepository;
 
@@ -64,12 +62,12 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationView getLocationById(@NonNull Long id) {
+	public LocationView getLocationById(@NonNull Long id, UserDetails userDetails) {
 		Location location = locationRepository.findById(id).orElseThrow(
 				() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, id)));
 
 		LocationView locationView = modelMapper.map(location, LocationView.class);
-		String email = userService.getCurrentUser().getEmail();
+		String email = userDetails.getUsername();
 		if (locationRepository.existsByIdAndFollowersEmail(id, email)) {
 			locationView.setIsFavorite(true);
 		}
@@ -77,9 +75,9 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public List<LocationView> getFavoriteLocations(@Nullable Long categoryId) {
+	public List<LocationView> getFavoriteLocations(@Nullable Long categoryId, UserDetails userDetails) {
 		List<Location> result;
-		String email = userService.getCurrentUser().getEmail();
+		String email = userDetails.getUsername();
 
 		if (categoryId == null) {
 			result = locationRepository.findAllByFollowersEmail(email);
@@ -121,8 +119,8 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public void addFavoriteLocation(@NonNull Long locationId) {
-		String email = userService.getCurrentUser().getEmail();
+	public void addFavoriteLocation(@NonNull Long locationId, UserDetails userDetails) {
+		String email = userDetails.getUsername();
 		Location location = locationRepository.findById(locationId).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, locationId)));
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, email)));
 
@@ -162,8 +160,8 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public void deleteFavoriteLocation(@NonNull Long locationId) {
-		String email = userService.getCurrentUser().getEmail();
+	public void deleteFavoriteLocation(@NonNull Long locationId, UserDetails userDetails) {
+		String email = userDetails.getUsername();
 		Location location = locationRepository.findById(locationId).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, locationId)));
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, email)));
 
