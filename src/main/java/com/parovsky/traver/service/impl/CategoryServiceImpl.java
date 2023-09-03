@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public List<Category> getFavoriteCategories() {
 		UserView user = userService.getCurrentUser();
-		return categoryRepository.findByLocationsFavouriteLocationsUserEmail(user.getEmail());
+		return categoryRepository.findByLocationsFollowersEmail(user.getEmail());
 	}
 
 	@Override

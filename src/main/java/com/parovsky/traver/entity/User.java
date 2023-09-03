@@ -1,5 +1,6 @@
 package com.parovsky.traver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,8 +36,11 @@ public class User {
     @Column(name="verify_code")
     private String verifyCode;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<FavouriteLocation> favouriteLocations;
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "location_user", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "location_id", referencedColumnName = "id"))
+    private List<Location> favouriteLocations;
 
     public User(Long id, String name, String email, String password, String role) {
         this.id = id;

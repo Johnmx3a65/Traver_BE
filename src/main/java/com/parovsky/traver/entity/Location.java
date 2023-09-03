@@ -1,7 +1,7 @@
 package com.parovsky.traver.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,7 +42,9 @@ public class Location {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<FavouriteLocation> favouriteLocations;
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "location_user", joinColumns = @JoinColumn(name = "location_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    private List<User> followers;
 }
