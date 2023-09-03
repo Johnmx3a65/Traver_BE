@@ -10,5 +10,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
 	List<Photo> findAllByLocation(Location location);
 
+	List<Photo> findAllByLocationId(Long locationId);
+
 	boolean existsByLocationId(Long locationId);
 }
