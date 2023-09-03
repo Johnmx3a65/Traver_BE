@@ -1,8 +1,8 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.dto.model.SaveLocationModel;
-import com.parovsky.traver.dto.model.UpdateLocationModel;
-import com.parovsky.traver.dto.view.LocationView;
+import com.parovsky.traver.dto.form.SaveLocationForm;
+import com.parovsky.traver.dto.form.UpdateLocationForm;
+import com.parovsky.traver.dto.response.LocationResponse;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.User;
@@ -45,7 +45,7 @@ public class LocationServiceImpl implements LocationService {
 	private final ModelMapper modelMapper;
 
 	@Override
-	public List<LocationView> getLocations(@Nullable Long categoryId) {
+	public List<LocationResponse> getLocations(@Nullable Long categoryId) {
 		List<Location> result;
 		if (categoryId != null) {
 			if (!categoryRepository.existsById(categoryId)) {
@@ -57,25 +57,25 @@ public class LocationServiceImpl implements LocationService {
 		}
 		return result
 				.stream()
-				.map(l -> modelMapper.map(l, LocationView.class))
+				.map(l -> modelMapper.map(l, LocationResponse.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public LocationView getLocationById(@NonNull Long id, UserDetails userDetails) {
+	public LocationResponse getLocationById(@NonNull Long id, UserDetails userDetails) {
 		Location location = locationRepository.findById(id).orElseThrow(
 				() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, id)));
 
-		LocationView locationView = modelMapper.map(location, LocationView.class);
+		LocationResponse locationResponse = modelMapper.map(location, LocationResponse.class);
 		String email = userDetails.getUsername();
 		if (locationRepository.existsByIdAndFollowersEmail(id, email)) {
-			locationView.setIsFavorite(true);
+			locationResponse.setIsFavorite(true);
 		}
-		return locationView;
+		return locationResponse;
 	}
 
 	@Override
-	public List<LocationView> getFavoriteLocations(@Nullable Long categoryId, UserDetails userDetails) {
+	public List<LocationResponse> getFavoriteLocations(@Nullable Long categoryId, UserDetails userDetails) {
 		List<Location> result;
 		String email = userDetails.getUsername();
 
@@ -89,12 +89,12 @@ public class LocationServiceImpl implements LocationService {
 
 		return result
 				.stream()
-				.map(l -> modelMapper.map(l, LocationView.class))
+				.map(l -> modelMapper.map(l, LocationResponse.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public LocationView saveLocation(@Valid @NonNull SaveLocationModel model) {
+	public LocationResponse saveLocation(@Valid @NonNull SaveLocationForm model) {
 		if (locationRepository.existsByNameAndSubtitle(model.getName(), model.getSubtitle())) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("name", model.getName());
@@ -115,7 +115,7 @@ public class LocationServiceImpl implements LocationService {
 				.build();
 
 		Location result = locationRepository.saveAndFlush(location);
-		return modelMapper.map(result, LocationView.class);
+		return modelMapper.map(result, LocationResponse.class);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public LocationView updateLocation(@NonNull @Valid UpdateLocationModel model) {
+	public LocationResponse updateLocation(@NonNull @Valid UpdateLocationForm model) {
 		Category category = categoryRepository.findById(model.getCategoryId()).orElseThrow(() -> new ApplicationException(CATEGORY_NOT_FOUND, Collections.singletonMap(ID, model.getCategoryId())));
 		Location location = locationRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
 
@@ -145,7 +145,7 @@ public class LocationServiceImpl implements LocationService {
 		location.setCategory(category);
 
 		Location result = locationRepository.saveAndFlush(location);
-		return modelMapper.map(result, LocationView.class);
+		return modelMapper.map(result, LocationResponse.class);
 	}
 
 	@Override

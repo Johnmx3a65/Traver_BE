@@ -1,8 +1,8 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.model.SaveLocationModel;
-import com.parovsky.traver.dto.model.UpdateLocationModel;
-import com.parovsky.traver.dto.view.LocationView;
+import com.parovsky.traver.dto.form.SaveLocationForm;
+import com.parovsky.traver.dto.form.UpdateLocationForm;
+import com.parovsky.traver.dto.response.LocationResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,17 +12,17 @@ import java.util.List;
 
 public interface LocationService {
 
-	List<LocationView> getLocations(@Nullable Long categoryId);
+	List<LocationResponse> getLocations(@Nullable Long categoryId);
 
-	LocationView getLocationById(@NonNull Long id, UserDetails userDetails);
+	LocationResponse getLocationById(@NonNull Long id, UserDetails userDetails);
 
-	List<LocationView> getFavoriteLocations(@Nullable Long categoryId, UserDetails userDetails);
+	List<LocationResponse> getFavoriteLocations(@Nullable Long categoryId, UserDetails userDetails);
 
-	LocationView saveLocation(@Valid @NonNull SaveLocationModel model);
+	LocationResponse saveLocation(@Valid @NonNull SaveLocationForm model);
 
 	void addFavoriteLocation(@NonNull Long locationId, UserDetails userDetails);
 
-	LocationView updateLocation(@Valid @NonNull UpdateLocationModel model);
+	LocationResponse updateLocation(@Valid @NonNull UpdateLocationForm model);
 
 	void deleteLocation(@NonNull Long id);
 

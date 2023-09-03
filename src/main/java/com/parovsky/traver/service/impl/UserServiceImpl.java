@@ -1,8 +1,8 @@
 package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.config.UserPrincipal;
-import com.parovsky.traver.dto.model.*;
-import com.parovsky.traver.dto.view.UserView;
+import com.parovsky.traver.dto.form.*;
+import com.parovsky.traver.dto.response.UserResponse;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.UserRepository;
@@ -52,19 +52,19 @@ public class UserServiceImpl implements UserService {
 	private final BCryptPasswordEncoder passwordEncoder;
 
 	@Override
-	public List<UserView> getAllUsers() {
+	public List<UserResponse> getAllUsers() {
 		List<User> users = userRepository.findAll();
-		return users.stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList());
+		return users.stream().map(user -> modelMapper.map(user, UserResponse.class)).collect(Collectors.toList());
 	}
 
 	@Override
-	public UserView getUserById(@NonNull Long id) {
+	public UserResponse getUserById(@NonNull Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
-		return modelMapper.map(user, UserView.class);
+		return modelMapper.map(user, UserResponse.class);
 	}
 
 	@Override
-	public ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model) {
+	public ResponseEntity<UserResponse> authenticateUser(@Valid @NonNull SignInForm model) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						model.getEmail(),
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
 				.map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 
-		UserView userView = UserView
+		UserResponse userResponse = UserResponse
 				.builder()
 				.id(userDetails.getId())
 				.email(userDetails.getUsername())
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
 				.role(roles.get(0).replace("ROLE_", ""))
 				.build();
 
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userView);
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userResponse);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model) {
+	public void sendVerificationEmail(@Valid @NonNull SendVerificationCodeForm model) {
 		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		int code = generateVerificationCode();
 		emailService.sendEmail(user.getEmail(), "Verification code", "Your verification code is: " + code);
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void checkVerificationCode(@NonNull CheckVerificationCodeModel model) {
+	public void checkVerificationCode(@NonNull CheckVerificationCodeForm model) {
 		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserView saveUser(@Valid @NonNull SignUpModel model) {
+	public UserResponse saveUser(@Valid @NonNull SignUpForm model) {
 		if (userRepository.existsByEmail(model.getEmail())) {
 			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
@@ -132,11 +132,11 @@ public class UserServiceImpl implements UserService {
 				.verifyCode(String.valueOf(code))
 				.build();
 		User newUser = userRepository.saveAndFlush(user);
-		return modelMapper.map(newUser, UserView.class);
+		return modelMapper.map(newUser, UserResponse.class);
 	}
 
 	@Override
-	public UserView saveUserByAdmin(@NonNull @Valid SaveUserModel model) {
+	public UserResponse saveUserByAdmin(@NonNull @Valid SaveUserForm model) {
 		if (userRepository.existsByEmail(model.getEmail())) {
 			throw new ApplicationException(USER_ALREADY_EXIST, Collections.singletonMap(EMAIL, model.getEmail()));
 		}
@@ -150,11 +150,11 @@ public class UserServiceImpl implements UserService {
 				.password(passwordEncoder.encode(password))
 				.build();
 		User newUser = userRepository.saveAndFlush(user);
-		return modelMapper.map(newUser, UserView.class);
+		return modelMapper.map(newUser, UserResponse.class);
 	}
 
 	@Override
-	public UserView updateUser(@NonNull @Valid UpdateUserModel model) {
+	public UserResponse updateUser(@NonNull @Valid UpdateUserForm model) {
 		User user = userRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
 
 		user.setName(model.getName());
@@ -162,11 +162,11 @@ public class UserServiceImpl implements UserService {
 		user.setRole(Role.valueOf(model.getRole()).name());
 
 		User result = userRepository.saveAndFlush(user);
-		return modelMapper.map(result, UserView.class);
+		return modelMapper.map(result, UserResponse.class);
 	}
 
 	@Override
-	public void resetPassword(@Valid @NonNull ResetPasswordModel model) {
+	public void resetPassword(@Valid @NonNull ResetPasswordForm model) {
 		User user = userRepository.findByEmail(model.getEmail()).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, model.getEmail())));
 		if (!user.getVerifyCode().equals(model.getVerificationCode())) {
 			throw new ApplicationException(VERIFICATION_CODE_NOT_MATCH);

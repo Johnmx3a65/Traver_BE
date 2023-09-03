@@ -1,7 +1,7 @@
 package com.parovsky.traver.service;
 
-import com.parovsky.traver.dto.model.*;
-import com.parovsky.traver.dto.view.UserView;
+import com.parovsky.traver.dto.form.*;
+import com.parovsky.traver.dto.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 
@@ -10,25 +10,25 @@ import java.util.List;
 
 public interface UserService {
 
-	List<UserView> getAllUsers();
+	List<UserResponse> getAllUsers();
 
-	UserView getUserById(@NonNull Long id);
+	UserResponse getUserById(@NonNull Long id);
 
-	ResponseEntity<UserView> authenticateUser(@Valid @NonNull SignInModel model);
+	ResponseEntity<UserResponse> authenticateUser(@Valid @NonNull SignInForm model);
 
 	ResponseEntity<Void> logoutUser();
 
-	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeModel model);
+	void sendVerificationEmail(@Valid @NonNull SendVerificationCodeForm model);
 
-	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeModel model);
+	void checkVerificationCode(@Valid @NonNull CheckVerificationCodeForm model);
 
-	UserView saveUser(@Valid @NonNull SignUpModel model);
+	UserResponse saveUser(@Valid @NonNull SignUpForm model);
 
-	UserView saveUserByAdmin(@Valid @NonNull SaveUserModel model);
+	UserResponse saveUserByAdmin(@Valid @NonNull SaveUserForm model);
 
-	UserView updateUser(@Valid @NonNull UpdateUserModel model);
+	UserResponse updateUser(@Valid @NonNull UpdateUserForm model);
 
 	void deleteUser(@NonNull Long id);
 
-	void resetPassword(@Valid @NonNull ResetPasswordModel model);
+	void resetPassword(@Valid @NonNull ResetPasswordForm model);
 }

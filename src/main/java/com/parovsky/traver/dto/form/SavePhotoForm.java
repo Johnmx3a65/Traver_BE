@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.model;
+package com.parovsky.traver.dto.form;
 
 import lombok.Data;
 
@@ -9,10 +9,7 @@ import javax.validation.constraints.Pattern;
 import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
-public class UpdatePhotoModel {
-    @NotNull(message = EMPTY_PHOTO_ID)
-    private Long id;
-
+public class SavePhotoForm {
     //pattern url
     @Pattern(regexp = "^(http|https)://.*$", message = PREVIEW_PHOTO_PATTERN)
     @NotBlank(message = EMPTY_PREVIEW_URL)

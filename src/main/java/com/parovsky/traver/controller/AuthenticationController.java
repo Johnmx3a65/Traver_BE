@@ -1,7 +1,7 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.*;
-import com.parovsky.traver.dto.view.UserView;
+import com.parovsky.traver.dto.form.*;
+import com.parovsky.traver.dto.response.UserResponse;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,14 +18,14 @@ public class AuthenticationController {
 	private final UserService userService;
 
 	@PostMapping(value = "/sign-in", consumes = "application/json")
-	public ResponseEntity<UserView> authenticateUser(@Valid @RequestBody SignInModel model) {
+	public ResponseEntity<UserResponse> authenticateUser(@Valid @RequestBody SignInForm model) {
 		return userService.authenticateUser(model);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
-	public UserView saveUser(@Valid @RequestBody SignUpModel model) {
+	public UserResponse saveUser(@Valid @RequestBody SignUpForm model) {
 		return userService.saveUser(model);
 	}
 
@@ -36,19 +36,19 @@ public class AuthenticationController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/send-verification-code", consumes = "application/json")
-	public void verifyEmail(@Valid @RequestBody SendVerificationCodeModel model) {
+	public void verifyEmail(@Valid @RequestBody SendVerificationCodeForm model) {
 		userService.sendVerificationEmail(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/check-verification-code", consumes = "application/json")
-	public void checkVerificationCode(@Valid @RequestBody CheckVerificationCodeModel model) {
+	public void checkVerificationCode(@Valid @RequestBody CheckVerificationCodeForm model) {
 		userService.checkVerificationCode(model);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping(value = "/reset-password", consumes = "application/json")
-	public void resetPassword(@Valid @RequestBody ResetPasswordModel model) {
+	public void resetPassword(@Valid @RequestBody ResetPasswordForm model) {
 		userService.resetPassword(model);
 	}
 

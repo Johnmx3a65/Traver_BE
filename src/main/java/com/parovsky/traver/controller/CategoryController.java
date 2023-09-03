@@ -1,7 +1,7 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.SaveCategoryModel;
-import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.dto.form.SaveCategoryForm;
+import com.parovsky.traver.dto.form.UpdateCategoryForm;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -40,13 +40,13 @@ public class CategoryController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/category", consumes = "application/json")
-    public Category saveCategory(@Valid @RequestBody SaveCategoryModel model) {
+    public Category saveCategory(@Valid @RequestBody SaveCategoryForm model) {
         return categoryService.saveCategory(model);
     }
 
     @ResponseBody
     @PutMapping(value = "/category", consumes = "application/json")
-    public Category updateCategory(@Valid @RequestBody UpdateCategoryModel model) {
+    public Category updateCategory(@Valid @RequestBody UpdateCategoryForm model) {
         return categoryService.updateCategory(model);
     }
 

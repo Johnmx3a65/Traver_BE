@@ -1,8 +1,8 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.SaveLocationModel;
-import com.parovsky.traver.dto.model.UpdateLocationModel;
-import com.parovsky.traver.dto.view.LocationView;
+import com.parovsky.traver.dto.form.SaveLocationForm;
+import com.parovsky.traver.dto.form.UpdateLocationForm;
+import com.parovsky.traver.dto.response.LocationResponse;
 import com.parovsky.traver.service.LocationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,26 +21,26 @@ public class LocationController {
 
 	@ResponseBody
 	@GetMapping("/locations")
-	public List<LocationView> getLocations(@RequestParam(required = false) Long categoryId) {
+	public List<LocationResponse> getLocations(@RequestParam(required = false) Long categoryId) {
 		return locationService.getLocations(categoryId);
 	}
 
 	@ResponseBody
 	@GetMapping("/locations/favourite")
-	public List<LocationView> getFavouriteLocations(@RequestParam(required = false) Long categoryId, @AuthenticationPrincipal() UserDetails userDetails) {
+	public List<LocationResponse> getFavouriteLocations(@RequestParam(required = false) Long categoryId, @AuthenticationPrincipal() UserDetails userDetails) {
 		return locationService.getFavoriteLocations(categoryId, userDetails);
 	}
 
 	@ResponseBody
 	@GetMapping("/location/{id}")
-	public LocationView getLocation(@PathVariable Long id, @AuthenticationPrincipal() UserDetails userDetails) {
+	public LocationResponse getLocation(@PathVariable Long id, @AuthenticationPrincipal() UserDetails userDetails) {
 		return locationService.getLocationById(id, userDetails);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
-    public LocationView saveLocation(@Valid @RequestBody SaveLocationModel model) {
+    public LocationResponse saveLocation(@Valid @RequestBody SaveLocationForm model) {
         return locationService.saveLocation(model);
     }
 
@@ -52,7 +52,7 @@ public class LocationController {
 
 	@ResponseBody
 	@PutMapping(value = "/location", consumes = "application/json")
-	public LocationView updateLocation(@Valid @RequestBody UpdateLocationModel model) {
+	public LocationResponse updateLocation(@Valid @RequestBody UpdateLocationForm model) {
 		return locationService.updateLocation(model);
 	}
 

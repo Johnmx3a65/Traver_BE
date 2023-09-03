@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.model;
+package com.parovsky.traver.dto.form;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
-public class UpdateCategoryModel {
+public class UpdateCategoryForm {
     @NotNull(message = EMPTY_CATEGORY_ID)
     private Long id;
 

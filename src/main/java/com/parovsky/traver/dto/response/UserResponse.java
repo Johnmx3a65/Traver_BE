@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.view;
+package com.parovsky.traver.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserView {
+public class UserResponse {
 	private Long id;
 
 	private String name;

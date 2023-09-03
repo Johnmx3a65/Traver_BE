@@ -1,7 +1,7 @@
 package com.parovsky.traver.service.impl;
 
-import com.parovsky.traver.dto.model.SaveCategoryModel;
-import com.parovsky.traver.dto.model.UpdateCategoryModel;
+import com.parovsky.traver.dto.form.SaveCategoryForm;
+import com.parovsky.traver.dto.form.UpdateCategoryForm;
 import com.parovsky.traver.entity.Category;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.CategoryRepository;
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Category saveCategory(@NonNull SaveCategoryModel model) {
+	public Category saveCategory(@NonNull SaveCategoryForm model) {
 		if (categoryRepository.existsByName(model.getName())) {
 			throw new ApplicationException(CATEGORY_ALREADY_EXIST, Collections.singletonMap(NAME, model.getName()));
 		}
@@ -56,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Category updateCategory(@Valid @NonNull UpdateCategoryModel model) {
+	public Category updateCategory(@Valid @NonNull UpdateCategoryForm model) {
 		Category category = categoryRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(CATEGORY_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
 		category.setName(model.getName());
 		category.setPicture(model.getPicture());

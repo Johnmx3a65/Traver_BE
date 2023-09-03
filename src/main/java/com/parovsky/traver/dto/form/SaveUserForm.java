@@ -1,16 +1,16 @@
-package com.parovsky.traver.dto.model;
+package com.parovsky.traver.dto.form;
 
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
-public class UpdateUserModel {
-	@NotNull(message = EMPTY_USER_ID)
-	private Long id;
-
+public class SaveUserForm {
 	@Size(min = 1, max = 255, message = NAME_LENGTH)
 	@NotBlank(message = EMPTY_NAME)
 	private String name;

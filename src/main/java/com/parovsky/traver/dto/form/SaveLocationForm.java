@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.model;
+package com.parovsky.traver.dto.form;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
-public class SaveLocationModel {
+public class SaveLocationForm {
 	@Size(min = 1, max = 255, message = NAME_LENGTH)
 	@NotBlank(message = EMPTY_NAME)
 	private String name;

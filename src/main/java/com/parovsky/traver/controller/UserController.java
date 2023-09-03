@@ -1,8 +1,8 @@
 package com.parovsky.traver.controller;
 
-import com.parovsky.traver.dto.model.SaveUserModel;
-import com.parovsky.traver.dto.model.UpdateUserModel;
-import com.parovsky.traver.dto.view.UserView;
+import com.parovsky.traver.dto.form.SaveUserForm;
+import com.parovsky.traver.dto.form.UpdateUserForm;
+import com.parovsky.traver.dto.response.UserResponse;
 import com.parovsky.traver.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,26 +19,26 @@ public class UserController {
 
 	@ResponseBody
 	@GetMapping("/users")
-	public List<UserView> getUsers() {
+	public List<UserResponse> getUsers() {
 		return userService.getAllUsers();
 	}
 
 	@ResponseBody
 	@GetMapping("/user/{id}")
-	public UserView getUserById(@PathVariable Long id) {
+	public UserResponse getUserById(@PathVariable Long id) {
 		return userService.getUserById(id);
 	}
 
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
-	public UserView saveUser(@Valid @RequestBody SaveUserModel model) {
+	public UserResponse saveUser(@Valid @RequestBody SaveUserForm model) {
 		return userService.saveUserByAdmin(model);
 	}
 
 	@ResponseBody
 	@PutMapping(value = "/user", consumes = "application/json")
-	public UserView updateUser(@Valid @RequestBody UpdateUserModel model) {
+	public UserResponse updateUser(@Valid @RequestBody UpdateUserForm model) {
 		return userService.updateUser(model);
 	}
 

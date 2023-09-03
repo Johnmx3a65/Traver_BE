@@ -1,4 +1,4 @@
-package com.parovsky.traver.dto.model;
+package com.parovsky.traver.dto.form;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import static com.parovsky.traver.utils.Constraints.*;
 
 @Data
-public class UpdateLocationModel {
+public class UpdateLocationForm {
 	@NotNull(message = EMPTY_LOCATION_ID)
 	private Long id;
 
