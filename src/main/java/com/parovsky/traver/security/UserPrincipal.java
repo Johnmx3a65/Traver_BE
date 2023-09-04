@@ -1,6 +1,7 @@
 package com.parovsky.traver.security;
 
 import com.parovsky.traver.entity.User;
+import com.parovsky.traver.role.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().equals("ADMIN") ? "ROLE_ADMIN" : "ROLE_USER"));
+        return Collections.singleton(new SimpleGrantedAuthority(
+                user.getRole().equals(Role.ADMIN.name()) ? Role.ADMIN.name() : Role.USER.name()
+        ));
     }
 
     public Long getId() {

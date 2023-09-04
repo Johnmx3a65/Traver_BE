@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and();
 
-		// Set unauthorized requests exception handler
+		// Set not authenticated or unauthorized requests exception handler
 		http = http
 				.exceptionHandling()
 				.authenticationEntryPoint(
@@ -67,6 +67,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								ex.getMessage()
 						)
 				)
+				.accessDeniedHandler((request, response, ex) -> response.sendError(
+						HttpServletResponse.SC_FORBIDDEN,
+						ex.getMessage()
+				))
 				.and();
 
 		// Set permissions on endpoints
@@ -74,18 +78,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// public endpoints
 				.antMatchers("/auth/**").permitAll()
 				// private endpoints
-				.antMatchers(HttpMethod.GET, "/current-user").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/photos/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/categories").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/categories/favorite").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/category/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/locations").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/locations/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.GET, "/location/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.POST, "/location/favourite/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-				.antMatchers(HttpMethod.DELETE, "/location/favourite/*").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/photos/*").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/categories").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/categories/favorite").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/category/*").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/locations").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/locations/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.GET, "/location/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.POST, "/location/favourite/*").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+				.antMatchers(HttpMethod.DELETE, "/location/favourite/*").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
 				// admin endpoints
-				.anyRequest().hasRole(Role.ADMIN.name());
+				.anyRequest().hasAuthority(Role.ADMIN.name());
 
 		// Add JWT token filter
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
