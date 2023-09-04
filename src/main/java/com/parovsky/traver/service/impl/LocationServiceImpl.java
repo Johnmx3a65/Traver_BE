@@ -101,9 +101,13 @@ public class LocationServiceImpl implements LocationService {
 			params.put("subtitle", model.getSubtitle());
 			throw new ApplicationException(Errors.LOCATION_ALREADY_EXIST, params);
 		}
+
 		Category category = categoryRepository
 				.findById(model.getCategoryId())
-				.orElseThrow(() -> new ApplicationException(CATEGORY_NOT_FOUND, Collections.singletonMap(ID, model.getCategoryId())));
+				.orElseThrow(() -> new ApplicationException(
+						CATEGORY_NOT_FOUND,
+						Collections.singletonMap(ID, model.getCategoryId())
+				));
 
 		Location location = Location.builder()
 				.name(model.getName())
@@ -121,11 +125,24 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public void addFavoriteLocation(@NonNull Long locationId, UserDetails userDetails) {
 		String email = userDetails.getUsername();
-		Location location = locationRepository.findById(locationId).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, locationId)));
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, email)));
+		Location location = locationRepository
+				.findById(locationId)
+				.orElseThrow(() -> new ApplicationException(
+						LOCATION_NOT_FOUND,
+						Collections.singletonMap(ID, locationId)
+				));
+
+		User user = userRepository
+				.findByEmail(email).orElseThrow(() -> new ApplicationException(
+						USER_NOT_FOUND_BY_EMAIL,
+						Collections.singletonMap(EMAIL, email)
+				));
 
 		if (location.getFollowers().contains(user)) {
-			throw new ApplicationException(FAVORITE_LOCATION_ALREADY_EXIST, Collections.singletonMap(LOCATION_ID, locationId));
+			throw new ApplicationException(
+					FAVORITE_LOCATION_ALREADY_EXIST,
+					Collections.singletonMap(LOCATION_ID, locationId)
+			);
 		}
 
 		location.addFollower(user);
@@ -134,8 +151,19 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public LocationView updateLocation(@NonNull @Valid UpdateLocationForm model) {
-		Category category = categoryRepository.findById(model.getCategoryId()).orElseThrow(() -> new ApplicationException(CATEGORY_NOT_FOUND, Collections.singletonMap(ID, model.getCategoryId())));
-		Location location = locationRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
+		Category category = categoryRepository
+				.findById(model.getCategoryId())
+				.orElseThrow(() -> new ApplicationException(
+						CATEGORY_NOT_FOUND,
+						Collections.singletonMap(ID, model.getCategoryId())
+				));
+
+		Location location = locationRepository
+				.findById(model.getId())
+				.orElseThrow(() -> new ApplicationException(
+						LOCATION_NOT_FOUND,
+						Collections.singletonMap(ID, model.getId())
+				));
 
 		location.setName(model.getName());
 		location.setSubtitle(model.getSubtitle());
@@ -150,7 +178,12 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public void deleteLocation(@NonNull Long id) {
-		Location location = locationRepository.findById(id).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, id)));
+		Location location = locationRepository
+				.findById(id)
+				.orElseThrow(() -> new ApplicationException(
+						LOCATION_NOT_FOUND,
+						Collections.singletonMap(ID, id)
+				));
 
 		if (photoRepository.existsByLocationId(id)) {
 			throw new ApplicationException(LOCATION_HAS_PHOTOS, Collections.singletonMap(ID, id));
@@ -162,8 +195,19 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public void deleteFavoriteLocation(@NonNull Long locationId, UserDetails userDetails) {
 		String email = userDetails.getUsername();
-		Location location = locationRepository.findById(locationId).orElseThrow(() -> new ApplicationException(LOCATION_NOT_FOUND, Collections.singletonMap(ID, locationId)));
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_BY_EMAIL, Collections.singletonMap(EMAIL, email)));
+		Location location = locationRepository
+				.findById(locationId)
+				.orElseThrow(() -> new ApplicationException(
+						LOCATION_NOT_FOUND,
+						Collections.singletonMap(ID, locationId)
+				));
+
+		User user = userRepository
+				.findByEmail(email)
+				.orElseThrow(() -> new ApplicationException(
+						USER_NOT_FOUND_BY_EMAIL,
+						Collections.singletonMap(EMAIL, email)
+				));
 
 		if (location.getFollowers().contains(user)) {
 			location.removeFollower(user);
