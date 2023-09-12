@@ -5,7 +5,7 @@ import com.parovsky.traver.dto.view.UserView;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.UserRepository;
-import com.parovsky.traver.role.Role;
+import com.parovsky.traver.security.Role;
 import com.parovsky.traver.security.UserPrincipal;
 import com.parovsky.traver.security.jwt.JwtUtils;
 import com.parovsky.traver.service.EmailService;

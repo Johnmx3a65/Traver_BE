@@ -31,7 +31,7 @@ public class Location {
     @Column(nullable = false)
     private String subtitle;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
