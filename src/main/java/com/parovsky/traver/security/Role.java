@@ -1,4 +1,4 @@
-package com.parovsky.traver.role;
+package com.parovsky.traver.security;
 
 public enum Role {
     USER,

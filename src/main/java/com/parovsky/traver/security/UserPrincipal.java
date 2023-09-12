@@ -1,7 +1,6 @@
 package com.parovsky.traver.security;
 
 import com.parovsky.traver.entity.User;
-import com.parovsky.traver.role.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

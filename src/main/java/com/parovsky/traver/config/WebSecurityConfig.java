@@ -1,10 +1,11 @@
 package com.parovsky.traver.config;
 
-import com.parovsky.traver.role.Role;
+import com.parovsky.traver.security.Role;
 import com.parovsky.traver.security.jwt.AuthTokenFilter;
 import io.pivotal.cfenv.core.CfEnv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,9 @@ import java.util.Collections;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
+
+	@Value("${traver.app.origin}")
+	private String origin;
 
 	@Autowired
 	public WebSecurityConfig(@Qualifier("AppUserDetailsService") UserDetailsService userDetailsService) {
@@ -116,7 +120,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Collections.singletonList(System.getenv("ORIGIN")));
+		configuration.setAllowedOrigins(Collections.singletonList(origin));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
 		configuration.setExposedHeaders(Arrays.asList("x-auth-token", "set-cookie"));
