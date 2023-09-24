@@ -1,6 +1,6 @@
 package com.parovsky.traver.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -30,7 +30,7 @@ public class Category {
     private String picture;
 
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "category", orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Location> locations = new ArrayList<>();
