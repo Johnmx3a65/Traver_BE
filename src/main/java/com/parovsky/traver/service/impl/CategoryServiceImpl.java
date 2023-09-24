@@ -58,7 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Category updateCategory(@Valid @NonNull UpdateCategoryForm model) {
 		Category category = categoryRepository.findById(model.getId()).orElseThrow(() -> new ApplicationException(CATEGORY_NOT_FOUND, Collections.singletonMap(ID, model.getId())));
-		if (categoryRepository.existsByName(model.getName())) {
+		if (categoryRepository.existsByNameAndIdNot(model.getName(), category.getId())) {
 			throw new ApplicationException(CATEGORY_ALREADY_EXIST, Collections.singletonMap(NAME, model.getName()));
 		}
 		category.setName(model.getName());
