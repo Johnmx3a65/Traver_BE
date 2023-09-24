@@ -12,4 +12,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	List<Category> findAllByLocationsFollowersEmail(String email);
 
 	boolean existsByName(String name);
+
+	boolean existsByNameAndIdNot(String name, Long id);
 }
