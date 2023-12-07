@@ -17,26 +17,22 @@ public class UserController {
 
 	private final UserService userService;
 
-	@ResponseBody
 	@GetMapping("/users")
 	public List<UserView> getUsers() {
 		return userService.getAllUsers();
 	}
 
-	@ResponseBody
 	@GetMapping("/user/{id}")
 	public UserView getUserById(@PathVariable Long id) {
 		return userService.getUserById(id);
 	}
 
-	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/user", consumes = "application/json")
 	public UserView saveUser(@Valid @RequestBody SaveUserForm model) {
 		return userService.saveUserByAdmin(model);
 	}
 
-	@ResponseBody
 	@PutMapping(value = "/user", consumes = "application/json")
 	public UserView updateUser(@Valid @RequestBody UpdateUserForm model) {
 		return userService.updateUser(model);

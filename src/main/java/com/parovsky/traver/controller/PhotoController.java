@@ -17,20 +17,17 @@ public class PhotoController {
 
     private final PhotoService photoService;
 
-    @ResponseBody
     @GetMapping("/photos/{locationId}")
     public List<PhotoView> getPhotos(@PathVariable Long locationId) {
         return photoService.getPhotos(locationId);
     }
 
-    @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/photo", consumes = "application/json")
     public PhotoView addLocationPhoto(@Valid @RequestBody SavePhotoForm model) {
         return photoService.addLocationPhoto(model);
     }
 
-    @ResponseBody
     @PutMapping(value = "/photo", consumes = "application/json")
     public PhotoView updatePhoto(@Valid @RequestBody UpdatePhotoForm model) {
         return photoService.updatePhoto(model);
