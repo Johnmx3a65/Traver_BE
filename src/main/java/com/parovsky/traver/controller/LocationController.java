@@ -19,25 +19,21 @@ public class LocationController {
 
 	private final LocationService locationService;
 
-	@ResponseBody
 	@GetMapping("/locations")
 	public List<LocationView> getLocations(@RequestParam(required = false) Long categoryId) {
 		return locationService.getLocations(categoryId);
 	}
 
-	@ResponseBody
 	@GetMapping("/locations/favourite")
 	public List<LocationView> getFavouriteLocations(@RequestParam(required = false) Long categoryId, @AuthenticationPrincipal() UserDetails userDetails) {
 		return locationService.getFavoriteLocations(categoryId, userDetails);
 	}
 
-	@ResponseBody
 	@GetMapping("/location/{id}")
 	public LocationView getLocation(@PathVariable Long id, @AuthenticationPrincipal() UserDetails userDetails) {
 		return locationService.getLocationById(id, userDetails);
 	}
 
-	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/location", consumes = "application/json")
     public LocationView saveLocation(@Valid @RequestBody SaveLocationForm model) {
@@ -50,7 +46,6 @@ public class LocationController {
 		locationService.addFavoriteLocation(locationId, userDetails);
 	}
 
-	@ResponseBody
 	@PutMapping(value = "/location", consumes = "application/json")
 	public LocationView updateLocation(@Valid @RequestBody UpdateLocationForm model) {
 		return locationService.updateLocation(model);

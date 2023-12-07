@@ -2,6 +2,7 @@ package com.parovsky.traver.service.impl;
 
 import com.parovsky.traver.dto.form.*;
 import com.parovsky.traver.dto.view.UserView;
+import com.parovsky.traver.entity.Location;
 import com.parovsky.traver.entity.User;
 import com.parovsky.traver.exception.ApplicationException;
 import com.parovsky.traver.repository.UserRepository;
@@ -178,6 +179,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(@NonNull Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(USER_NOT_FOUND, Collections.singletonMap(ID, id)));
+		for (Location location : user.getFavoriteLocations()) {
+			location.removeFollower(user);
+		}
 		userRepository.delete(user);
 	}
 }

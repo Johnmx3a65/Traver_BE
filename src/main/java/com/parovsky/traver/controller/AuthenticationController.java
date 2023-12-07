@@ -22,7 +22,6 @@ public class AuthenticationController {
 		return userService.authenticateUser(model);
 	}
 
-	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(value = "/sign-up", consumes = "application/json")
 	public UserView saveUser(@Valid @RequestBody SignUpForm model) {

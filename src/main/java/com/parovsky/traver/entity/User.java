@@ -1,10 +1,14 @@
 package com.parovsky.traver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +38,11 @@ public class User {
 
     @Column(name="verify_code")
     private String verifyCode;
+
+    @JsonIgnore
+    @Fetch(value= FetchMode.SELECT)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+    private Set<Location> favoriteLocations;
 
     @Override
     public final boolean equals(Object o) {
