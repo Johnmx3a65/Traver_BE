@@ -1,0 +1,18 @@
+name: Webhook Status Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  webhook_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Trigger Webhook
+        run: |
+          curl -X POST https://example.com/webhook \
+               -H "Content-Type: application/json" \
+               -d '{"event_type": "webhook-check", "sha": "${{ github.sha }}"}'
